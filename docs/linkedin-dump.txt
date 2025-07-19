@@ -1,0 +1,277 @@
+
+0 notifications total
+
+    new feed updates notifications
+
+Home
+My Network
+Jobs
+Messaging
+Notifications
+
+    Try Premium for CA$0
+
+Kevin Geng
+Status is online
+Kevin Geng (He/Him)
+eng @ faire
+
+Background Image
+Kevin Geng
+He/Him
+eng @ faire
+
+Toronto, Ontario, Canada Contact info
+
+    494 connections
+
+AnalyticsAnalytics
+
+ Private to you
+
+ Private to you
+
+120 profile views120 profile views
+Discover who's viewed your profile.Discover who's viewed your profile.
+26 post impressions26 post impressions
+Check out who's engaging with your posts.Check out who's engaging with your posts. Past 7 daysPast 7 days
+
+    37 search appearances37 search appearances
+    See how often you appear in search results.See how often you appear in search results.
+
+Show all analytics
+AboutAbout
+Full-stack Software Engineer with 3+ years of experience building SaaS products and cloud infrastructure. Contributed to the development of three products for business brokerage and real estate sectors using React, JavaScript, TypeScript, Java, and AWS. Previously at Amazon working on Alexa Communications infrastructure with Kotlin and Java.
+
+Core expertise:
+- Frontend: React, JavaScript, TypeScript
+- Backend: Java, Spring Boot, Kotlin
+- Cloud: AWS (S3, CloudFront, Route53, WAF, SES)
+- Database: PostgreSQL, DynamoDB, Redis
+
+Passionate about building effective products and improving development workflows. Open to new opportunities in software engineering.Full-stack Software Engineer with 3+ years of experience building SaaS products and cloud infrastructure. Contributed to the development of three products for business brokerage and real estate sectors using React, JavaScript, TypeScript, Java, and AWS. Previously at Amazon working on Alexa Communications infrastructure with Kotlin and Java. Core expertise: - Frontend: React, JavaScript, TypeScript - Backend: Java, Spring Boot, Kotlin - Cloud: AWS (S3, CloudFront, Route53, WAF, SES) - Database: PostgreSQL, DynamoDB, Redis Passionate about building effective products and improving development workflows. Open to new opportunities in software engineering.
+
+    Top skillsTop skills
+    Java • JavaScript • React.jsJava • JavaScript • React.js
+
+ActivityActivity
+
+494 followers494 followers
+Create a post
+Loaded 1 Posts post
+
+    View Kevin Geng’s graphic link
+    Kevin GengKevin Geng   • YouVerified • You eng @ faireeng @ faire 1mo •
+
+ 1 month ago • Visible to anyone on or off LinkedIn
+I’m happy to share that I’m starting a new position as Software Engineer at Faire!
+Starting a New Position
+
+Show all posts
+ExperienceExperience
+
+    Faire logo
+    Software EngineerSoftware Engineer
+    Faire · Permanent Full-timeFaire · Permanent Full-time May 2025 - Present · 3 mosMay 2025 to Present · 3 mos Toronto, Ontario, Canada · HybridToronto, Ontario, Canada · Hybrid
+            Frontend on Catalog GrowthFrontend on Catalog Growth
+    QuarkSys logo
+    Software EngineerSoftware Engineer
+    QuarkSys · Permanent Full-timeQuarkSys · Permanent Full-time Mar 2023 - Mar 2025 · 2 yrs 1 moMar 2023 to Mar 2025 · 2 yrs 1 mo Toronto, Ontario, Canada · RemoteToronto, Ontario, Canada · Remote
+            Builder of Web SaaSBuilder of Web SaaS
+            React.js, Continuous Integration and Continuous Delivery (CI/CD) and +6 skills
+    Amazon logo
+    Software Development Engineer ISoftware Development Engineer I
+    Amazon · Permanent Full-timeAmazon · Permanent Full-time Aug 2022 - Mar 2023 · 8 mosAug 2022 to Mar 2023 · 8 mos Toronto, Ontario, Canada · HybridToronto, Ontario, Canada · Hybrid
+            Alexa CommunicationsAlexa Communications
+            Continuous Integration and Continuous Delivery (CI/CD), Session Initiation Protocol (SIP) and +4 skills
+    RBC logo
+    Student DeveloperStudent Developer
+    RBC · InternshipRBC · Internship May 2021 - Aug 2021 · 4 mosMay 2021 to Aug 2021 · 4 mos Toronto, Ontario, CanadaToronto, Ontario, Canada
+            - Responsible for building web components as part of a new customer journey in a customer-facing web
+            application using AngularJS. Ensured that the components adhered to accessibility guidelines and met the
+            required testing coverage. As a result, the web application offered a seamless user experience
+            - In a Java Spring API, developed API service endpoints with JWT validation. Utilized JUnit to thoroughly test the functionality, ensuring robust security and reliable performance. This implementation facilitated secure data exchange and improved the overall system integrity- Responsible for building web components as part of a new customer journey in a customer-facing web application using AngularJS. Ensured that the components adhered to accessibility guidelines and met the required testing coverage. As a result, the web application offered a seamless user experience - In a Java Spring API, developed API service endpoints with JWT validation. Utilized JUnit to thoroughly test the functionality, ensuring robust security and reliable performance. This implementation facilitated secure data exchange and improved the overall system integrity
+            AngularJS and Java
+    RBC logo
+    Student DeveloperStudent Developer
+    RBC · InternshipRBC · Internship May 2020 - Aug 2020 · 4 mosMay 2020 to Aug 2020 · 4 mos Toronto, Ontario, CanadaToronto, Ontario, Canada
+            - In response to the need for a high-performing online banking account summary page, designed and
+            developed responsive and accessible web components using AngularJS. Implemented both unit testing and integration testing to ensure reliability, resulting in an improvement in page loading speed, and users with diverse accessibility needs could easily navigate and interact with the content
+            - To streamline daily deployments, collaborated on the development of an automated release note generation tool. Leveraging Angular and NodeJS, the tool was deployed on Jenkins, ensuring smooth interactions with the deployment pipeline. This enhancement significantly reduced manual intervention, allowing faster and more reliable daily releases- In response to the need for a high-performing online banking account summary page, designed and developed responsive and accessible web components using AngularJS. Implemented both unit testing and integration testing to ensure reliability, resulting in an improvement in page loading speed, and users with diverse accessibility needs could easily navigate and interact with the content - To streamline daily deployments, collaborated on the development of an automated release note generation tool. Leveraging Angular and NodeJS, the tool was deployed on Jenkins, ensuring smooth interactions with the deployment pipeline. This enhancement significantly reduced manual intervention, allowing faster and more reliable daily releases
+            Jenkins, Python and +2 skills
+
+Show all 6 experiences
+EducationEducation
+
+    Carleton University logo
+    Carleton UniversityCarleton University
+    Bachelor of Engineering - BEng, Software EngineeringBachelor of Engineering - BEng, Software Engineering 2017 - 20222017 - 2022
+
+Licenses & certificationsLicenses & certifications
+
+    Coursera logo
+    Natural Language Processing in TensorFlowNatural Language Processing in TensorFlow
+    CourseraCoursera Issued Apr 2020Issued Apr 2020 Credential ID 5XKKH4ETMDMKCredential ID 5XKKH4ETMDMK
+        Show credential
+    Coursera logo
+    Sequences, Time Series and PredictionSequences, Time Series and Prediction
+    CourseraCoursera Issued Apr 2020Issued Apr 2020 Credential ID WAVDKV2PNCQKCredential ID WAVDKV2PNCQK
+        Show credential
+
+Show all 6 licenses & certifications
+VolunteeringVolunteering
+
+    Systems and Computer Engineering Society - SCEsoc logo
+    VP FinanceVP Finance
+    Carleton Systems and Computer Engineering Society - SCEsocCarleton Systems and Computer Engineering Society - SCEsoc May 2018 - Apr 2019 · 1 yrMay 2018 - Apr 2019 · 1 yr EducationEducation
+        Handled the day-to-day transactions and long-term financial planning of the society’s $5000
+        operating budget
+        Worked with fellow executives with all of the society’s activities and administration.Handled the day-to-day transactions and long-term financial planning of the society’s $5000 operating budget Worked with fellow executives with all of the society’s activities and administration.
+
+    Team Captain Head, Luminary Head
+    Team Captain Head, Luminary HeadTeam Captain Head, Luminary Head
+    Bell High School Relay For Life CommitteeBell High School Relay For Life Committee May 2016 - May 2017 · 1 yr 1 moMay 2016 - May 2017 · 1 yr 1 mo HealthHealth
+
+Show all 3 volunteer experiences
+SkillsSkills
+
+    Continuous Integration and Continuous Delivery (CI/CD)Continuous Integration and Continuous Delivery (CI/CD)
+            Company logo
+        2 experiences across QuarkSys and 1 other company2 experiences across QuarkSys and 1 other company
+    REST APIsREST APIs
+            Company logo
+        2 experiences across QuarkSys and 1 other company2 experiences across QuarkSys and 1 other company
+
+Show all 32 skills
+LanguagesLanguages
+
+    ChineseChinese
+    Professional working proficiencyProfessional working proficiency
+    EnglishEnglish
+    Native or bilingual proficiencyNative or bilingual proficiency
+
+Show all 3 languages
+OrganizationsOrganizations
+
+    Carleton Systems and Computer Engineering SocietyCarleton Systems and Computer Engineering Society
+    President / VP Finance · May 2018 - Apr 2020President / VP Finance · May 2018 - Apr 2020
+            Carleton University logo
+        Associated with Carleton UniversityAssociated with Carleton University
+            Formerly President and Vice President of Finance of the Departmental Society of the Systems and Computer Engineering Department at Carleton University.
+
+            I participate actively in all happenings of the society. I have worked on policy and the constitution, the website, social media outreach, meeting with faculty and department, and running workshops for our membership.Formerly President and Vice President of Finance of the Departmental Society of the Systems and Computer Engineering Department at Carleton University. I participate actively in all happenings of the society. I have worked on policy and the constitution, the website, social media outreach, meeting with faculty and department, and running workshops for our membership.
+
+InterestsInterests
+
+    IBM logo
+    IBM IBM
+    18,474,278 followers18,474,278 followers
+
+Microsoft logo
+Microsoft Microsoft
+25,887,615 followers25,887,615 followers
+
+Show all companies
+Profile language
+
+English
+Public profile & URL
+
+www.linkedin.com/in/keving3ng
+Who your viewers also viewedWho your viewers also viewed
+
+ Private to you
+
+ Private to you
+
+    Brandon Dang
+    Brandon DangBrandon Dang
+    · 2ndSecond degree connection
+    Software Engineer @ FaireSoftware Engineer @ Faire
+
+Mehul Pillai
+Mehul PillaiMehul Pillai
+· 1stFirst degree connection
+SWE @ FaireSWE @ Faire
+
+    Message
+
+Unlock the full list
+
+See who else is often viewed alongside you
+Try Premium for CA$0
+
+1-month free trial. Cancel whenever. We’ll remind you 7 days before your trial ends.
+People you may knowPeople you may know
+
+From your job titleFrom your job title
+
+    Michael Mityushkin is open to work
+    Michael MityushkinMichael Mityushkin
+    Software DeveloperSoftware Developer
+
+Bertha Daza puerta
+Bertha Daza puertaBertha Daza puerta
+Ingeniero de software en TuapekaIngeniero de software en Tuapeka
+
+Sarah M.
+Sarah M.Sarah M.
+Android Developer at FaireAndroid Developer at Faire
+
+B. Phaneendra
+B. PhaneendraB. Phaneendra
+Dotnet Developer at Infinity Computer SolutionsDotnet Developer at Infinity Computer Solutions
+
+Jacky Tran is open to work
+Jacky TranJacky Tran
+Software EngineerSoftware Engineer
+
+Show all
+You might likeYou might like
+
+Pages for youPages for you
+
+    Uber logo
+    Uber Uber
+    Internet Marketplace PlatformsInternet Marketplace Platforms
+    3,160,792 followers3,160,792 followers
+        2 connections work here
+
+Meta logo
+Meta Meta
+Software DevelopmentSoftware Development
+11,073,783 followers11,073,783 followers
+
+    9 connections work here
+
+Show all
+
+    About
+    Accessibility
+    Talent Solutions
+    Professional Community Policies
+    Careers
+    Marketing Solutions
+
+    Ad Choices
+    Advertising
+    Sales Solutions
+    Mobile
+    Small Business
+    Safety Center
+
+    Questions?
+
+    Visit our Help Center.
+    Manage your account and privacy
+
+    Go to your Settings.
+    Recommendation transparency
+
+    Learn more about Recommended Content.
+
+Select Language
+
+LinkedIn Corporation © 2025
+Kevin Geng
+Status is online
