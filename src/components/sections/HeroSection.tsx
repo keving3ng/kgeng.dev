@@ -46,6 +46,11 @@ const itemVariants = {
 };
 
 export const HeroSection = () => {
+  const scrollToAbout = () => {
+    const aboutSection = document.getElementById('about');
+    aboutSection?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section id="home" className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Background Pattern */}
@@ -162,17 +167,21 @@ export const HeroSection = () => {
           variants={itemVariants}
           className="flex justify-center"
         >
-          <motion.div
+          <motion.button
+            onClick={scrollToAbout}
             animate={{ y: [0, -10, 0] }}
             transition={{
               duration: 2,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
-            className="p-3 rounded-full bg-slate-800/30 border border-slate-700/50 backdrop-blur-sm"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-3 rounded-full bg-slate-800/30 border border-slate-700/50 backdrop-blur-sm hover:bg-slate-700/50 transition-colors duration-300 cursor-pointer"
+            aria-label="Scroll to about section"
           >
-            <ArrowDown className="text-slate-400" size={24} />
-          </motion.div>
+            <ArrowDown className="text-slate-400 hover:text-slate-300 transition-colors duration-300" size={24} />
+          </motion.button>
         </motion.div>
       </motion.div>
     </section>
