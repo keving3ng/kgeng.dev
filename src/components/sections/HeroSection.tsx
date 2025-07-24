@@ -121,24 +121,6 @@ export const HeroSection = () => {
           <span className="text-blue-400 font-semibold">AWS</span>.
         </motion.p>
 
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-wrap justify-center gap-4 mb-12"
-        >
-          <Button
-            size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
-          >
-            View My Work
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white px-8 py-3 rounded-full transition-all duration-300 hover:scale-105"
-          >
-            Download Resume
-          </Button>
-        </motion.div>
 
         <motion.div
           variants={itemVariants}

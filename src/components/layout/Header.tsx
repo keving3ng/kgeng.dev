@@ -81,7 +81,11 @@ export const Header = () => {
           {/* Logo */}
           <Link href="/">
             <motion.div
-              className="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className={`text-xl font-bold transition-colors ${
+                isScrolled 
+                  ? 'text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400' 
+                  : 'text-white hover:text-blue-300'
+              }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
