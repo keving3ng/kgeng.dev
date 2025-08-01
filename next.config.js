@@ -6,6 +6,8 @@ const nextConfig = {
   images: {
     domains: ['images.unsplash.com'],
   },
+  // Ensure proper transpilation of dependencies
+  transpilePackages: ['lucide-react', 'class-variance-authority'],
 };
 
 module.exports = nextConfig;
