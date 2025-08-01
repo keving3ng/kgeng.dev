@@ -79,7 +79,8 @@
       "Bash(npm run type-check:*)",
       "Bash(git push:*)",
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(gh pr view:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",

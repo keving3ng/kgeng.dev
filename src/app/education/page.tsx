@@ -1,4 +1,4 @@
-import { EducationSection } from '@/components/sections/EducationSection';
+import { EducationSection } from '../../components/sections/EducationSection';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
