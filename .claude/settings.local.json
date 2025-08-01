@@ -75,7 +75,8 @@
       "Bash(gh pr view:*)",
       "Bash(gh run list:*)",
       "Bash(git fetch:*)",
-      "WebFetch(domain:www.asklen.info)"
+      "WebFetch(domain:www.asklen.info)",
+      "WebFetch(domain:letterboxd.com)"
     ],
     "deny": [
       "Bash(rm -rf /*)",

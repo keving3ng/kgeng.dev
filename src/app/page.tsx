@@ -5,6 +5,7 @@ import { SkillsSection } from '@/components/sections/SkillsSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { GitHubActivitySection } from '@/components/sections/GitHubActivitySection';
 import { EducationSection } from '@/components/sections/EducationSection';
+import { LetterboxdSection } from '@/components/sections/LetterboxdSection';
 
 export default function HomePage() {
   return (
@@ -14,6 +15,7 @@ export default function HomePage() {
       <ExperienceSection />
       <SkillsSection />
       <ProjectsSection />
+      <LetterboxdSection />
       <GitHubActivitySection />
       <EducationSection />
     </main>
