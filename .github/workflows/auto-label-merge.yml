@@ -31,14 +31,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Auto-label portfolio updates
-        if: contains(github.event.pull_request.files_changed, 'src/data/') || contains(github.event.pull_request.title, 'portfolio') || contains(github.event.pull_request.title, 'experience') || contains(github.event.pull_request.title, 'content')
+        if: contains(github.event.pull_request.title, 'portfolio') || contains(github.event.pull_request.title, 'experience') || contains(github.event.pull_request.title, 'content') || contains(github.event.pull_request.title, 'Faire')
         run: |
           gh pr edit ${{ github.event.pull_request.number }} --add-label "portfolio-update"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Auto-label config changes
-        if: contains(github.event.pull_request.files_changed, '.github/') || contains(github.event.pull_request.files_changed, '.claude/') || contains(github.event.pull_request.files_changed, 'package.json') || contains(github.event.pull_request.files_changed, 'tailwind.config') || contains(github.event.pull_request.files_changed, 'next.config')
+        if: contains(github.event.pull_request.title, 'config') || contains(github.event.pull_request.title, 'workflow') || contains(github.event.pull_request.title, 'permissions') || contains(github.event.pull_request.title, 'auto-accept')
         run: |
           gh pr edit ${{ github.event.pull_request.number }} --add-label "config-change"
         env:
