@@ -14,11 +14,14 @@ export function GitHubActivitySection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchGitHubData = async () => {
+  const fetchGitHubData = async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError(null);
-      const combinedData = await githubService.getCombinedActivity('keving3ng', 'kevingeng33');
+      if (forceRefresh) {
+        githubService.clearCache();
+      }
+      const combinedData = await githubService.getCombinedActivity('keving3ng', 'kevingeng33', forceRefresh);
       setData(combinedData);
     } catch (err) {
       console.error('Failed to fetch GitHub data:', err);
@@ -70,6 +73,14 @@ export function GitHubActivitySection() {
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
                 GitHub Activity
               </h2>
+              <button
+                onClick={() => fetchGitHubData(true)}
+                disabled={loading}
+                className="ml-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors disabled:opacity-50"
+                title="Refresh GitHub data"
+              >
+                <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
             </div>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Live data from my personal and work GitHub accounts, showcasing recent commits, 
@@ -111,7 +122,7 @@ export function GitHubActivitySection() {
               <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-3" />
               <p className="text-red-700 dark:text-red-400 mb-4">{error}</p>
               <button
-                onClick={fetchGitHubData}
+                onClick={() => fetchGitHubData(true)}
                 disabled={loading}
                 className="inline-flex items-center space-x-2 px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
               >
@@ -205,8 +216,12 @@ export function GitHubActivitySection() {
           {/* Footer note */}
           <motion.div variants={itemVariants} className="text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Data is cached for 24 hours and updates automatically. Last updated:{' '}
-              {data ? new Date().toLocaleString() : 'Loading...'}
+              Data is cached for 6 hours and updates automatically. Click the refresh icon to get the latest data.{' '}
+              {data && (
+                <>
+                  Last updated: {new Date().toLocaleString()}
+                </>
+              )}
             </p>
           </motion.div>
         </motion.div>
