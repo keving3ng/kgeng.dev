@@ -94,3 +94,5 @@ temp/
 
 # Claude Code artifacts
 .claude/
+# But allow commands to be tracked
+!.claude/commands/

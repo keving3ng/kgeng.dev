@@ -1,0 +1,171 @@
+#!/bin/bash
+
+# Fix GitHub Issue Command for Claude Code
+# This command fetches a GitHub issue, creates a branch, and prepares the context for Claude to implement the fix
+
+set -e  # Exit on any error
+
+# Check if issue number is provided, otherwise get oldest issue
+if [ $# -eq 0 ]; then
+    echo "🔍 No issue number provided. Finding oldest open issue..."
+    
+    # Check if gh CLI is installed first
+    if ! command -v gh &> /dev/null; then
+        echo "❌ Error: GitHub CLI (gh) is not installed"
+        echo "Please install it from: https://cli.github.com/"
+        exit 1
+    fi
+    
+    # Check if authenticated with gh
+    if ! gh auth status &> /dev/null; then
+        echo "❌ Error: Not authenticated with GitHub CLI"
+        echo "Please run: gh auth login"
+        exit 1
+    fi
+    
+    # Get oldest open issue
+    OLDEST_ISSUE=$(gh issue list --state open --limit 100 --json number,createdAt | jq -r 'sort_by(.createdAt) | .[0].number // empty')
+    
+    if [ -z "$OLDEST_ISSUE" ] || [ "$OLDEST_ISSUE" = "null" ]; then
+        echo "🎉 No open issues found!"
+        exit 0
+    fi
+    
+    ISSUE_NUMBER=$OLDEST_ISSUE
+    echo "📋 Selected oldest issue: #$ISSUE_NUMBER"
+else
+    # Validate issue number is numeric
+    if ! [[ "$1" =~ ^[0-9]+$ ]]; then
+        echo "❌ Error: Issue number must be a positive integer"
+        echo "Usage: /fix-issue [issue-number]"
+        exit 1
+    fi
+    ISSUE_NUMBER=$1
+fi
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel)" 2>/dev/null || echo "unknown")
+BRANCH_NAME="fix/issue-$ISSUE_NUMBER"
+
+echo "🔍 Analyzing GitHub issue #$ISSUE_NUMBER..."
+
+# Check if gh CLI is installed and authenticated (skip if already checked above)
+if [ $# -ne 0 ]; then
+    if ! command -v gh &> /dev/null; then
+        echo "❌ Error: GitHub CLI (gh) is not installed"
+        echo "Please install it from: https://cli.github.com/"
+        exit 1
+    fi
+
+    # Check if authenticated with gh
+    if ! gh auth status &> /dev/null; then
+        echo "❌ Error: Not authenticated with GitHub CLI"
+        echo "Please run: gh auth login"
+        exit 1
+    fi
+fi
+
+# Check if we're in a git repository
+if ! git rev-parse --is-inside-work-tree &> /dev/null; then
+    echo "❌ Error: Not in a git repository"
+    exit 1
+fi
+
+# Fetch issue details
+echo "📡 Fetching issue details..."
+ISSUE_JSON=$(gh issue view "$ISSUE_NUMBER" --json title,body,labels,assignees 2>/dev/null)
+if [ $? -ne 0 ]; then
+    echo "❌ Error: Failed to fetch issue #$ISSUE_NUMBER"
+    echo "Make sure the issue exists and you have access to the repository"
+    exit 1
+fi
+
+ISSUE_TITLE=$(echo "$ISSUE_JSON" | jq -r '.title')
+ISSUE_BODY=$(echo "$ISSUE_JSON" | jq -r '.body // "No description provided"')
+
+if [ "$ISSUE_TITLE" = "null" ] || [ -z "$ISSUE_TITLE" ]; then
+    echo "❌ Error: Issue #$ISSUE_NUMBER not found or not accessible"
+    exit 1
+fi
+
+echo "📋 Issue: $ISSUE_TITLE"
+echo "📝 Description: ${ISSUE_BODY:0:100}..."
+
+# Ensure we're on main branch before creating new branch
+CURRENT_BRANCH=$(git branch --show-current)
+if [ "$CURRENT_BRANCH" != "main" ]; then
+    echo "⚠️  Currently on branch '$CURRENT_BRANCH'. Switching to main..."
+    git checkout main
+fi
+
+# Pull latest changes
+echo "🔄 Pulling latest changes..."
+git pull origin main --quiet
+
+# Check if branch already exists
+if git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
+    echo "⚠️  Branch $BRANCH_NAME already exists. Switching to it..."
+    git checkout "$BRANCH_NAME"
+    echo "🔄 Pulling latest changes for branch..."
+    git pull origin "$BRANCH_NAME" --quiet 2>/dev/null || echo "   (No remote branch to pull from)"
+else
+    echo "🌿 Creating new branch: $BRANCH_NAME"
+    git checkout -b "$BRANCH_NAME"
+fi
+
+# Save issue context for Claude (in the working directory)
+CONTEXT_FILE="$(pwd)/.claude-issue-context.md"
+cat > "$CONTEXT_FILE" << EOF
+# GitHub Issue #$ISSUE_NUMBER: $ISSUE_TITLE
+
+## Description
+$ISSUE_BODY
+
+## Task for Claude
+Please analyze this GitHub issue and implement the necessary fixes. Follow these guidelines:
+
+### Analysis Phase
+1. Read and understand the issue description and requirements
+2. Examine the current codebase structure and relevant files
+3. Identify the root cause and scope of the issue
+4. Plan the implementation approach
+
+### Implementation Phase
+1. Implement the necessary code changes following project conventions
+2. Ensure changes are minimal and focused on the specific issue
+3. Follow the existing code style and patterns in the project
+4. Add appropriate error handling and validation
+
+### Validation Phase
+1. Test the changes thoroughly
+2. Run the project's quality checks: npm run lint && npm run type-check && npm run build
+3. Verify the fix resolves the issue without breaking existing functionality
+4. Prepare clear commit messages following conventional commit format
+
+### Project Context
+- **Repository**: $REPO_NAME
+- **Branch**: $BRANCH_NAME  
+- **Issue**: #$ISSUE_NUMBER
+- **Development Commands**: See CLAUDE.md for available npm scripts
+- **Architecture**: Next.js 14+ portfolio website with TypeScript and Tailwind CSS
+
+### Next Steps After Implementation
+1. Commit changes with message: "fix: resolve issue #$ISSUE_NUMBER - $ISSUE_TITLE"
+2. Push branch: git push -u origin $BRANCH_NAME
+3. Create PR: gh pr create --title "Fix #$ISSUE_NUMBER: $ISSUE_TITLE" --body "Resolves #$ISSUE_NUMBER" --reviewer keving3ng
+
+Remember to follow the project's coding standards and conventions as documented in CLAUDE.md.
+EOF
+
+echo "🤖 Issue context prepared for Claude analysis"
+echo "📄 Context saved to: $CONTEXT_FILE"
+echo ""
+echo "🎯 Ready for implementation!"
+echo ""
+echo "Claude will now:"
+echo "1. 📖 Analyze the issue requirements"
+echo "2. 🔍 Examine the codebase structure" 
+echo "3. ⚙️  Implement the necessary changes"
+echo "4. ✅ Test and validate the fix"
+echo "5. 📝 Prepare for code review"
+echo ""
+echo "Branch: $BRANCH_NAME"
+echo "Issue: #$ISSUE_NUMBER - $ISSUE_TITLE"
