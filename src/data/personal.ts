@@ -1,11 +1,11 @@
 export const personalInfo = {
   name: 'Kevin Geng',
   pronouns: 'He/Him',
-  title: 'Full-stack Software Engineer',
+  title: 'Frontend-focused Software Engineer',
   location: 'Toronto, Ontario, Canada',
   currentCompany: 'Faire',
   email: 'kevin@kgeng.dev',
-  bio: 'Full-stack Software Engineer with 3+ years of experience building SaaS products and cloud infrastructure. Contributed to the development of three products for business brokerage and real estate sectors using React, JavaScript, TypeScript, Java, and AWS. Previously at Amazon working on Alexa Communications infrastructure with Kotlin and Java.',
+  bio: 'Frontend-focused Software Engineer with 3+ years of experience building modern web applications and user interfaces. Specialized in React, TypeScript, and Next.js development for SaaS products including business brokerage and real estate platforms. Currently working on frontend solutions at Faire, with previous experience at Amazon and full-stack development at QuarkSys.',
   summary: 'Passionate about building effective products and improving development workflows. Open to new opportunities in software engineering.',
   connections: 494,
   github: {
@@ -14,8 +14,8 @@ export const personalInfo = {
   },
   linkedin: 'keving3ng',
   skills: {
-    core: ['Java', 'JavaScript', 'React.js'],
-    frontend: ['React', 'JavaScript', 'TypeScript'],
+    core: ['React', 'TypeScript', 'Next.js'],
+    frontend: ['React', 'TypeScript', 'Next.js', 'JavaScript', 'CSS-in-JS', 'Component Libraries'],
     backend: ['Java', 'Spring Boot', 'Kotlin'],
     cloud: ['AWS (S3, CloudFront, Route53, WAF, SES)'],
     database: ['PostgreSQL', 'DynamoDB', 'Redis'],
