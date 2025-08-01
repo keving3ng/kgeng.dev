@@ -74,7 +74,12 @@
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
       "Bash(gh run list:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run type-check:*)",
+      "Bash(git push:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
