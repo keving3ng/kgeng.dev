@@ -15,6 +15,9 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
       - name: Enable auto-merge for PR
         run: |
           pr_number="${{ github.event.pull_request.number }}"
@@ -51,6 +54,9 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
       - name: Disable auto-merge for PR
         run: |
           pr_number="${{ github.event.pull_request.number }}"
