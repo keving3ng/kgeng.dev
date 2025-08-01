@@ -69,7 +69,12 @@
       "Bash(dirname:*)",
       "Bash(jq:*)",
       "Bash(pkill:*)",
-      "Bash(killall:*)"
+      "Bash(killall:*)",
+      "Bash(gh label:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh run list:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",

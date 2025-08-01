@@ -9,7 +9,7 @@ import {
 } from '@/types/github';
 
 const GITHUB_API_BASE = 'https://api.github.com';
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours for fresher data
 
 interface CacheEntry<T> {
   data: T;
@@ -19,10 +19,14 @@ interface CacheEntry<T> {
 class GitHubService {
   private cache = new Map<string, CacheEntry<any>>();
 
-  private async fetchWithCache<T>(url: string, cacheKey: string): Promise<T> {
-    // Check cache first
+  clearCache(): void {
+    this.cache.clear();
+  }
+
+  private async fetchWithCache<T>(url: string, cacheKey: string, forceRefresh = false): Promise<T> {
+    // Check cache first (skip if force refresh is requested)
     const cached = this.cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    if (!forceRefresh && cached && Date.now() - cached.timestamp < CACHE_DURATION) {
       return cached.data;
     }
 
@@ -59,31 +63,34 @@ class GitHubService {
     }
   }
 
-  async getUser(username: string): Promise<GitHubUser> {
+  async getUser(username: string, forceRefresh = false): Promise<GitHubUser> {
     return this.fetchWithCache<GitHubUser>(
       `${GITHUB_API_BASE}/users/${username}`,
-      `user_${username}`
+      `user_${username}`,
+      forceRefresh
     );
   }
 
-  async getUserRepositories(username: string, limit = 100): Promise<GitHubRepository[]> {
+  async getUserRepositories(username: string, limit = 100, forceRefresh = false): Promise<GitHubRepository[]> {
     const repos = await this.fetchWithCache<GitHubRepository[]>(
       `${GITHUB_API_BASE}/users/${username}/repos?sort=updated&per_page=${limit}`,
-      `repos_${username}_${limit}`
+      `repos_${username}_${limit}`,
+      forceRefresh
     );
     
     // Filter out forks and archived repos for cleaner display
     return repos.filter(repo => !repo.fork && !repo.archived);
   }
 
-  async getRecentCommits(username: string, limit = 10): Promise<GitHubCommit[]> {
+  async getRecentCommits(username: string, limit = 10, forceRefresh = false): Promise<GitHubCommit[]> {
     try {
-      const repos = await this.getUserRepositories(username, 10);
+      const repos = await this.getUserRepositories(username, 10, forceRefresh);
       const commitPromises = repos.slice(0, 5).map(async (repo) => {
         try {
           const commits = await this.fetchWithCache<GitHubCommit[]>(
             `${GITHUB_API_BASE}/repos/${repo.full_name}/commits?author=${username}&per_page=3`,
-            `commits_${repo.full_name}_${username}`
+            `commits_${repo.full_name}_${username}`,
+            forceRefresh
           );
           return commits.map(commit => ({ ...commit, repo: repo.name }));
         } catch {
@@ -103,11 +110,12 @@ class GitHubService {
     }
   }
 
-  async getUserEvents(username: string, limit = 30): Promise<GitHubEvent[]> {
+  async getUserEvents(username: string, limit = 30, forceRefresh = false): Promise<GitHubEvent[]> {
     try {
       const events = await this.fetchWithCache<GitHubEvent[]>(
         `${GITHUB_API_BASE}/users/${username}/events/public?per_page=${limit}`,
-        `events_${username}_${limit}`
+        `events_${username}_${limit}`,
+        forceRefresh
       );
       
       // Filter for push events and other interesting activities
@@ -132,13 +140,13 @@ class GitHubService {
     return languageCount;
   }
 
-  async getUserActivity(username: string): Promise<GitHubActivity> {
+  async getUserActivity(username: string, forceRefresh = false): Promise<GitHubActivity> {
     try {
       const [user, repositories, recentCommits, events] = await Promise.all([
-        this.getUser(username),
-        this.getUserRepositories(username),
-        this.getRecentCommits(username),
-        this.getUserEvents(username),
+        this.getUser(username, forceRefresh),
+        this.getUserRepositories(username, 100, forceRefresh),
+        this.getRecentCommits(username, 10, forceRefresh),
+        this.getUserEvents(username, 30, forceRefresh),
       ]);
 
       const languageStats = this.calculateLanguageStats(repositories);
@@ -160,11 +168,11 @@ class GitHubService {
     }
   }
 
-  async getCombinedActivity(personalUsername: string, workUsername: string): Promise<CombinedGitHubActivity> {
+  async getCombinedActivity(personalUsername: string, workUsername: string, forceRefresh = false): Promise<CombinedGitHubActivity> {
     try {
       const [personal, work] = await Promise.all([
-        this.getUserActivity(personalUsername),
-        this.getUserActivity(workUsername),
+        this.getUserActivity(personalUsername, forceRefresh),
+        this.getUserActivity(workUsername, forceRefresh),
       ]);
 
       // Combine statistics
