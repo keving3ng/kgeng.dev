@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Building2, Calendar, MapPin, ExternalLink } from 'lucide-react';
-import { experiences } from '@/data/experience';
+import { experiences } from '../../data/experience';
 
 const containerVariants = {
   hidden: { opacity: 0 },

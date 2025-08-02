@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, Briefcase, GraduationCap, Brain, Code } from 'lucide-react';
-import { projects } from '@/data/projects';
-import { Button } from '@/components/ui/button';
+import { projects } from '../../data/projects';
+import { Button } from '../ui/button';
 
 const containerVariants = {
   hidden: { opacity: 0 },

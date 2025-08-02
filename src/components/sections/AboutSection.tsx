@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, Users, Award } from 'lucide-react';
-import { personalInfo } from '@/data/personal';
+import { personalInfo } from '../../data/personal';
 
 const containerVariants = {
   hidden: { opacity: 0 },

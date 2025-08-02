@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { GraduationCap, Award, Users, Calendar, MapPin, ExternalLink } from 'lucide-react';
-import { education, volunteer } from '@/data/experience';
-import { personalInfo } from '@/data/personal';
+import { education, volunteer } from '../../data/experience';
+import { personalInfo } from '../../data/personal';
 
 const containerVariants = {
   hidden: { opacity: 0 },

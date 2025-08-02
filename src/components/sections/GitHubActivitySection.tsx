@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, AlertCircle, RefreshCw } from 'lucide-react';
-import { githubService } from '@/services/github';
-import { CombinedGitHubActivity } from '@/types/github';
-import { GitHubStats } from '@/components/ui/GitHubStats';
-import { RecentCommits } from '@/components/ui/RecentCommits';
-import { RepositoryList } from '@/components/ui/RepositoryList';
+import { githubService } from '../../services/github';
+import { CombinedGitHubActivity } from '../../types/github';
+import { GitHubStats } from '../ui/GitHubStats';
+import { RecentCommits } from '../ui/RecentCommits';
+import { RepositoryList } from '../ui/RepositoryList';
 
 export function GitHubActivitySection() {
   const [data, setData] = useState<CombinedGitHubActivity | null>(null);

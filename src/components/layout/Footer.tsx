@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Github, Linkedin, Mail, Heart } from 'lucide-react';
-import { personalInfo } from '@/data/personal';
+import { personalInfo } from '../../data/personal';
 
 const navigation = [
   { name: 'About', href: '/about' as const },
