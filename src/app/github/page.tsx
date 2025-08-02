@@ -1,4 +1,4 @@
-import { GitHubActivitySection } from '@/components/sections/GitHubActivitySection';
+import { GitHubActivitySection } from '../../components/sections/GitHubActivitySection';
 
 export const metadata = {
   title: 'GitHub Activity - Kevin Geng',

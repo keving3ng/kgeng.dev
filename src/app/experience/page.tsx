@@ -1,4 +1,4 @@
-import { ExperienceSection } from '@/components/sections/ExperienceSection';
+import { ExperienceSection } from '../../components/sections/ExperienceSection';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
