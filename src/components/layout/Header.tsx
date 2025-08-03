@@ -14,6 +14,7 @@ const navigation = [
   { name: 'Skills', href: '/skills', section: '#skills' },
   { name: 'Projects', href: '/projects', section: '#projects' },
   { name: 'Movies', href: '/movies', section: '#letterboxd' },
+  { name: 'Music', href: '/music', section: '#spotify' },
   { name: 'Education', href: '/education', section: '#education' },
 ];
 
