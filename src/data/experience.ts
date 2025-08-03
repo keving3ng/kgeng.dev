@@ -101,6 +101,23 @@ export const experiences: Experience[] = [
     ],
     technologies: ['Jenkins', 'Python', 'AngularJS', 'NodeJS', 'CI/CD'],
   },
+  {
+    id: 'general-dynamics',
+    company: 'General Dynamics Mission Systems–Canada',
+    position: 'Test Automation Engineer',
+    duration: 'Sep 2019 - Apr 2020',
+    location: 'Ottawa, Canada Area',
+    type: 'internship',
+    current: false,
+    description: 'Developed automated testing solutions and custom testing tools to streamline software testing processes for military systems.',
+    achievements: [
+      'Developed automated tests replicating manual steps on both software simulators and hardware lab environments, resulting in significantly reduced testing cycles for each release, enabling faster delivery of high-quality software by over 90%',
+      'Designed and developed a custom testing tool using Python and PyQT with features for automated testing and result analysis',
+      'Streamlined the testing process, allowing for more efficient and accurate testing of software releases',
+      'Implemented automated testing procedures that replaced time-consuming manual testing workflows',
+    ],
+    technologies: ['Python', 'PyQT', 'Jenkins', 'Robot Framework', 'Test Automation'],
+  },
 ];
 
 export const education = [
