@@ -8,12 +8,13 @@ import { Menu, X, Github, Linkedin, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const navigation = [
-  { name: 'Home', href: '/' as const, section: '#home' },
-  { name: 'About', href: '/about' as const, section: '#about' },
-  { name: 'Experience', href: '/experience' as const, section: '#experience' },
-  { name: 'Skills', href: '/skills' as const, section: '#skills' },
-  { name: 'Projects', href: '/projects' as const, section: '#projects' },
-  { name: 'Education', href: '/education' as const, section: '#education' },
+  { name: 'Home', href: '/', section: '#home' },
+  { name: 'About', href: '/about', section: '#about' },
+  { name: 'Experience', href: '/experience', section: '#experience' },
+  { name: 'Skills', href: '/skills', section: '#skills' },
+  { name: 'Projects', href: '/projects', section: '#projects' },
+  { name: 'Movies', href: '/movies', section: '#letterboxd' },
+  { name: 'Education', href: '/education', section: '#education' },
 ];
 
 const socialLinks = [
@@ -108,7 +109,7 @@ export const Header = () => {
                   </button>
                 ) : (
                   <Link
-                    href={item.href}
+                    href={item.href as any}
                     className={`text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium ${
                       pathname === item.href ? 'text-blue-600 dark:text-blue-400' : ''
                     }`}
@@ -175,7 +176,7 @@ export const Header = () => {
                     </button>
                   ) : (
                     <Link
-                      href={item.href}
+                      href={item.href as any}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`block w-full text-left text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2 ${
                         pathname === item.href ? 'text-blue-600 dark:text-blue-400' : ''
