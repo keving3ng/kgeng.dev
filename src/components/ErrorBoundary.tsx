@@ -36,15 +36,15 @@ class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <h2 className="text-xl font-semibold text-content mb-2">
             Something went wrong
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-content-secondary mb-4">
             An unexpected error occurred while loading this page.
           </p>
           <button
             onClick={this.handleReset}
-            className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded hover:opacity-80 transition-opacity"
+            className="px-4 py-2 bg-content text-surface rounded hover:opacity-80 transition-opacity"
           >
             Try again
           </button>

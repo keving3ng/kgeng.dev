@@ -220,7 +220,7 @@ function Splits() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
+    <div className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <PageHeader
           title="splits"
@@ -230,13 +230,13 @@ function Splits() {
         {/* Items Section */}
         <section className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <label className="text-sm text-gray-500 dark:text-gray-400">
+            <label className="text-sm text-content-muted">
               default split:
             </label>
             <select
               value={defaultPeopleCount}
               onChange={(e) => handleDefaultPeopleChange(parseInt(e.target.value))}
-              className="text-sm px-2 py-1 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+              className="text-sm px-2 py-1 border border-border rounded bg-surface text-content"
             >
               <option value={1}>1 person</option>
               <option value={2}>2 people (A, B)</option>
@@ -248,13 +248,13 @@ function Splits() {
 
           <button
             onClick={addItem}
-            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-4 transition-colors"
+            className="text-sm text-content-muted hover:text-content-secondary mb-4 transition-colors"
           >
             + add item
           </button>
 
           {/* Header */}
-          <div className="hidden md:grid grid-cols-[1fr_80px_140px_32px] gap-3 text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">
+          <div className="hidden md:grid grid-cols-[1fr_80px_140px_32px] gap-3 text-xs text-content-muted mb-2 px-1">
             <span>description</span>
             <span>cost</span>
             <span>split</span>
@@ -273,7 +273,7 @@ function Splits() {
                   placeholder="item"
                   value={item.description}
                   onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                  className="w-full text-sm px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-full text-sm px-2 py-1.5 border border-border rounded bg-surface text-content placeholder-content-muted"
                 />
                 <input
                   type="number"
@@ -281,7 +281,7 @@ function Splits() {
                   step="0.01"
                   value={item.cost}
                   onChange={(e) => updateItem(item.id, 'cost', e.target.value)}
-                  className="w-full text-sm px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-full text-sm px-2 py-1.5 border border-border rounded bg-surface text-content placeholder-content-muted"
                 />
                 <div className="flex gap-1 flex-wrap">
                   {activePeople.map((person) => (
@@ -290,8 +290,8 @@ function Splits() {
                       onClick={() => togglePerson(item.id, person)}
                       className={`text-xs px-2 py-1 rounded transition-colors ${
                         item.selectedPeople.includes(person)
-                          ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
+                          ? 'bg-border text-content'
+                          : 'bg-surface-secondary text-content-muted'
                       }`}
                     >
                       {person}
@@ -300,7 +300,7 @@ function Splits() {
                 </div>
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-lg justify-self-center md:justify-self-start"
+                  className="text-content-muted hover:text-content-secondary transition-colors text-lg justify-self-center md:justify-self-start"
                 >
                   ×
                 </button>
@@ -310,15 +310,15 @@ function Splits() {
         </section>
 
         {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-gray-800 my-6" />
+        <div className="border-t border-border my-6" />
 
         {/* Tax & Tip Section */}
         <section className="mb-8">
-          <h2 className="text-sm text-gray-500 dark:text-gray-400 mb-4">tax & tip</h2>
+          <h2 className="text-sm text-content-muted mb-4">tax & tip</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1">tax</label>
+              <label className="block text-xs text-content-muted mb-1">tax</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -326,22 +326,22 @@ function Splits() {
                   step="0.01"
                   value={taxAmount}
                   onChange={(e) => handleTaxAmountChange(e.target.value)}
-                  className="w-20 text-sm px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-20 text-sm px-2 py-1.5 border border-border rounded bg-surface text-content placeholder-content-muted"
                 />
-                <span className="text-gray-400 text-sm">or</span>
+                <span className="text-content-muted text-sm">or</span>
                 <input
                   type="number"
                   placeholder="%"
                   step="0.1"
                   value={taxPercent}
                   onChange={(e) => handleTaxPercentChange(e.target.value)}
-                  className="w-16 text-sm px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-16 text-sm px-2 py-1.5 border border-border rounded bg-surface text-content placeholder-content-muted"
                 />
-                <span className="text-gray-400 text-sm">%</span>
+                <span className="text-content-muted text-sm">%</span>
               </div>
             </div>
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1">tip</label>
+              <label className="block text-xs text-content-muted mb-1">tip</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -349,42 +349,42 @@ function Splits() {
                   step="0.01"
                   value={tipAmount}
                   onChange={(e) => handleTipAmountChange(e.target.value)}
-                  className="w-20 text-sm px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-20 text-sm px-2 py-1.5 border border-border rounded bg-surface text-content placeholder-content-muted"
                 />
-                <span className="text-gray-400 text-sm">or</span>
+                <span className="text-content-muted text-sm">or</span>
                 <input
                   type="number"
                   placeholder="%"
                   step="0.1"
                   value={tipPercent}
                   onChange={(e) => handleTipPercentChange(e.target.value)}
-                  className="w-16 text-sm px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-16 text-sm px-2 py-1.5 border border-border rounded bg-surface text-content placeholder-content-muted"
                 />
-                <span className="text-gray-400 text-sm">%</span>
+                <span className="text-content-muted text-sm">%</span>
               </div>
             </div>
           </div>
 
           <div className="mb-6">
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-2">
+            <label className="block text-xs text-content-muted mb-2">
               split method for tax & tip
             </label>
             <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-content-secondary cursor-pointer">
                 <input
                   type="radio"
                   checked={splitMethod === 'proportional'}
                   onChange={() => setSplitMethod('proportional')}
-                  className="accent-gray-600"
+                  className="accent-content-secondary"
                 />
                 proportional
               </label>
-              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-content-secondary cursor-pointer">
                 <input
                   type="radio"
                   checked={splitMethod === 'even'}
                   onChange={() => setSplitMethod('even')}
-                  className="accent-gray-600"
+                  className="accent-content-secondary"
                 />
                 even
               </label>
@@ -394,33 +394,33 @@ function Splits() {
           {/* Totals */}
           <div className="flex flex-wrap gap-6 text-sm">
             <div>
-              <span className="text-gray-400 dark:text-gray-500">subtotal</span>
-              <span className="ml-2 text-gray-900 dark:text-gray-100">{subtotal.toFixed(2)}</span>
+              <span className="text-content-muted">subtotal</span>
+              <span className="ml-2 text-content">{subtotal.toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-gray-400 dark:text-gray-500">tax</span>
-              <span className="ml-2 text-gray-900 dark:text-gray-100">{tax.toFixed(2)}</span>
+              <span className="text-content-muted">tax</span>
+              <span className="ml-2 text-content">{tax.toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-gray-400 dark:text-gray-500">tip</span>
-              <span className="ml-2 text-gray-900 dark:text-gray-100">{tip.toFixed(2)}</span>
+              <span className="text-content-muted">tip</span>
+              <span className="ml-2 text-content">{tip.toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-gray-400 dark:text-gray-500">total</span>
-              <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{grandTotal.toFixed(2)}</span>
+              <span className="text-content-muted">total</span>
+              <span className="ml-2 font-medium text-content">{grandTotal.toFixed(2)}</span>
             </div>
           </div>
         </section>
 
         {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-gray-800 my-6" />
+        <div className="border-t border-border my-6" />
 
         {/* Summary Section */}
         <section className="mb-8">
-          <h2 className="text-sm text-gray-500 dark:text-gray-400 mb-4">summary</h2>
+          <h2 className="text-sm text-content-muted mb-4">summary</h2>
 
           {activePeopleWithItems.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500">
+            <p className="text-sm text-content-muted">
               add items above to see the split
             </p>
           ) : (
@@ -433,15 +433,15 @@ function Splits() {
                 return (
                   <div
                     key={person}
-                    className={`p-4 bg-gray-50 dark:bg-gray-900 rounded border-l-4 ${personColors[person]}`}
+                    className={`p-4 bg-surface-secondary rounded border-l-4 ${personColors[person]}`}
                   >
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">
+                    <h3 className="font-medium text-content mb-3">
                       person {person}
                     </h3>
 
                     <div className="space-y-1 mb-3 text-xs">
                       {personItems[person].map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-gray-500 dark:text-gray-400">
+                        <div key={idx} className="flex justify-between text-content-muted">
                           <span>
                             {item.description}
                             {item.sharedWith > 1 && ` (÷${item.sharedWith})`}
@@ -451,7 +451,7 @@ function Splits() {
                       ))}
                     </div>
 
-                    <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
+                    <div className="space-y-1 text-xs text-content-muted border-t border-border pt-2">
                       <div className="flex justify-between">
                         <span>items</span>
                         <span>{itemsTotal.toFixed(2)}</span>
@@ -466,7 +466,7 @@ function Splits() {
                       </div>
                     </div>
 
-                    <div className="flex justify-between font-medium text-gray-900 dark:text-gray-100 border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+                    <div className="flex justify-between font-medium text-content border-t border-border pt-2 mt-2">
                       <span>total</span>
                       <span>{personTotal.toFixed(2)}</span>
                     </div>
@@ -480,7 +480,7 @@ function Splits() {
         {/* Clear button */}
         <button
           onClick={clearAll}
-          className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+          className="text-sm text-content-muted hover:text-content-secondary transition-colors"
         >
           clear all
         </button>

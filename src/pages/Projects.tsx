@@ -24,7 +24,7 @@ const projects: Project[] = [
 
 function Projects() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
+    <div className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <PageHeader title="projects" subtitle="things i'm building." />
 
@@ -32,7 +32,7 @@ function Projects() {
           {projects.map((project) => (
             <div
               key={project.name}
-              className="border-l-2 border-gray-200 dark:border-gray-800 pl-4"
+              className="border-l-2 border-border pl-4"
             >
               <div className="flex items-baseline gap-2">
                 {project.url ? (
@@ -40,21 +40,21 @@ function Projects() {
                     href={project.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    className="text-sm font-medium text-content hover:text-content-secondary transition-colors"
                   >
                     {project.name} ↗
                   </a>
                 ) : (
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <span className="text-sm font-medium text-content">
                     {project.name}
                   </span>
                 )}
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-content-muted">
                   — {project.description}
                 </span>
               </div>
               {project.note && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-content-muted mt-1">
                   {project.note}
                 </p>
               )}

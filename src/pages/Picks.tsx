@@ -57,12 +57,12 @@ function Picks() {
   const nonEmptyCategories = categories.filter((cat) => cat.items.length > 0)
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
+    <div className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <PageHeader title="picks" subtitle="things i've enjoyed and would recommend." />
 
         {nonEmptyCategories.length === 0 ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+          <p className="text-sm text-content-muted italic">
             coming soon...
           </p>
         ) : (
@@ -70,7 +70,7 @@ function Picks() {
             {nonEmptyCategories.map((category) => (
               <section key={category.name}>
                 <div className="flex items-baseline gap-2 mb-4">
-                  <h2 className="text-sm text-gray-500 dark:text-gray-400 lowercase">
+                  <h2 className="text-sm text-content-muted lowercase">
                     {category.name}
                   </h2>
                   {category.link && (
@@ -78,7 +78,7 @@ function Picks() {
                       href={category.link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+                      className="text-xs text-content-muted hover:text-content-secondary transition-colors"
                     >
                       ({category.link.label} ↗)
                     </a>
@@ -88,34 +88,34 @@ function Picks() {
                   {category.items.map((item, idx) => (
                     <div key={idx}>
                       {item.label && (
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mb-2 mt-2">
+                        <p className="text-xs text-content-muted mb-2 mt-2">
                           {item.label}
                         </p>
                       )}
-                      <div className="border-l-2 border-gray-200 dark:border-gray-800 pl-4">
+                      <div className="border-l-2 border-border pl-4">
                       <div className="flex items-baseline gap-2">
                         {item.url ? (
                           <a
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                            className="text-sm font-medium text-content hover:text-content-secondary transition-colors"
                           >
                             {item.title} ↗
                           </a>
                         ) : (
-                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          <span className="text-sm font-medium text-content">
                             {item.title}
                           </span>
                         )}
                         {item.author && (
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                          <span className="text-sm text-content-muted">
                             — {item.author}
                           </span>
                         )}
                       </div>
                       {item.note && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-sm text-content-muted mt-1">
                           {item.note}
                         </p>
                       )}

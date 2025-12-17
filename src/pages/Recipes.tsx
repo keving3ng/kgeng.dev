@@ -23,7 +23,7 @@ function Recipes() {
   }, [recipes, activeTag])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
+    <div className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <PageHeader title="recipes" subtitle="a collection of recipes i've saved." />
 
@@ -34,8 +34,8 @@ function Recipes() {
               onClick={() => setActiveTag(null)}
               className={`text-sm px-3 py-1 rounded-full transition-colors ${
                 activeTag === null
-                  ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  ? 'bg-content text-surface'
+                  : 'bg-surface-secondary text-content-secondary hover:bg-border'
               }`}
             >
               all
@@ -46,8 +46,8 @@ function Recipes() {
                 onClick={() => setActiveTag(tag)}
                 className={`text-sm px-3 py-1 rounded-full transition-colors ${
                   activeTag === tag
-                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-content text-surface'
+                    : 'bg-surface-secondary text-content-secondary hover:bg-border'
                 }`}
               >
                 {tag.toLowerCase()}
@@ -58,13 +58,13 @@ function Recipes() {
 
         {/* Content */}
         {loading ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500">
+          <p className="text-sm text-content-muted">
             loading recipes...
           </p>
         ) : error ? (
-          <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+          <p className="text-sm text-red-500">{error}</p>
         ) : filteredRecipes.length === 0 ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+          <p className="text-sm text-content-muted italic">
             {activeTag ? `no recipes tagged "${activeTag}"` : 'no recipes yet...'}
           </p>
         ) : (
@@ -72,24 +72,24 @@ function Recipes() {
             {filteredRecipes.map((recipe) => (
               <div
                 key={recipe.id}
-                className="border-l-2 border-gray-200 dark:border-gray-800 pl-4 py-1"
+                className="border-l-2 border-border pl-4 py-1"
               >
                 {recipe.url ? (
                   <a
                     href={recipe.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    className="text-sm font-medium text-content hover:text-content-secondary transition-colors"
                   >
                     {recipe.name} ↗
                   </a>
                 ) : (
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <span className="text-sm font-medium text-content">
                     {recipe.name}
                   </span>
                 )}
                 {recipe.notes && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                  <p className="text-sm text-content-muted mt-0.5">
                     {recipe.notes}
                   </p>
                 )}
@@ -98,7 +98,7 @@ function Recipes() {
                     {recipe.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-xs text-gray-400 dark:text-gray-500"
+                        className="text-xs text-content-muted"
                       >
                         #{tag.toLowerCase()}
                       </span>

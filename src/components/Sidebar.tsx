@@ -33,28 +33,28 @@ export function MobileNav({
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="text-sm text-gray-500 dark:text-gray-400 mb-4"
+        className="text-sm text-content-muted mb-4"
       >
-        filter: <span className="text-gray-900 dark:text-gray-100">{activeLabel}</span> ↓
+        filter: <span className="text-content">{activeLabel}</span> ↓
       </button>
 
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40"
+          className="fixed inset-0 bg-black/20 z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Bottom sheet */}
       <div
-        className={`fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 rounded-t-2xl z-50 transition-transform duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 bg-surface-secondary border-t border-border rounded-t-2xl z-50 transition-transform duration-300 ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
         <div className="p-6 pb-8 max-h-[70vh] overflow-y-auto">
           {/* Handle */}
-          <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-6" />
+          <div className="w-10 h-1 bg-content-muted/50 rounded-full mx-auto mb-6" />
 
           {/* Filters */}
           <div className="space-y-2 mb-6">
@@ -68,8 +68,8 @@ export function MobileNav({
                   onClick={() => handleFilterClick(filter)}
                   className={`block w-full text-left text-sm py-2 transition-colors ${
                     isActive
-                      ? 'text-gray-900 dark:text-gray-100 font-medium'
-                      : 'text-gray-500 dark:text-gray-400'
+                      ? 'text-content font-medium'
+                      : 'text-content-muted'
                   }`}
                 >
                   {filter.toLowerCase()}
@@ -79,7 +79,7 @@ export function MobileNav({
           </div>
 
           {/* Divider */}
-          <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
+          <div className="border-t border-border my-4" />
 
           {/* Lists */}
           {lists.length > 0 && (
@@ -90,7 +90,7 @@ export function MobileNav({
                     key={list.url}
                     to={list.url}
                     onClick={() => setIsOpen(false)}
-                    className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+                    className="block text-sm text-content-muted py-1"
                   >
                     {list.label}
                   </Link>
@@ -98,7 +98,7 @@ export function MobileNav({
               </div>
 
               {/* Divider */}
-              <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
+              <div className="border-t border-border my-4" />
             </>
           )}
 
@@ -110,7 +110,7 @@ export function MobileNav({
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+                className="block text-sm text-content-muted py-1"
               >
                 {link.label.toLowerCase()} ↗
               </a>
@@ -118,7 +118,7 @@ export function MobileNav({
           </div>
 
           {/* Divider */}
-          <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
+          <div className="border-t border-border my-4" />
 
           {/* Tools */}
           <div className="space-y-2">
@@ -127,7 +127,7 @@ export function MobileNav({
                 key={tool.url}
                 to={tool.url}
                 onClick={() => setIsOpen(false)}
-                className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+                className="block text-sm text-content-muted py-1"
               >
                 {tool.label}
               </Link>
@@ -142,7 +142,7 @@ export function MobileNav({
 // Desktop sidebar
 function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = [] }: SidebarProps) {
   return (
-    <aside className="hidden md:block w-48 border-r border-gray-200 dark:border-gray-800 shrink-0">
+    <aside className="hidden md:block w-48 border-r border-border shrink-0">
       <div className="p-6 space-y-6">
         {/* Filters */}
         <div>
@@ -158,8 +158,8 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
                   onClick={() => onFilterChange(filter === 'All Posts' ? null : filter)}
                   className={`block w-full text-left text-sm py-1 transition-colors ${
                     isActive
-                      ? 'text-gray-900 dark:text-gray-100 font-medium'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'text-content font-medium'
+                      : 'text-content-muted hover:text-content-secondary'
                   }`}
                 >
                   {filter.toLowerCase()}
@@ -170,7 +170,7 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-gray-800"></div>
+        <div className="border-t border-border"></div>
 
         {/* Lists */}
         {lists.length > 0 && (
@@ -180,7 +180,7 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
                 <Link
                   key={list.url}
                   to={list.url}
-                  className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                  className="block text-sm text-content-muted hover:text-content-secondary transition-colors"
                 >
                   {list.label}
                 </Link>
@@ -188,7 +188,7 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
             </div>
 
             {/* Divider */}
-            <div className="border-t border-gray-200 dark:border-gray-800"></div>
+            <div className="border-t border-border"></div>
           </>
         )}
 
@@ -200,7 +200,7 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              className="block text-sm text-content-muted hover:text-content-secondary transition-colors"
             >
               {link.label.toLowerCase()} ↗
             </a>
@@ -208,7 +208,7 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-gray-800"></div>
+        <div className="border-t border-border"></div>
 
         {/* Tools */}
         <div className="space-y-2">
@@ -216,7 +216,7 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
             <Link
               key={tool.url}
               to={tool.url}
-              className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              className="block text-sm text-content-muted hover:text-content-secondary transition-colors"
             >
               {tool.label}
             </Link>

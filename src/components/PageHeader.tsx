@@ -15,16 +15,16 @@ export default function PageHeader({ title, subtitle, showBackLink = true }: Pag
           {showBackLink && (
             <Link
               to="/"
-              className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-4 transition-colors"
+              className="inline-flex items-center text-sm text-content-muted hover:text-content-secondary mb-4 transition-colors"
             >
               ← back
             </Link>
           )}
-          <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-medium text-content">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-content-muted mt-1">
               {subtitle}
             </p>
           )}

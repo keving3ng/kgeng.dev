@@ -23,19 +23,19 @@ function PostContent({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <div className="text-gray-400 dark:text-gray-500 text-sm">Loading...</div>
+      <div className="text-content-muted text-sm">Loading...</div>
     )
   }
 
   if (error) {
     return (
-      <div className="text-red-500 dark:text-red-400 text-sm">{error}</div>
+      <div className="text-red-500 text-sm">{error}</div>
     )
   }
 
   if (!post || !post.blocks || post.blocks.length === 0) {
     return (
-      <div className="text-gray-400 dark:text-gray-500 text-sm italic">
+      <div className="text-content-muted text-sm italic">
         No content
       </div>
     )
@@ -58,7 +58,7 @@ function CopyLinkButton({ slug }: { slug: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="text-gray-300 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-300 transition-colors text-xs"
+      className="text-content-muted/50 hover:text-content-muted transition-colors text-xs"
       title="Copy link"
     >
       {copied ? '✓' : '#'}
@@ -97,7 +97,7 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
 
   if (filteredItems.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-16 text-content-muted">
         {singleSlug ? 'Post not found.' : 'No posts found.'}
       </div>
     )
@@ -111,7 +111,7 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
         return (
           <article
             key={item.id}
-            className="group/article border-b border-gray-200 dark:border-gray-800 py-6 px-2 md:px-6"
+            className="group/article border-b border-border py-6 px-2 md:px-6"
           >
             <div className="max-w-2xl">
               <div className="flex items-start gap-2">
@@ -120,25 +120,25 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
                   className="flex-1 text-left flex items-start gap-2 group"
                 >
                   <span
-                    className={`text-gray-400 dark:text-gray-500 mt-1 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                    className={`text-content-muted mt-1 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
                   >
                     ›
                   </span>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-lg font-medium group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                      <h2 className="text-lg font-medium group-hover:text-content-secondary transition-colors">
                         {item.title}
                       </h2>
                       {item.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs text-gray-400 dark:text-gray-500 lowercase"
+                          className="text-xs text-content-muted lowercase"
                         >
                           {tag}
                         </span>
                       ))}
                       {item.date && (
-                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                        <span className="text-xs text-content-muted">
                           ·{' '}
                           {new Date(item.date).toLocaleDateString('en-US', {
                             year: 'numeric',

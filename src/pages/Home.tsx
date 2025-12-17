@@ -34,16 +34,16 @@ function Home() {
       {/* Header */}
       <header className="mb-8 px-2 md:px-0 flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-medium text-content">
             kevin geng
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-content-muted mt-1">
             frontend @{' '}
             <a
               href="https://faire.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              className="text-content-secondary hover:text-content transition-colors"
             >
               faire
             </a>{' '}
@@ -75,11 +75,11 @@ function Home() {
         />
         <main className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-16 text-content-muted">
               Loading posts...
             </div>
           ) : error ? (
-            <div className="text-center py-16 text-red-500 dark:text-red-400">
+            <div className="text-center py-16 text-red-500">
               {error}
             </div>
           ) : (

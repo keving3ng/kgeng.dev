@@ -38,11 +38,11 @@ function Blog() {
       />
       <main className="flex-1">
         {loading ? (
-          <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-16 text-content-muted">
             Loading posts...
           </div>
         ) : error ? (
-          <div className="text-center py-16 text-red-500 dark:text-red-400">
+          <div className="text-center py-16 text-red-500">
             {error}
           </div>
         ) : (

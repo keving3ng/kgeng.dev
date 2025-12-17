@@ -6,7 +6,23 @@ export default {
   ],
   darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        // Semantic theme colors using CSS variables
+        surface: {
+          DEFAULT: 'var(--color-surface)',
+          secondary: 'var(--color-surface-secondary)',
+        },
+        content: {
+          DEFAULT: 'var(--color-content)',
+          secondary: 'var(--color-content-secondary)',
+          muted: 'var(--color-content-muted)',
+        },
+        border: {
+          DEFAULT: 'var(--color-border)',
+        },
+      },
+    },
   },
   plugins: [],
 }

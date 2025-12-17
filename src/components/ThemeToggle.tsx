@@ -9,7 +9,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-sm"
+      className="text-content-muted hover:text-content-secondary transition-colors text-sm"
       aria-label={`Current theme: ${currentTheme?.label}. Click to change.`}
       title={`Theme: ${currentTheme?.label}`}
     >

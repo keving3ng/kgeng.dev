@@ -280,7 +280,7 @@ function Recipeer() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
+    <div className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <PageHeader
           title="recipeer"
@@ -289,21 +289,21 @@ function Recipeer() {
 
         {/* Mode Toggle */}
         <div className="flex gap-4 mb-6">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-content-secondary cursor-pointer">
             <input
               type="radio"
               checked={mode === 'paste'}
               onChange={() => setMode('paste')}
-              className="accent-gray-600"
+              className="accent-content-secondary"
             />
             paste full recipe
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-content-secondary cursor-pointer">
             <input
               type="radio"
               checked={mode === 'manual'}
               onChange={() => setMode('manual')}
-              className="accent-gray-600"
+              className="accent-content-secondary"
             />
             separate sections
           </label>
@@ -312,62 +312,62 @@ function Recipeer() {
         {/* Input Section */}
         {mode === 'paste' ? (
           <section className="mb-8">
-            <label className="block text-sm text-gray-500 dark:text-gray-400 mb-2">
+            <label className="block text-sm text-content-muted mb-2">
               paste recipe
             </label>
             <textarea
               value={recipeText}
               onChange={(e) => setRecipeText(e.target.value)}
               placeholder="Paste your full recipe here..."
-              className="w-full h-64 text-sm px-3 py-2 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y font-mono"
+              className="w-full h-64 text-sm px-3 py-2 border border-border rounded bg-surface text-content placeholder-content-muted resize-y font-mono"
             />
           </section>
         ) : (
           <section className="mb-8 space-y-4">
             <div>
-              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-2">
+              <label className="block text-sm text-content-muted mb-2">
                 ingredients (one per line)
               </label>
               <textarea
                 value={ingredientsSection}
                 onChange={(e) => setIngredientsSection(e.target.value)}
                 placeholder="2 cups flour&#10;1 tsp salt&#10;3 eggs"
-                className="w-full h-40 text-sm px-3 py-2 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y font-mono"
+                className="w-full h-40 text-sm px-3 py-2 border border-border rounded bg-surface text-content placeholder-content-muted resize-y font-mono"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-2">
+              <label className="block text-sm text-content-muted mb-2">
                 instructions
               </label>
               <textarea
                 value={instructionsSection}
                 onChange={(e) => setInstructionsSection(e.target.value)}
                 placeholder="Mix the flour and salt together..."
-                className="w-full h-40 text-sm px-3 py-2 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y font-mono"
+                className="w-full h-40 text-sm px-3 py-2 border border-border rounded bg-surface text-content placeholder-content-muted resize-y font-mono"
               />
             </div>
           </section>
         )}
 
         {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-gray-800 my-6" />
+        <div className="border-t border-border my-6" />
 
         {/* Parsed Ingredients */}
         {parsedIngredients.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <h2 className="text-sm text-content-muted mb-4">
               parsed ingredients ({parsedIngredients.length})
             </h2>
             <div className="space-y-1">
               {parsedIngredients.map((ing, idx) => (
                 <div
                   key={idx}
-                  className="flex gap-3 text-sm py-1 px-2 rounded hover:bg-gray-50 dark:hover:bg-gray-900"
+                  className="flex gap-3 text-sm py-1 px-2 rounded hover:bg-surface-secondary"
                 >
-                  <span className="text-gray-400 dark:text-gray-500 w-20 text-right shrink-0">
+                  <span className="text-content-muted w-20 text-right shrink-0">
                     {ing.quantity} {abbreviateUnit(ing.unit)}
                   </span>
-                  <span className="text-gray-900 dark:text-gray-100">
+                  <span className="text-content">
                     {ing.name}
                   </span>
                 </div>
@@ -378,16 +378,16 @@ function Recipeer() {
 
         {/* Divider */}
         {annotatedInstructions && (
-          <div className="border-t border-gray-200 dark:border-gray-800 my-6" />
+          <div className="border-t border-border my-6" />
         )}
 
         {/* Annotated Instructions */}
         {annotatedInstructions && (
           <section className="mb-8">
-            <h2 className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <h2 className="text-sm text-content-muted mb-4">
               annotated instructions
             </h2>
-            <div className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed space-y-4">
+            <div className="text-sm text-content leading-relaxed space-y-4">
               {annotatedInstructions.split('\n').filter(line => line.trim()).map((line, lineIdx) => (
                 <p key={lineIdx}>
                   {line.split(/(<<[^>]+>>|\[[^\]]+\])/g).map((part, idx) => {
@@ -423,7 +423,7 @@ function Recipeer() {
         {/* Clear button */}
         <button
           onClick={clearAll}
-          className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+          className="text-sm text-content-muted hover:text-content-secondary transition-colors"
         >
           clear all
         </button>

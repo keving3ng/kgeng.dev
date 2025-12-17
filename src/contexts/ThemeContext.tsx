@@ -1,11 +1,10 @@
 import { createContext, useState, useEffect, useCallback, useContext, ReactNode } from 'react'
 import type { ThemeId } from '../config/themes'
-import { themes, defaultTheme } from '../config/themes'
+import { themes, getSystemTheme } from '../config/themes'
 
 interface ThemeContextValue {
   theme: ThemeId
   setTheme: (theme: ThemeId) => void
-  resolvedTheme: 'light' | 'dark'
   cycleTheme: () => void
 }
 
@@ -25,13 +24,7 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<ThemeId>(defaultTheme)
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
-
-  const getSystemTheme = useCallback((): 'light' | 'dark' => {
-    if (typeof window === 'undefined') return 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }, [])
+  const [theme, setTheme] = useState<ThemeId>(getSystemTheme)
 
   useEffect(() => {
     const root = document.documentElement
@@ -43,34 +36,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       }
     })
 
-    // Determine which class to apply
-    let appliedTheme: 'light' | 'dark'
-    if (theme === 'system') {
-      appliedTheme = getSystemTheme()
-    } else {
-      appliedTheme = theme as 'light' | 'dark'
-    }
-
-    // Apply the class
-    root.classList.add(appliedTheme)
-    setResolvedTheme(appliedTheme)
-  }, [theme, getSystemTheme])
-
-  // Listen for system preference changes when theme is 'system'
-  useEffect(() => {
-    if (theme !== 'system') return
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = () => {
-      const systemTheme = getSystemTheme()
-      document.documentElement.classList.remove('light', 'dark')
-      document.documentElement.classList.add(systemTheme)
-      setResolvedTheme(systemTheme)
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, getSystemTheme])
+    // Apply the current theme class
+    root.classList.add(theme)
+  }, [theme])
 
   const cycleTheme = useCallback(() => {
     const currentIndex = themes.findIndex(t => t.id === theme)
@@ -79,7 +47,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }, [theme])
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme, cycleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme }}>
       {children}
     </ThemeContext.Provider>
   )

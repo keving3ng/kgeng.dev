@@ -12,7 +12,7 @@ function RichTextRenderer({ richText }: { richText: RichText[] }) {
 
         if (text.annotations.code) {
           content = (
-            <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">
+            <code className="bg-surface-secondary px-1.5 py-0.5 rounded text-sm font-mono">
               {content}
             </code>
           )
@@ -35,7 +35,7 @@ function RichTextRenderer({ richText }: { richText: RichText[] }) {
               href={text.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-700 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-gray-100"
+              className="text-content-secondary underline hover:text-content"
             >
               {content}
             </a>
@@ -52,7 +52,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
   switch (block.type) {
     case 'paragraph':
       return (
-        <p className="mb-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p className="mb-4 text-content-secondary leading-relaxed">
           <RichTextRenderer richText={block.paragraph.rich_text} />
         </p>
       )
@@ -80,7 +80,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
 
     case 'bulleted_list_item':
       return (
-        <li className="ml-4 mb-1 text-gray-600 dark:text-gray-400 list-disc">
+        <li className="ml-4 mb-1 text-content-secondary list-disc">
           <RichTextRenderer richText={block.bulleted_list_item.rich_text} />
           {block.children && block.children.length > 0 && (
             <ul className="mt-1">
@@ -94,7 +94,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
 
     case 'numbered_list_item':
       return (
-        <li className="ml-4 mb-1 text-gray-600 dark:text-gray-400 list-decimal">
+        <li className="ml-4 mb-1 text-content-secondary list-decimal">
           <RichTextRenderer richText={block.numbered_list_item.rich_text} />
           {block.children && block.children.length > 0 && (
             <ol className="mt-1">
@@ -108,7 +108,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
 
     case 'code':
       return (
-        <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4 overflow-x-auto">
+        <pre className="bg-surface-secondary p-4 rounded-lg mb-4 overflow-x-auto">
           <code className="text-sm font-mono">
             <RichTextRenderer richText={block.code.rich_text} />
           </code>
@@ -130,7 +130,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
             className="rounded-lg max-w-full"
           />
           {caption && caption.length > 0 && (
-            <figcaption className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center">
+            <figcaption className="text-sm text-content-muted mt-2 text-center">
               <RichTextRenderer richText={caption} />
             </figcaption>
           )}
@@ -169,7 +169,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
 
     case 'quote':
       return (
-        <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 mb-4 italic text-gray-600 dark:text-gray-400">
+        <blockquote className="border-l-4 border-content-muted pl-4 mb-4 italic text-content-secondary">
           <RichTextRenderer richText={block.quote.rich_text} />
           {block.children && block.children.length > 0 && (
             <div className="mt-2 not-italic">
@@ -182,15 +182,15 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
       )
 
     case 'divider':
-      return <hr className="my-8 border-gray-200 dark:border-gray-800" />
+      return <hr className="my-8 border-border" />
 
     case 'callout':
       return (
-        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4 flex gap-3">
+        <div className="bg-surface-secondary p-4 rounded-lg mb-4 flex gap-3">
           {block.callout.icon && (
             <span className="text-xl">{block.callout.icon.emoji}</span>
           )}
-          <div className="text-gray-600 dark:text-gray-400 flex-1">
+          <div className="text-content-secondary flex-1">
             <RichTextRenderer richText={block.callout.rich_text} />
             {block.children && block.children.length > 0 && (
               <div className="mt-2">
@@ -224,11 +224,11 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
     case 'toggle':
       return (
         <details className="mb-4">
-          <summary className="cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+          <summary className="cursor-pointer text-content-secondary hover:text-content">
             <RichTextRenderer richText={block.toggle.rich_text} />
           </summary>
           {block.children && block.children.length > 0 && (
-            <div className="pl-4 mt-2 border-l-2 border-gray-200 dark:border-gray-700">
+            <div className="pl-4 mt-2 border-l-2 border-border">
               {block.children.map((child) => (
                 <BlockRenderer key={child.id} block={child} />
               ))}
