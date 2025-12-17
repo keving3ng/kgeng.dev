@@ -3,21 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import { usePosts } from '../hooks/usePosts'
-const links = [
-  { label: 'GitHub', url: 'https://github.com/keving3ng' },
-  { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
-  { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
-]
-
-const tools = [
-  { label: 'splits', url: '/tools/splits' },
-  { label: 'recipeer', url: '/tools/recipeer' },
-]
-
-const lists = [
-  { label: 'picks', url: '/picks' },
-  { label: 'recipes', url: '/recipes' },
-]
+import { socialLinks, tools, lists } from '../config/navigation'
 
 function Home() {
   const { slug } = useParams<{ slug: string }>()
@@ -68,7 +54,7 @@ function Home() {
         filters={filters}
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
-        links={links}
+        links={socialLinks}
         tools={tools}
         lists={lists}
       />
@@ -79,7 +65,7 @@ function Home() {
           filters={filters}
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
-          links={links}
+          links={socialLinks}
           tools={tools}
           lists={lists}
         />

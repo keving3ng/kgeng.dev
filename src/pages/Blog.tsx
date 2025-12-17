@@ -2,20 +2,7 @@ import { useState, useMemo } from 'react'
 import Sidebar from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import { usePosts } from '../hooks/usePosts'
-const links = [
-  { label: 'GitHub', url: 'https://github.com/keving3ng' },
-  { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
-  { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
-]
-const tools = [
-  { label: 'splits', url: '/tools/splits' },
-  { label: 'recipeer', url: '/tools/recipeer' },
-]
-
-const lists = [
-  { label: 'picks', url: '/picks' },
-  { label: 'recipes', url: '/recipes' },
-]
+import { socialLinks, tools, lists } from '../config/navigation'
 
 function Blog() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
@@ -40,7 +27,7 @@ function Blog() {
         filters={filters}
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
-        links={links}
+        links={socialLinks}
         tools={tools}
         lists={lists}
       />
