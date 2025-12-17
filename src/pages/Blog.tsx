@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import Sidebar from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
+import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
 import { socialLinks, tools, lists } from '../config/navigation'
 
@@ -22,7 +23,11 @@ function Blog() {
   }
 
   return (
-    <div className="flex">
+    <div>
+      <div className="flex justify-end mb-4 px-2">
+        <ThemeToggle />
+      </div>
+      <div className="flex">
       <Sidebar
         filters={filters}
         activeFilter={activeFilter}
@@ -44,6 +49,7 @@ function Blog() {
           <Newsfeed items={posts} activeFilter={activeFilter} />
         )}
       </main>
+      </div>
     </div>
   )
 }

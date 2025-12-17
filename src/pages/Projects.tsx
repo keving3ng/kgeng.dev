@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import PageHeader from '../components/PageHeader'
 
 interface Project {
   name: string
@@ -26,20 +26,7 @@ function Projects() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        {/* Back button */}
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-6 transition-colors"
-        >
-          ← back
-        </Link>
-
-        <h1 className="text-2xl font-medium mb-2 text-gray-900 dark:text-gray-100">
-          projects
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-          things i'm building.
-        </p>
+        <PageHeader title="projects" subtitle="things i'm building." />
 
         <div className="space-y-6">
           {projects.map((project) => (

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 interface SidebarProps {
   filters: string[]
@@ -85,13 +86,14 @@ export function MobileNav({
             <>
               <div className="space-y-2 mb-4">
                 {lists.map((list) => (
-                  <a
+                  <Link
                     key={list.url}
-                    href={list.url}
+                    to={list.url}
+                    onClick={() => setIsOpen(false)}
                     className="block text-sm text-gray-500 dark:text-gray-400 py-1"
                   >
                     {list.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
 
@@ -121,13 +123,14 @@ export function MobileNav({
           {/* Tools */}
           <div className="space-y-2">
             {tools.map((tool) => (
-              <a
+              <Link
                 key={tool.url}
-                href={tool.url}
+                to={tool.url}
+                onClick={() => setIsOpen(false)}
                 className="block text-sm text-gray-500 dark:text-gray-400 py-1"
               >
                 {tool.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -174,13 +177,13 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
           <>
             <div className="space-y-2">
               {lists.map((list) => (
-                <a
+                <Link
                   key={list.url}
-                  href={list.url}
+                  to={list.url}
                   className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                 >
                   {list.label}
-                </a>
+                </Link>
               ))}
             </div>
 
@@ -210,13 +213,13 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
         {/* Tools */}
         <div className="space-y-2">
           {tools.map((tool) => (
-            <a
+            <Link
               key={tool.url}
-              href={tool.url}
+              to={tool.url}
               className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               {tool.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>

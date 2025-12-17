@@ -3,8 +3,58 @@
 @tailwind utilities;
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Solarized Light overrides */
+  .light {
+    --sol-base3: #fdf6e3;   /* main background */
+    --sol-base2: #eee8d5;   /* secondary background */
+    --sol-base1: #93a1a1;   /* muted text */
+    --sol-base00: #657b83;  /* body text */
+    --sol-base01: #586e75;  /* secondary text */
+    --sol-base02: #073642;  /* emphasized text */
+  }
+
+  .light body,
+  .light .bg-white {
+    background-color: var(--sol-base3);
+  }
+
+  .light .bg-gray-50,
+  .light .bg-gray-100 {
+    background-color: var(--sol-base2);
+  }
+
+  .light .text-gray-900 {
+    color: var(--sol-base02);
+  }
+
+  .light .text-gray-700,
+  .light .text-gray-600 {
+    color: var(--sol-base01);
+  }
+
+  .light .text-gray-500,
+  .light .text-gray-400 {
+    color: var(--sol-base00);
+  }
+
+  .light .border-gray-200,
+  .light .border-gray-300 {
+    border-color: var(--sol-base2);
+  }
+
   body {
     @apply min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased;
+  }
+
+  /* Apply solarized background to html when light */
+  .light {
+    background-color: var(--sol-base3);
   }
 }
 

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
+import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
 import { socialLinks, tools, lists } from '../config/navigation'
 
@@ -31,22 +32,25 @@ function Home() {
   return (
     <div>
       {/* Header */}
-      <header className="mb-8 px-2 md:px-0">
-        <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">
-          kevin geng
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          frontend @{' '}
-          <a
-            href="https://faire.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            faire
-          </a>{' '}
-          · side quester · kindmaxing and joybaiting
-        </p>
+      <header className="mb-8 px-2 md:px-0 flex justify-between items-start">
+        <div>
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">
+            kevin geng
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            frontend @{' '}
+            <a
+              href="https://faire.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              faire
+            </a>{' '}
+            · side quester · kindmaxing and joybaiting
+          </p>
+        </div>
+        <ThemeToggle />
       </header>
 
       {/* Mobile navigation */}

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import PageHeader from '../components/PageHeader'
 
 // Common units and their variations
 const UNITS = [
@@ -282,20 +282,10 @@ function Recipeer() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        {/* Back button */}
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-6 transition-colors"
-        >
-          ← back
-        </Link>
-
-        <h1 className="text-2xl font-medium mb-2 text-gray-900 dark:text-gray-100">
-          recipeer
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-          paste a recipe and see quantities next to ingredients in the instructions.
-        </p>
+        <PageHeader
+          title="recipeer"
+          subtitle="paste a recipe and see quantities next to ingredients in the instructions."
+        />
 
         {/* Mode Toggle */}
         <div className="flex gap-4 mb-6">

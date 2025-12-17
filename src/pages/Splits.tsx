@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import PageHeader from '../components/PageHeader'
 
 const PEOPLE = ['A', 'B', 'C', 'D', 'E']
 
@@ -222,20 +222,10 @@ function Splits() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        {/* Back button */}
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-6 transition-colors"
-        >
-          ← back
-        </Link>
-
-        <h1 className="text-2xl font-medium mb-2 text-gray-900 dark:text-gray-100">
-          splits
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-          i made this for my own use, so it's intentionally rigid. let me know if you'd like to request improvements.
-        </p>
+        <PageHeader
+          title="splits"
+          subtitle="i made this for my own use, so it's intentionally rigid. let me know if you'd like to request improvements."
+        />
 
         {/* Items Section */}
         <section className="mb-8">
