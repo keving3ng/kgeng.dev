@@ -11,7 +11,10 @@ const links = [
   { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
 ]
 
-const tools = [{ label: 'splits', url: '/tools/splits' }]
+const tools = [
+  { label: 'splits', url: '/tools/splits' },
+  { label: 'recipeer', url: '/tools/recipeer' },
+]
 
 function Home() {
   const { slug } = useParams<{ slug: string }>()

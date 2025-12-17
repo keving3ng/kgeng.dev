@@ -9,7 +9,10 @@ const links = [
   { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
   { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
 ]
-const tools = [{ label: 'splits', url: '/tools/splits' }]
+const tools = [
+  { label: 'splits', url: '/tools/splits' },
+  { label: 'recipeer', url: '/tools/recipeer' },
+]
 
 function Blog() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)

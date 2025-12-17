@@ -8,6 +8,7 @@ const links = [
 ]
 const tools = [
   { label: 'splits', url: '/tools/splits' },
+  { label: 'recipeer', url: '/tools/recipeer' },
 ]
 
 function About() {

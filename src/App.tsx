@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Blog from './pages/Blog'
 import About from './pages/About'
 import Splits from './pages/Splits'
+import Recipeer from './pages/Recipeer'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/about" element={<About />} />
           <Route path="/tools/splits" element={<Splits />} />
+          <Route path="/tools/recipeer" element={<Recipeer />} />
         </Routes>
       </Layout>
     </Router>
