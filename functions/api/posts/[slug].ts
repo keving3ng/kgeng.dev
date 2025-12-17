@@ -1,4 +1,4 @@
-import { getCorsHeaders, errorResponse } from '../_shared'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse } from '../_shared'
 
 interface Env {
   NOTION_API_KEY: string
@@ -14,6 +14,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
   const requestOrigin = context.request.headers.get('Origin')
   const corsHeaders = getCorsHeaders(requestOrigin)
+
+  // Rate limiting (skip in local development)
+  if (!isLocalDev) {
+    const { allowed } = await checkRateLimit(context.request, 'posts-slug')
+    if (!allowed) {
+      return rateLimitResponse(corsHeaders)
+    }
+  }
 
   const cacheKey = new Request(context.request.url)
   const cache = caches.default
@@ -111,7 +119,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
           },
         })
 
-        if (!response.ok) break
+        if (!response.ok) {
+          const error = await response.text()
+          console.error(`Failed to fetch children for block ${blockId}:`, response.status, error)
+          break // Return partial results rather than failing completely
+        }
 
         const data = (await response.json()) as {
           results: any[]

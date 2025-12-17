@@ -1,4 +1,4 @@
-import { isAllowedImageUrl } from '../_shared'
+import { isAllowedImageUrl, checkRateLimit } from '../_shared'
 
 interface Env {
   NOTION_API_KEY: string
@@ -8,9 +8,19 @@ interface Env {
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const blockId = context.params.blockId as string
   const { NOTION_API_KEY, IMAGES } = context.env
+  const url = new URL(context.request.url)
+  const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
 
   if (!NOTION_API_KEY) {
     return new Response('Server configuration error', { status: 500 })
+  }
+
+  // Rate limiting (skip in local development)
+  if (!isLocalDev) {
+    const { allowed } = await checkRateLimit(context.request, 'image')
+    if (!allowed) {
+      return new Response('Too many requests', { status: 429, headers: { 'Retry-After': '60' } })
+    }
   }
 
   // 1. Check R2 cache first

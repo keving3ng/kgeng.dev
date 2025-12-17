@@ -64,3 +64,68 @@ export function errorResponse(
     }
   )
 }
+
+/**
+ * Rate limiting configuration
+ */
+const RATE_LIMIT = {
+  maxRequests: 60,      // requests per window
+  windowSeconds: 60,    // 1 minute window
+}
+
+/**
+ * Simple rate limiter using Cloudflare Cache API
+ * Returns true if request should be allowed, false if rate limited
+ */
+export async function checkRateLimit(
+  request: Request,
+  endpoint: string
+): Promise<{ allowed: boolean; remaining: number }> {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown'
+  const cacheKey = `https://rate-limit.internal/${endpoint}/${ip}`
+  const cache = caches.default
+
+  try {
+    const cached = await cache.match(cacheKey)
+    let count = 1
+
+    if (cached) {
+      const data = await cached.json() as { count: number }
+      count = data.count + 1
+    }
+
+    const remaining = Math.max(0, RATE_LIMIT.maxRequests - count)
+    const allowed = count <= RATE_LIMIT.maxRequests
+
+    // Update the cache with new count
+    const response = new Response(JSON.stringify({ count }), {
+      headers: {
+        'Cache-Control': `max-age=${RATE_LIMIT.windowSeconds}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    await cache.put(cacheKey, response)
+
+    return { allowed, remaining }
+  } catch {
+    // On cache error, allow the request
+    return { allowed: true, remaining: RATE_LIMIT.maxRequests }
+  }
+}
+
+/**
+ * Create a 429 rate limit response
+ */
+export function rateLimitResponse(headers: Record<string, string> = {}): Response {
+  return new Response(
+    JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+    {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(RATE_LIMIT.windowSeconds),
+        ...headers,
+      },
+    }
+  )
+}

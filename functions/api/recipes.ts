@@ -1,4 +1,4 @@
-import { getCorsHeaders, errorResponse } from './_shared'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse } from './_shared'
 
 interface Env {
   NOTION_API_KEY: string
@@ -18,6 +18,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const url = new URL(context.request.url)
   const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+
+  // Rate limiting (skip in local development)
+  if (!isLocalDev) {
+    const { allowed } = await checkRateLimit(context.request, 'recipes')
+    if (!allowed) {
+      return rateLimitResponse(corsHeaders)
+    }
+  }
 
   const cacheKey = new Request(context.request.url)
   const cache = caches.default
