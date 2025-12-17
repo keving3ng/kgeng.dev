@@ -102,10 +102,11 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
       )
 
     case 'image': {
+      // Use proxy for Notion-hosted images (they expire after ~1 hour)
       const url =
         block.image.type === 'external'
           ? block.image.external.url
-          : block.image.file.url
+          : `/api/image/${block.id}`
       const caption = block.image.caption
       return (
         <figure className="mb-4">
