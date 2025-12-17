@@ -58,6 +58,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       id: page.id,
       name: page.properties['Recipe Name']?.title?.[0]?.plain_text || 'Untitled',
       url: page.properties['Link']?.url || null,
+      notes: page.properties['Notes']?.rich_text?.[0]?.plain_text || null,
       tags: page.properties['Tags']?.multi_select?.map((tag: any) => tag.name) || [],
     }))
 

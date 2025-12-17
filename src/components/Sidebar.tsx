@@ -80,6 +80,26 @@ export function MobileNav({
           {/* Divider */}
           <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
 
+          {/* Lists */}
+          {lists.length > 0 && (
+            <>
+              <div className="space-y-2 mb-4">
+                {lists.map((list) => (
+                  <a
+                    key={list.url}
+                    href={list.url}
+                    className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+                  >
+                    {list.label}
+                  </a>
+                ))}
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
+            </>
+          )}
+
           {/* Links */}
           <div className="space-y-2 mb-4">
             {links.map((link) => (
@@ -99,7 +119,7 @@ export function MobileNav({
           <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
 
           {/* Tools */}
-          <div className="space-y-2 mb-4">
+          <div className="space-y-2">
             {tools.map((tool) => (
               <a
                 key={tool.url}
@@ -110,24 +130,6 @@ export function MobileNav({
               </a>
             ))}
           </div>
-
-          {/* Divider */}
-          <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
-
-          {/* Lists */}
-          {lists.length > 0 && (
-            <div className="space-y-2">
-              {lists.map((list) => (
-                <a
-                  key={list.url}
-                  href={list.url}
-                  className="block text-sm text-gray-500 dark:text-gray-400 py-1"
-                >
-                  {list.label}
-                </a>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -167,6 +169,26 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
         {/* Divider */}
         <div className="border-t border-gray-200 dark:border-gray-800"></div>
 
+        {/* Lists */}
+        {lists.length > 0 && (
+          <>
+            <div className="space-y-2">
+              {lists.map((list) => (
+                <a
+                  key={list.url}
+                  href={list.url}
+                  className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  {list.label}
+                </a>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-gray-200 dark:border-gray-800"></div>
+          </>
+        )}
+
         {/* Links */}
         <div className="space-y-2">
           {links.map((link) => (
@@ -197,24 +219,6 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = 
             </a>
           ))}
         </div>
-
-        {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-gray-800"></div>
-
-        {/* Lists */}
-        {lists.length > 0 && (
-          <div className="space-y-2">
-            {lists.map((list) => (
-              <a
-                key={list.url}
-                href={list.url}
-                className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              >
-                {list.label}
-              </a>
-            ))}
-          </div>
-        )}
       </div>
     </aside>
   )

@@ -101,6 +101,11 @@ function Recipes() {
                     {recipe.name}
                   </span>
                 )}
+                {recipe.notes && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    {recipe.notes}
+                  </p>
+                )}
                 {recipe.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-1">
                     {recipe.tags.map((tag) => (

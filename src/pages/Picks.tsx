@@ -5,11 +5,13 @@ interface Pick {
   author?: string
   url?: string
   note?: string
+  label?: string // optional sub-section label
 }
 
 interface Category {
   name: string
   items: Pick[]
+  link?: { label: string; url: string }
 }
 
 const categories: Category[] = [
@@ -23,8 +25,11 @@ const categories: Category[] = [
   {
     name: 'articles',
     items: [
-      // Add your article picks here
-      // { title: 'Example Article', url: 'https://...', note: 'Why I recommend it' },
+      {
+        title: 'An Existential Guide to Making Friends',
+        url: 'https://theshadowedarchive.substack.com/p/an-existential-guide-to-making-friends',
+        author: 'The Shadowed Archive',
+      },
     ],
   },
   {
@@ -36,9 +41,15 @@ const categories: Category[] = [
   },
   {
     name: 'movies & shows',
+    link: { label: 'letterboxd', url: 'https://letterboxd.com/kegk3g/' },
     items: [
-      // Add your movie/show picks here
-      // { title: 'Example Movie', note: 'Why I recommend it' },
+      { title: 'Spider-Man: Into the Spider-Verse', label: 'movies' },
+      { title: 'Hacksaw Ridge' },
+      { title: 'Forrest Gump' },
+      { title: 'Parasite' },
+      { title: 'Shrinking', label: 'shows' },
+      { title: 'Arrested Development' },
+      { title: 'Arcane' },
     ],
   },
   {
@@ -79,15 +90,30 @@ function Picks() {
           <div className="space-y-10">
             {nonEmptyCategories.map((category) => (
               <section key={category.name}>
-                <h2 className="text-sm text-gray-500 dark:text-gray-400 mb-4 lowercase">
-                  {category.name}
-                </h2>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <h2 className="text-sm text-gray-500 dark:text-gray-400 lowercase">
+                    {category.name}
+                  </h2>
+                  {category.link && (
+                    <a
+                      href={category.link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+                    >
+                      ({category.link.label} ↗)
+                    </a>
+                  )}
+                </div>
                 <div className="space-y-4">
                   {category.items.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="border-l-2 border-gray-200 dark:border-gray-800 pl-4"
-                    >
+                    <div key={idx}>
+                      {item.label && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mb-2 mt-2">
+                          {item.label}
+                        </p>
+                      )}
+                      <div className="border-l-2 border-gray-200 dark:border-gray-800 pl-4">
                       <div className="flex items-baseline gap-2">
                         {item.url ? (
                           <a
@@ -114,6 +140,7 @@ function Picks() {
                           {item.note}
                         </p>
                       )}
+                      </div>
                     </div>
                   ))}
                 </div>

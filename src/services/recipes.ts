@@ -2,6 +2,7 @@ export interface Recipe {
   id: string
   name: string
   url: string | null
+  notes: string | null
   tags: string[]
 }
 
