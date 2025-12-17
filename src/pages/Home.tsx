@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import Sidebar from '../components/Sidebar'
+import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import { usePosts } from '../hooks/usePosts'
 
@@ -30,7 +30,7 @@ function Home() {
   return (
     <div>
       {/* Header */}
-      <header className="mt-4 mb-8">
+      <header className="mb-8 px-2 md:px-0">
         <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">
           kevin geng
         </h1>
@@ -48,8 +48,17 @@ function Home() {
         </p>
       </header>
 
+      {/* Mobile navigation */}
+      <MobileNav
+        filters={filters}
+        activeFilter={activeFilter}
+        onFilterChange={handleFilterChange}
+        links={links}
+        tools={tools}
+      />
+
       {/* Main content */}
-      <div className="flex h-[75vh]">
+      <div className="flex md:h-[75vh]">
         <Sidebar
           filters={filters}
           activeFilter={activeFilter}

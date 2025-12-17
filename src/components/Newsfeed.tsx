@@ -111,7 +111,7 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
         return (
           <article
             key={item.id}
-            className="group/article border-b border-gray-200 dark:border-gray-800 py-6 px-6"
+            className="group/article border-b border-gray-200 dark:border-gray-800 py-6 px-2 md:px-6"
           >
             <div className="max-w-2xl">
               <div className="flex items-start gap-2">

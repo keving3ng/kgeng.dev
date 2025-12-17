@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 interface SidebarProps {
   filters: string[]
   activeFilter: string | null
@@ -6,9 +8,116 @@ interface SidebarProps {
   tools: { label: string; url: string }[]
 }
 
+// Mobile bottom sheet
+export function MobileNav({
+  filters,
+  activeFilter,
+  onFilterChange,
+  links,
+  tools,
+}: SidebarProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleFilterClick = (filter: string) => {
+    onFilterChange(filter === 'All Posts' ? null : filter)
+    setIsOpen(false)
+  }
+
+  const activeLabel = activeFilter?.toLowerCase() || 'all posts'
+
+  return (
+    <div className="md:hidden px-2">
+      {/* Trigger button */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="text-sm text-gray-500 dark:text-gray-400 mb-4"
+      >
+        filter: <span className="text-gray-900 dark:text-gray-100">{activeLabel}</span> ↓
+      </button>
+
+      {/* Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Bottom sheet */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 rounded-t-2xl z-50 transition-transform duration-300 ${
+          isOpen ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
+        <div className="p-6 pb-8 max-h-[70vh] overflow-y-auto">
+          {/* Handle */}
+          <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-6" />
+
+          {/* Filters */}
+          <div className="space-y-2 mb-6">
+            {filters.map((filter) => {
+              const isActive =
+                filter === 'All Posts' ? activeFilter === null : activeFilter === filter
+
+              return (
+                <button
+                  key={filter}
+                  onClick={() => handleFilterClick(filter)}
+                  className={`block w-full text-left text-sm py-2 transition-colors ${
+                    isActive
+                      ? 'text-gray-900 dark:text-gray-100 font-medium'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  {filter.toLowerCase()}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
+
+          {/* Tools */}
+          <div className="space-y-2 mb-4">
+            {tools.map((tool) => (
+              <a
+                key={tool.url}
+                href={tool.url}
+                className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+              >
+                {tool.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
+
+          {/* Links */}
+          <div className="space-y-2">
+            {links.map((link) => (
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+              >
+                {link.label.toLowerCase()} ↗
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Desktop sidebar
 function Sidebar({ filters, activeFilter, onFilterChange, links, tools }: SidebarProps) {
   return (
-    <aside className="w-48 border-r border-gray-200 dark:border-gray-800 shrink-0">
+    <aside className="hidden md:block w-48 border-r border-gray-200 dark:border-gray-800 shrink-0">
       <div className="p-6 space-y-6">
         {/* Filters */}
         <div>
