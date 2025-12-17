@@ -174,6 +174,24 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
         </div>
       )
 
+    case 'column_list':
+      return (
+        <div className="flex gap-4 mb-4">
+          {block.children?.map((child) => (
+            <BlockRenderer key={child.id} block={child} />
+          ))}
+        </div>
+      )
+
+    case 'column':
+      return (
+        <div className="flex-1 min-w-0">
+          {block.children?.map((child) => (
+            <BlockRenderer key={child.id} block={child} />
+          ))}
+        </div>
+      )
+
     default:
       return null
   }

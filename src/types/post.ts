@@ -24,10 +24,13 @@ export type NotionBlock =
   | QuoteBlock
   | DividerBlock
   | CalloutBlock
+  | ColumnListBlock
+  | ColumnBlock
 
 interface BaseBlock {
   id: string
   type: string
+  has_children?: boolean
 }
 
 export interface RichText {
@@ -106,4 +109,16 @@ export interface DividerBlock extends BaseBlock {
 export interface CalloutBlock extends BaseBlock {
   type: 'callout'
   callout: { rich_text: RichText[]; icon: { emoji: string } | null }
+}
+
+export interface ColumnListBlock extends BaseBlock {
+  type: 'column_list'
+  column_list: Record<string, never>
+  children?: NotionBlock[]
+}
+
+export interface ColumnBlock extends BaseBlock {
+  type: 'column'
+  column: Record<string, never>
+  children?: NotionBlock[]
 }

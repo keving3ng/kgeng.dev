@@ -86,6 +86,37 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const blocksData = await blocksResponse.json() as { results: any[] }
 
+    // Recursively fetch children for blocks that have them (e.g., column_list, column)
+    const fetchChildren = async (blockId: string): Promise<any[]> => {
+      const childrenResponse = await fetch(
+        `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100`,
+        {
+          headers: {
+            Authorization: `Bearer ${NOTION_API_KEY}`,
+            'Notion-Version': '2022-06-28',
+          },
+        }
+      )
+      if (!childrenResponse.ok) return []
+      const childrenData = await childrenResponse.json() as { results: any[] }
+      return childrenData.results
+    }
+
+    const enrichBlocksWithChildren = async (blocks: any[]): Promise<any[]> => {
+      return Promise.all(
+        blocks.map(async (block) => {
+          if (block.has_children && (block.type === 'column_list' || block.type === 'column')) {
+            const children = await fetchChildren(block.id)
+            const enrichedChildren = await enrichBlocksWithChildren(children)
+            return { ...block, children: enrichedChildren }
+          }
+          return block
+        })
+      )
+    }
+
+    const enrichedBlocks = await enrichBlocksWithChildren(blocksData.results)
+
     const post = {
       id: page.id,
       title: page.properties.Title?.title?.[0]?.plain_text || 'Untitled',
@@ -93,7 +124,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       tags:
         page.properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
       date: page.properties.Date?.date?.start || null,
-      blocks: blocksData.results,
+      blocks: enrichedBlocks,
     }
 
     const jsonResponse = new Response(JSON.stringify(post), {
