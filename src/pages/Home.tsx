@@ -44,7 +44,7 @@ function Home() {
           >
             faire
           </a>{' '}
-          · hobbyist · traveler
+          · side quester · kindmaxing and joybaiting
         </p>
       </header>
 
