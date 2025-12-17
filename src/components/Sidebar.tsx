@@ -17,7 +17,7 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools }: Sideba
               const isActive = filter === 'All Posts'
                 ? activeFilter === null
                 : activeFilter === filter
-              
+
               return (
                 <button
                   key={filter}

@@ -13,18 +13,21 @@ const mockPosts = [
   },
 ]
 
-const filters = ['All', 'General', 'Tech', 'Design']
+const filters = ['All Posts', 'Code', 'Bake', 'Eat', 'Travel', 'Pottery']
 const links = [
-  { label: 'GitHub', url: 'https://github.com' },
-  { label: 'Twitter', url: 'https://twitter.com' },
-  { label: 'LinkedIn', url: 'https://linkedin.com' },
+  { label: 'GitHub', url: 'https://github.com/keving3ng' },
+  { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
+  { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
+]
+const tools = [
+  { label: 'splits', url: '/tools/splits' },
 ]
 
 function Blog() {
-  const [activeFilter, setActiveFilter] = useState<string | null>('All')
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
   const handleFilterChange = (filter: string | null) => {
-    setActiveFilter(filter === 'All' ? null : filter)
+    setActiveFilter(filter === 'All Posts' ? null : filter)
   }
 
   return (
@@ -34,6 +37,7 @@ function Blog() {
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
         links={links}
+        tools={tools}
       />
       <main className="flex-1">
         <Newsfeed items={mockPosts} activeFilter={activeFilter} />

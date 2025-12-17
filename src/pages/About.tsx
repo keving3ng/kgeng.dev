@@ -1,10 +1,13 @@
 import Sidebar from '../components/Sidebar'
 
-const filters = ['All', 'General', 'Tech', 'Design']
+const filters = ['All Posts', 'Code', 'Bake', 'Eat', 'Travel', 'Pottery']
 const links = [
-  { label: 'GitHub', url: 'https://github.com' },
-  { label: 'Twitter', url: 'https://twitter.com' },
-  { label: 'LinkedIn', url: 'https://linkedin.com' },
+  { label: 'GitHub', url: 'https://github.com/keving3ng' },
+  { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
+  { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
+]
+const tools = [
+  { label: 'splits', url: '/tools/splits' },
 ]
 
 function About() {
@@ -15,6 +18,7 @@ function About() {
         activeFilter={null}
         onFilterChange={() => {}}
         links={links}
+        tools={tools}
       />
       <main className="flex-1 p-8">
         <div className="max-w-2xl">

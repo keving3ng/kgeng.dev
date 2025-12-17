@@ -39,10 +39,10 @@ const tools = [
 ]
 
 function Home() {
-  const [activeFilter, setActiveFilter] = useState<string | null>('All')
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
   const handleFilterChange = (filter: string | null) => {
-    setActiveFilter(filter === 'All' ? null : filter)
+    setActiveFilter(filter === 'All Posts' ? null : filter)
   }
 
   return (
