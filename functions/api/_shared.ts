@@ -162,3 +162,58 @@ export function rateLimitResponse(headers: Record<string, string> = {}): Respons
     }
   )
 }
+
+/**
+ * Notion API pagination response type
+ */
+interface NotionPaginatedResponse<T> {
+  results: T[]
+  has_more: boolean
+  next_cursor: string | null
+}
+
+/**
+ * Options for fetching Notion block children
+ */
+interface FetchBlockChildrenOptions {
+  blockId: string
+  apiKey: string
+  onError?: (status: number, error: string) => void
+}
+
+/**
+ * Fetch all children of a Notion block with pagination
+ * Returns all results, handling pagination automatically
+ */
+export async function fetchNotionBlockChildren<T = unknown>(
+  options: FetchBlockChildrenOptions
+): Promise<T[]> {
+  const { blockId, apiKey, onError } = options
+  const allResults: T[] = []
+  let cursor: string | undefined = undefined
+
+  do {
+    const url = cursor
+      ? `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100&start_cursor=${cursor}`
+      : `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100`
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Notion-Version': '2022-06-28',
+      },
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      onError?.(response.status, errorText)
+      break // Return partial results
+    }
+
+    const data = (await response.json()) as NotionPaginatedResponse<T>
+    allResults.push(...data.results)
+    cursor = data.has_more ? (data.next_cursor ?? undefined) : undefined
+  } while (cursor)
+
+  return allResults
+}

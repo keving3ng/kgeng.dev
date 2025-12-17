@@ -1,4 +1,4 @@
-import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger } from '../_shared'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, fetchNotionBlockChildren } from '../_shared'
 
 interface Env {
   NOTION_API_KEY: string
@@ -71,71 +71,30 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const page = queryData.results[0]
 
     // Fetch all page blocks with pagination
-    const allBlocks: any[] = []
-    let blocksCursor: string | undefined = undefined
+    let fetchError: { status: number; detail: string } | null = null
+    const allBlocks = await fetchNotionBlockChildren({
+      blockId: page.id,
+      apiKey: NOTION_API_KEY,
+      onError: (status, detail) => {
+        fetchError = { status, detail }
+        logger.error('Failed to fetch blocks', { endpoint: 'posts/slug', status, slug, detail })
+      },
+    })
 
-    do {
-      const blocksUrl = blocksCursor
-        ? `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100&start_cursor=${blocksCursor}`
-        : `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`
+    // If we got an error on the first page (no blocks), return error
+    if (fetchError && allBlocks.length === 0) {
+      return errorResponse(500, 'Failed to fetch content', corsHeaders)
+    }
 
-      const blocksResponse = await fetch(blocksUrl, {
-        headers: {
-          Authorization: `Bearer ${NOTION_API_KEY}`,
-          'Notion-Version': '2022-06-28',
+    // Helper to fetch children for nested blocks
+    const fetchAllChildren = async (blockId: string) => {
+      return fetchNotionBlockChildren({
+        blockId,
+        apiKey: NOTION_API_KEY,
+        onError: (status, detail) => {
+          logger.warn('Failed to fetch block children', { endpoint: 'posts/slug', status, blockId, detail })
         },
       })
-
-      if (!blocksResponse.ok) {
-        const errorText = await blocksResponse.text()
-        logger.error('Failed to fetch blocks', { endpoint: 'posts/slug', status: blocksResponse.status, slug, detail: errorText })
-        return errorResponse(500, 'Failed to fetch content', corsHeaders)
-      }
-
-      const blocksData = (await blocksResponse.json()) as {
-        results: any[]
-        has_more: boolean
-        next_cursor: string | null
-      }
-
-      allBlocks.push(...blocksData.results)
-      blocksCursor = blocksData.has_more ? (blocksData.next_cursor ?? undefined) : undefined
-    } while (blocksCursor)
-
-    // Fetch all blocks with pagination support
-    const fetchAllChildren = async (blockId: string): Promise<any[]> => {
-      const allChildren: any[] = []
-      let cursor: string | undefined = undefined
-
-      do {
-        const url = cursor
-          ? `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100&start_cursor=${cursor}`
-          : `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100`
-
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${NOTION_API_KEY}`,
-            'Notion-Version': '2022-06-28',
-          },
-        })
-
-        if (!response.ok) {
-          const errorText = await response.text()
-          logger.warn('Failed to fetch block children', { endpoint: 'posts/slug', status: response.status, blockId, detail: errorText })
-          break // Return partial results rather than failing completely
-        }
-
-        const data = (await response.json()) as {
-          results: any[]
-          has_more: boolean
-          next_cursor: string | null
-        }
-
-        allChildren.push(...data.results)
-        cursor = data.has_more ? (data.next_cursor ?? undefined) : undefined
-      } while (cursor)
-
-      return allChildren
     }
 
     // Recursively fetch children for ALL blocks that have them
