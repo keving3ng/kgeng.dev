@@ -1,5 +1,6 @@
 name = "kgeng-dev"
 compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
 
 [[r2_buckets]]
 binding = "IMAGES"
