@@ -1,3 +1,5 @@
+import { getCorsHeaders, errorResponse } from '../_shared'
+
 interface Env {
   NOTION_API_KEY: string
   NOTION_DATABASE_ID: string
@@ -10,6 +12,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const slug = context.params.slug as string
   const url = new URL(context.request.url)
   const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+  const requestOrigin = context.request.headers.get('Origin')
+  const corsHeaders = getCorsHeaders(requestOrigin)
 
   const cacheKey = new Request(context.request.url)
   const cache = caches.default
@@ -47,19 +51,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (!queryResponse.ok) {
       const error = await queryResponse.text()
       console.error('Notion API error:', error)
-      return new Response(JSON.stringify({ error: 'Failed to fetch post' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return errorResponse(500, 'Failed to fetch post', corsHeaders)
     }
 
     const queryData = await queryResponse.json() as { results: any[] }
 
     if (queryData.results.length === 0) {
-      return new Response(JSON.stringify({ error: 'Post not found' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return errorResponse(404, 'Post not found', corsHeaders)
     }
 
     const page = queryData.results[0]
@@ -83,10 +81,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       if (!blocksResponse.ok) {
         const error = await blocksResponse.text()
         console.error('Notion API error:', error)
-        return new Response(JSON.stringify({ error: 'Failed to fetch content' }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        })
+        return errorResponse(500, 'Failed to fetch content', corsHeaders)
       }
 
       const blocksData = (await blocksResponse.json()) as {
@@ -160,7 +155,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const jsonResponse = new Response(JSON.stringify(post), {
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders,
         'Cache-Control': isLocalDev ? 'no-store' : `public, max-age=${CACHE_TTL}`,
       },
     })
@@ -173,9 +168,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return jsonResponse
   } catch (error) {
     console.error('Notion API error:', error)
-    return new Response(JSON.stringify({ error: 'Failed to fetch post' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return errorResponse(500, 'An unexpected error occurred', corsHeaders)
   }
 }

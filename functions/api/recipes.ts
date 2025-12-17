@@ -1,3 +1,5 @@
+import { getCorsHeaders, errorResponse } from './_shared'
+
 interface Env {
   NOTION_API_KEY: string
   NOTION_RECIPES_DATABASE_ID: string
@@ -7,12 +9,11 @@ const CACHE_TTL = 300 // 5 minutes
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { NOTION_API_KEY, NOTION_RECIPES_DATABASE_ID } = context.env
+  const requestOrigin = context.request.headers.get('Origin')
+  const corsHeaders = getCorsHeaders(requestOrigin)
 
   if (!NOTION_API_KEY || !NOTION_RECIPES_DATABASE_ID) {
-    return new Response(JSON.stringify({ error: 'Missing env vars' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return errorResponse(500, 'Server configuration error', corsHeaders)
   }
 
   const url = new URL(context.request.url)
@@ -46,10 +47,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (!response.ok) {
       const error = await response.text()
       console.error('Notion API error:', response.status, error)
-      return new Response(JSON.stringify({ error: `Failed to fetch recipes: ${response.status}` }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return errorResponse(500, 'Failed to fetch recipes', corsHeaders)
     }
 
     const data = await response.json() as { results: any[] }
@@ -65,7 +63,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const jsonResponse = new Response(JSON.stringify(recipes), {
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders,
         'Cache-Control': isLocalDev ? 'no-store' : `public, max-age=${CACHE_TTL}`,
       },
     })
@@ -78,9 +76,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return jsonResponse
   } catch (error) {
     console.error('Notion API error:', error)
-    return new Response(JSON.stringify({ error: `Exception: ${error}` }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return errorResponse(500, 'An unexpected error occurred', corsHeaders)
   }
 }

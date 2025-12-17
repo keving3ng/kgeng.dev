@@ -1,3 +1,5 @@
+import { isAllowedImageUrl } from '../_shared'
+
 interface Env {
   NOTION_API_KEY: string
   IMAGES: R2Bucket
@@ -8,7 +10,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { NOTION_API_KEY, IMAGES } = context.env
 
   if (!NOTION_API_KEY) {
-    return new Response('NOTION_API_KEY not configured', { status: 500 })
+    return new Response('Server configuration error', { status: 500 })
   }
 
   // 1. Check R2 cache first
@@ -41,7 +43,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (!blockResponse.ok) {
     const error = await blockResponse.text()
     console.error('Notion block fetch error:', blockResponse.status, error)
-    return new Response(`Block not found: ${blockResponse.status}`, { status: 404 })
+    return new Response('Block not found', { status: 404 })
   }
 
   const block = (await blockResponse.json()) as {
@@ -66,7 +68,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return new Response('No image URL found', { status: 404 })
   }
 
-  // 3. Fetch the actual image
+  // 3. Validate the image URL is from an allowed domain
+  if (!isAllowedImageUrl(imageUrl)) {
+    console.error('Blocked image URL from untrusted domain:', imageUrl)
+    return new Response('Image source not allowed', { status: 403 })
+  }
+
+  // 4. Fetch the actual image
   const imageResponse = await fetch(imageUrl)
 
   if (!imageResponse.ok) {
@@ -76,7 +84,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const imageBuffer = await imageResponse.arrayBuffer()
   const contentType = imageResponse.headers.get('Content-Type') || 'image/jpeg'
 
-  // 4. Cache in R2 (non-blocking)
+  // 5. Cache in R2 (non-blocking)
   try {
     context.waitUntil(
       IMAGES.put(blockId, imageBuffer, {
@@ -87,7 +95,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     console.error('R2 cache write error:', e)
   }
 
-  // 5. Return the image
+  // 6. Return the image
   return new Response(imageBuffer, {
     headers: {
       'Content-Type': contentType,
