@@ -6,6 +6,7 @@ interface SidebarProps {
   onFilterChange: (filter: string | null) => void
   links: { label: string; url: string }[]
   tools: { label: string; url: string }[]
+  lists?: { label: string; url: string }[]
 }
 
 // Mobile bottom sheet
@@ -15,6 +16,7 @@ export function MobileNav({
   onFilterChange,
   links,
   tools,
+  lists = [],
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -78,6 +80,24 @@ export function MobileNav({
           {/* Divider */}
           <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
 
+          {/* Links */}
+          <div className="space-y-2 mb-4">
+            {links.map((link) => (
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+              >
+                {link.label.toLowerCase()} ↗
+              </a>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
+
           {/* Tools */}
           <div className="space-y-2 mb-4">
             {tools.map((tool) => (
@@ -94,20 +114,20 @@ export function MobileNav({
           {/* Divider */}
           <div className="border-t border-gray-200 dark:border-gray-800 my-4" />
 
-          {/* Links */}
-          <div className="space-y-2">
-            {links.map((link) => (
-              <a
-                key={link.url}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-gray-500 dark:text-gray-400 py-1"
-              >
-                {link.label.toLowerCase()} ↗
-              </a>
-            ))}
-          </div>
+          {/* Lists */}
+          {lists.length > 0 && (
+            <div className="space-y-2">
+              {lists.map((list) => (
+                <a
+                  key={list.url}
+                  href={list.url}
+                  className="block text-sm text-gray-500 dark:text-gray-400 py-1"
+                >
+                  {list.label}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -115,7 +135,7 @@ export function MobileNav({
 }
 
 // Desktop sidebar
-function Sidebar({ filters, activeFilter, onFilterChange, links, tools }: SidebarProps) {
+function Sidebar({ filters, activeFilter, onFilterChange, links, tools, lists = [] }: SidebarProps) {
   return (
     <aside className="hidden md:block w-48 border-r border-gray-200 dark:border-gray-800 shrink-0">
       <div className="p-6 space-y-6">
@@ -147,6 +167,24 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools }: Sideba
         {/* Divider */}
         <div className="border-t border-gray-200 dark:border-gray-800"></div>
 
+        {/* Links */}
+        <div className="space-y-2">
+          {links.map((link) => (
+            <a
+              key={link.url}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              {link.label.toLowerCase()} ↗
+            </a>
+          ))}
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-gray-200 dark:border-gray-800"></div>
+
         {/* Tools */}
         <div className="space-y-2">
           {tools.map((tool) => (
@@ -163,20 +201,20 @@ function Sidebar({ filters, activeFilter, onFilterChange, links, tools }: Sideba
         {/* Divider */}
         <div className="border-t border-gray-200 dark:border-gray-800"></div>
 
-        {/* Links */}
-        <div className="space-y-2">
-          {links.map((link) => (
-            <a
-              key={link.url}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              {link.label.toLowerCase()} ↗
-            </a>
-          ))}
-        </div>
+        {/* Lists */}
+        {lists.length > 0 && (
+          <div className="space-y-2">
+            {lists.map((list) => (
+              <a
+                key={list.url}
+                href={list.url}
+                className="block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              >
+                {list.label}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </aside>
   )

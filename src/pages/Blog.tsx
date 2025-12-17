@@ -14,6 +14,11 @@ const tools = [
   { label: 'recipeer', url: '/tools/recipeer' },
 ]
 
+const lists = [
+  { label: 'picks', url: '/picks' },
+  { label: 'recipes', url: '/recipes' },
+]
+
 function Blog() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const { posts, loading, error } = usePosts()
@@ -30,6 +35,7 @@ function Blog() {
         onFilterChange={handleFilterChange}
         links={links}
         tools={tools}
+        lists={lists}
       />
       <main className="flex-1">
         {loading ? (

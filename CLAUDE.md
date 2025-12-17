@@ -5,8 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # Start Vite dev server (frontend only)
-npm run dev:full # Start with Cloudflare Pages Functions (full stack)
+npm run dev      # Start full stack dev server (localhost:8788)
 npm run build    # TypeScript check + production build
 npm run lint     # ESLint with zero warnings policy
 npm run preview  # Preview production build with Functions
@@ -29,7 +28,9 @@ React Router handles navigation in `src/App.tsx`:
 - `/` - Home (main newsfeed)
 - `/blog` - Blog page
 - `/about` - About page
-- `/tools/*` - Tool pages (e.g., `/tools/splits`)
+- `/tools/*` - Tool pages (e.g., `/tools/splits`, `/tools/recipeer`)
+- `/picks` - Recommendations list (static)
+- `/recipes` - Recipe list (from Notion)
 
 ### Layout Structure
 
@@ -51,6 +52,7 @@ The site uses a centered layout with a sidebar + newsfeed pattern:
 For local development, copy `.dev.vars.example` to `.dev.vars`:
 - `NOTION_API_KEY` - Notion integration token
 - `NOTION_DATABASE_ID` - ID of the posts database
+- `NOTION_RECIPES_DATABASE_ID` - ID of the recipes database
 
 ### Styling
 

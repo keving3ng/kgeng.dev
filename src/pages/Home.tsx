@@ -16,6 +16,11 @@ const tools = [
   { label: 'recipeer', url: '/tools/recipeer' },
 ]
 
+const lists = [
+  { label: 'picks', url: '/picks' },
+  { label: 'recipes', url: '/recipes' },
+]
+
 function Home() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
@@ -58,6 +63,7 @@ function Home() {
         onFilterChange={handleFilterChange}
         links={links}
         tools={tools}
+        lists={lists}
       />
 
       {/* Main content */}
@@ -68,6 +74,7 @@ function Home() {
           onFilterChange={handleFilterChange}
           links={links}
           tools={tools}
+          lists={lists}
         />
         <main className="flex-1 overflow-y-auto">
           {loading ? (
