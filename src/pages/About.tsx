@@ -1,6 +1,5 @@
 import Sidebar from '../components/Sidebar'
 
-const filters = ['All Posts', 'Code', 'Bake', 'Eat', 'Travel', 'Pottery']
 const links = [
   { label: 'GitHub', url: 'https://github.com/keving3ng' },
   { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
@@ -20,7 +19,7 @@ function About() {
   return (
     <div className="flex">
       <Sidebar
-        filters={filters}
+        filters={[]}
         activeFilter={null}
         onFilterChange={() => {}}
         links={links}

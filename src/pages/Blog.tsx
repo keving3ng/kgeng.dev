@@ -1,9 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Sidebar from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import { usePosts } from '../hooks/usePosts'
-
-const filters = ['All Posts', 'Code', 'Bake', 'Eat', 'Travel', 'Pottery']
 const links = [
   { label: 'GitHub', url: 'https://github.com/keving3ng' },
   { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
@@ -22,6 +20,15 @@ const lists = [
 function Blog() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const { posts, loading, error } = usePosts()
+
+  // Derive filters from post tags
+  const filters = useMemo(() => {
+    const tagSet = new Set<string>()
+    posts.forEach((post) => {
+      post.tags.forEach((tag) => tagSet.add(tag))
+    })
+    return ['All Posts', ...Array.from(tagSet).sort()]
+  }, [posts])
 
   const handleFilterChange = (filter: string | null) => {
     setActiveFilter(filter === 'All Posts' ? null : filter)
