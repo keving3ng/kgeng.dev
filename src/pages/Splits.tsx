@@ -230,9 +230,12 @@ function Splits() {
           ← back
         </Link>
 
-        <h1 className="text-2xl font-medium mb-8 text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-medium mb-2 text-gray-900 dark:text-gray-100">
           splits
         </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+          i made this for my own use, so it's intentionally rigid. let me know if you'd like to request improvements.
+        </p>
 
         {/* Items Section */}
         <section className="mb-8">
