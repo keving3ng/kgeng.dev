@@ -1,18 +1,30 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { Post, PostWithContent } from '../types/post'
 import { getPosts, getPost } from '../services/posts'
+
+const DEV_REFRESH_INTERVAL = 30000 // 30 seconds
 
 export function usePosts() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchPosts = useCallback(() => {
     getPosts()
       .then(setPosts)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    fetchPosts()
+
+    // Auto-refresh in development only
+    if (import.meta.env.DEV) {
+      const interval = setInterval(fetchPosts, DEV_REFRESH_INTERVAL)
+      return () => clearInterval(interval)
+    }
+  }, [fetchPosts])
 
   return { posts, loading, error }
 }

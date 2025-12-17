@@ -89,8 +89,9 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
     : items
 
   if (!singleSlug && activeFilter) {
+    const filterLower = activeFilter.toLowerCase()
     filteredItems = filteredItems.filter((item) =>
-      item.tags.includes(activeFilter)
+      item.tags.some((tag) => tag.toLowerCase() === filterLower)
     )
   }
 
