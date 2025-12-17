@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import PageHeader from '../components/PageHeader'
 
 interface Pick {
   title: string
@@ -40,17 +40,9 @@ const categories: Category[] = [
     ],
   },
   {
-    name: 'movies & shows',
+    name: 'movies',
     link: { label: 'letterboxd', url: 'https://letterboxd.com/kegk3g/' },
-    items: [
-      { title: 'Spider-Man: Into the Spider-Verse', label: 'movies' },
-      { title: 'Hacksaw Ridge' },
-      { title: 'Forrest Gump' },
-      { title: 'Parasite' },
-      { title: 'Shrinking', label: 'shows' },
-      { title: 'Arrested Development' },
-      { title: 'Arcane' },
-    ],
+    items: []
   },
   {
     name: 'podcasts',
@@ -67,20 +59,7 @@ function Picks() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        {/* Back button */}
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-6 transition-colors"
-        >
-          ← back
-        </Link>
-
-        <h1 className="text-2xl font-medium mb-2 text-gray-900 dark:text-gray-100">
-          picks
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-          things i've enjoyed and would recommend.
-        </p>
+        <PageHeader title="picks" subtitle="things i've enjoyed and would recommend." />
 
         {nonEmptyCategories.length === 0 ? (
           <p className="text-sm text-gray-400 dark:text-gray-500 italic">
