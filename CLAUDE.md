@@ -22,6 +22,31 @@ Posts are managed in Notion and fetched via the Notion API:
 - **API proxy**: Cloudflare Pages Functions in `functions/api/`
 - **Client service**: `src/services/posts.ts` fetches from `/api/posts`
 
+### API Layer (`functions/api/`)
+
+Cloudflare Pages Functions handle API requests with shared utilities in `_shared.ts`:
+
+**Endpoints:**
+- `GET /api/posts` - List all published posts
+- `GET /api/posts/[slug]` - Get single post with Notion blocks
+- `GET /api/recipes` - List recipes from Notion
+- `GET /api/image/[blockId]` - Image proxy with R2 caching
+
+**Security & Features:**
+- **CORS**: Restricted to allowed origins (kgeng.dev, localhost)
+- **Rate limiting**: 60 requests/minute per IP via Cache API
+- **Image proxy validation**: Whitelist of allowed domains (Notion S3, Unsplash)
+- **Error sanitization**: Generic messages to clients, detailed logs server-side
+- **Structured logging**: JSON-formatted logs with timestamps and context
+
+**Shared utilities** (`_shared.ts`):
+- `getCorsHeaders()` - Origin-validated CORS headers
+- `errorResponse()` - Sanitized JSON error responses
+- `checkRateLimit()` - IP-based rate limiting
+- `logger` - Structured logging (info/warn/error)
+- `fetchNotionBlockChildren()` - Paginated Notion block fetching
+- `isAllowedImageUrl()` - Image URL domain validation
+
 ### Routing
 
 React Router handles navigation in `src/App.tsx`:
@@ -38,6 +63,7 @@ The site uses a centered layout with a sidebar + newsfeed pattern:
 - `Layout.tsx` - Outer container, centers content horizontally/vertically with max-width
 - `Sidebar.tsx` - Left sidebar with filters (tags), tools, and external links
 - `Newsfeed.tsx` - Scrollable feed of collapsible articles, fetches content on expand
+- `ErrorBoundary.tsx` - Catches React errors with fallback UI and retry button
 
 ### Key Patterns
 
@@ -46,6 +72,7 @@ The site uses a centered layout with a sidebar + newsfeed pattern:
 - **Notion blocks**: `NotionRenderer.tsx` converts Notion API blocks to React components.
 - **Lowercase styling**: Tags and links display lowercase via `.toLowerCase()` in render.
 - **External links**: Marked with ↗ arrow to distinguish from internal navigation.
+- **Centralized config**: Navigation links/tools/lists defined in `src/config/navigation.ts`.
 
 ### Environment Variables
 
