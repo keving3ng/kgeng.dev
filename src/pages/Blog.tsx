@@ -1,17 +1,7 @@
 import { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
-
-// Mock data - will be replaced with real content later
-const mockPosts = [
-  {
-    id: '1',
-    title: 'Blog Post Example',
-    content: 'This is an example blog post in the newsfeed format.',
-    date: '2024-01-15',
-    category: 'General',
-  },
-]
+import { usePosts } from '../hooks/usePosts'
 
 const filters = ['All Posts', 'Code', 'Bake', 'Eat', 'Travel', 'Pottery']
 const links = [
@@ -19,12 +9,11 @@ const links = [
   { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
   { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
 ]
-const tools = [
-  { label: 'splits', url: '/tools/splits' },
-]
+const tools = [{ label: 'splits', url: '/tools/splits' }]
 
 function Blog() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const { posts, loading, error } = usePosts()
 
   const handleFilterChange = (filter: string | null) => {
     setActiveFilter(filter === 'All Posts' ? null : filter)
@@ -40,11 +29,20 @@ function Blog() {
         tools={tools}
       />
       <main className="flex-1">
-        <Newsfeed items={mockPosts} activeFilter={activeFilter} />
+        {loading ? (
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+            Loading posts...
+          </div>
+        ) : error ? (
+          <div className="text-center py-16 text-red-500 dark:text-red-400">
+            {error}
+          </div>
+        ) : (
+          <Newsfeed items={posts} activeFilter={activeFilter} />
+        )}
       </main>
     </div>
   )
 }
 
 export default Blog
-
