@@ -7,6 +7,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const blockId = context.params.blockId as string
   const { NOTION_API_KEY, IMAGES } = context.env
 
+  if (!NOTION_API_KEY) {
+    return new Response('NOTION_API_KEY not configured', { status: 500 })
+  }
+
   // 1. Check R2 cache first
   try {
     const cached = await IMAGES.get(blockId)
@@ -35,7 +39,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   )
 
   if (!blockResponse.ok) {
-    return new Response('Block not found', { status: 404 })
+    const error = await blockResponse.text()
+    console.error('Notion block fetch error:', blockResponse.status, error)
+    return new Response(`Block not found: ${blockResponse.status}`, { status: 404 })
   }
 
   const block = (await blockResponse.json()) as {
