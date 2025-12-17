@@ -4,7 +4,7 @@ import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import { usePosts } from '../hooks/usePosts'
 
-const filters = ['All Posts', 'Code', 'Bake', 'Eat', 'Travel', 'Pottery']
+const filters = ['All Posts', 'Code', 'Bake', 'Eat', 'Travel', 'Pottery', 'Experiences']
 const links = [
   { label: 'GitHub', url: 'https://github.com/keving3ng' },
   { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
