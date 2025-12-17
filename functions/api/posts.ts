@@ -7,6 +7,14 @@ const CACHE_TTL = 300 // 5 minutes
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { NOTION_API_KEY, NOTION_DATABASE_ID } = context.env
+
+  if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
+    return new Response(JSON.stringify({ error: 'Missing env vars' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
   const url = new URL(context.request.url)
   const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
 
@@ -43,8 +51,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('Notion API error:', error)
-      return new Response(JSON.stringify({ error: 'Failed to fetch posts' }), {
+      console.error('Notion API error:', response.status, error)
+      return new Response(JSON.stringify({ error: `Failed to fetch posts: ${response.status}` }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       })
@@ -77,7 +85,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return jsonResponse
   } catch (error) {
     console.error('Notion API error:', error)
-    return new Response(JSON.stringify({ error: 'Failed to fetch posts' }), {
+    return new Response(JSON.stringify({ error: `Exception: ${error}` }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })
