@@ -2,6 +2,9 @@
 .env
 .dev.vars
 
+# Wrangler local state (contains cached API responses with temp AWS tokens)
+.wrangler/
+
 # Logs
 logs
 *.log

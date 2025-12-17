@@ -7,13 +7,18 @@ const CACHE_TTL = 300 // 5 minutes
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { NOTION_API_KEY, NOTION_DATABASE_ID } = context.env
+  const url = new URL(context.request.url)
+  const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+
   const cacheKey = new Request(context.request.url)
   const cache = caches.default
 
-  // Check cache first
-  const cachedResponse = await cache.match(cacheKey)
-  if (cachedResponse) {
-    return cachedResponse
+  // Check cache first (skip in local development for fresh content)
+  if (!isLocalDev) {
+    const cachedResponse = await cache.match(cacheKey)
+    if (cachedResponse) {
+      return cachedResponse
+    }
   }
 
   try {
@@ -60,12 +65,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Cache-Control': `public, max-age=${CACHE_TTL}`,
+        'Cache-Control': isLocalDev ? 'no-store' : `public, max-age=${CACHE_TTL}`,
       },
     })
 
-    // Store in cache (non-blocking)
-    context.waitUntil(cache.put(cacheKey, jsonResponse.clone()))
+    // Store in cache (non-blocking, skip in local development)
+    if (!isLocalDev) {
+      context.waitUntil(cache.put(cacheKey, jsonResponse.clone()))
+    }
 
     return jsonResponse
   } catch (error) {
