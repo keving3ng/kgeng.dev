@@ -64,49 +64,79 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const page = queryData.results[0]
 
-    // Fetch page blocks (content is written directly in the database entry's page body)
-    const blocksResponse = await fetch(
-      `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`,
-      {
+    // Fetch all page blocks with pagination
+    const allBlocks: any[] = []
+    let blocksCursor: string | undefined = undefined
+
+    do {
+      const blocksUrl = blocksCursor
+        ? `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100&start_cursor=${blocksCursor}`
+        : `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`
+
+      const blocksResponse = await fetch(blocksUrl, {
         headers: {
           Authorization: `Bearer ${NOTION_API_KEY}`,
           'Notion-Version': '2022-06-28',
         },
-      }
-    )
-
-    if (!blocksResponse.ok) {
-      const error = await blocksResponse.text()
-      console.error('Notion API error:', error)
-      return new Response(JSON.stringify({ error: 'Failed to fetch content' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
       })
-    }
 
-    const blocksData = await blocksResponse.json() as { results: any[] }
+      if (!blocksResponse.ok) {
+        const error = await blocksResponse.text()
+        console.error('Notion API error:', error)
+        return new Response(JSON.stringify({ error: 'Failed to fetch content' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
 
-    // Recursively fetch children for blocks that have them (e.g., column_list, column)
-    const fetchChildren = async (blockId: string): Promise<any[]> => {
-      const childrenResponse = await fetch(
-        `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100`,
-        {
+      const blocksData = (await blocksResponse.json()) as {
+        results: any[]
+        has_more: boolean
+        next_cursor: string | null
+      }
+
+      allBlocks.push(...blocksData.results)
+      blocksCursor = blocksData.has_more ? (blocksData.next_cursor ?? undefined) : undefined
+    } while (blocksCursor)
+
+    // Fetch all blocks with pagination support
+    const fetchAllChildren = async (blockId: string): Promise<any[]> => {
+      const allChildren: any[] = []
+      let cursor: string | undefined = undefined
+
+      do {
+        const url = cursor
+          ? `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100&start_cursor=${cursor}`
+          : `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100`
+
+        const response = await fetch(url, {
           headers: {
             Authorization: `Bearer ${NOTION_API_KEY}`,
             'Notion-Version': '2022-06-28',
           },
+        })
+
+        if (!response.ok) break
+
+        const data = (await response.json()) as {
+          results: any[]
+          has_more: boolean
+          next_cursor: string | null
         }
-      )
-      if (!childrenResponse.ok) return []
-      const childrenData = await childrenResponse.json() as { results: any[] }
-      return childrenData.results
+
+        allChildren.push(...data.results)
+        cursor = data.has_more ? (data.next_cursor ?? undefined) : undefined
+      } while (cursor)
+
+      return allChildren
     }
 
+    // Recursively fetch children for ALL blocks that have them
     const enrichBlocksWithChildren = async (blocks: any[]): Promise<any[]> => {
       return Promise.all(
         blocks.map(async (block) => {
-          if (block.has_children && (block.type === 'column_list' || block.type === 'column')) {
-            const children = await fetchChildren(block.id)
+          if (block.has_children) {
+            const children = await fetchAllChildren(block.id)
             const enrichedChildren = await enrichBlocksWithChildren(children)
             return { ...block, children: enrichedChildren }
           }
@@ -115,7 +145,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       )
     }
 
-    const enrichedBlocks = await enrichBlocksWithChildren(blocksData.results)
+    const enrichedBlocks = await enrichBlocksWithChildren(allBlocks)
 
     const post = {
       id: page.id,

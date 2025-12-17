@@ -26,11 +26,13 @@ export type NotionBlock =
   | CalloutBlock
   | ColumnListBlock
   | ColumnBlock
+  | ToggleBlock
 
 interface BaseBlock {
   id: string
   type: string
   has_children?: boolean
+  children?: NotionBlock[]
 }
 
 export interface RichText {
@@ -114,11 +116,14 @@ export interface CalloutBlock extends BaseBlock {
 export interface ColumnListBlock extends BaseBlock {
   type: 'column_list'
   column_list: Record<string, never>
-  children?: NotionBlock[]
 }
 
 export interface ColumnBlock extends BaseBlock {
   type: 'column'
   column: Record<string, never>
-  children?: NotionBlock[]
+}
+
+export interface ToggleBlock extends BaseBlock {
+  type: 'toggle'
+  toggle: { rich_text: RichText[] }
 }
