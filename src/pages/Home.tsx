@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import { usePosts } from '../hooks/usePosts'
@@ -13,10 +14,16 @@ const links = [
 const tools = [{ label: 'splits', url: '/tools/splits' }]
 
 function Home() {
+  const { slug } = useParams<{ slug: string }>()
+  const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const { posts, loading, error } = usePosts()
 
   const handleFilterChange = (filter: string | null) => {
+    // If viewing a single post, navigate back to home
+    if (slug) {
+      navigate('/')
+    }
     setActiveFilter(filter === 'All Posts' ? null : filter)
   }
 
@@ -60,7 +67,7 @@ function Home() {
               {error}
             </div>
           ) : (
-            <Newsfeed items={posts} activeFilter={activeFilter} />
+            <Newsfeed items={posts} activeFilter={activeFilter} singleSlug={slug} />
           )}
         </main>
       </div>
