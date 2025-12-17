@@ -34,6 +34,10 @@ const links = [
   { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
 ]
 
+const tools = [
+  { label: 'splits', url: '/tools/splits' },
+]
+
 function Home() {
   const [activeFilter, setActiveFilter] = useState<string | null>('All')
 
@@ -47,7 +51,7 @@ function Home() {
       <header className="mt-4 mb-8">
         <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">kevin geng</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          frontend @ <a href="https://faire.com" target="_blank" rel="noopener noreferrer" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">faire</a> · baker · hobbyist · traveler
+          frontend @ <a href="https://faire.com" target="_blank" rel="noopener noreferrer" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">faire</a> · hobbyist · traveler
         </p>
       </header>
 
@@ -58,6 +62,7 @@ function Home() {
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
           links={links}
+          tools={tools}
         />
         <main className="flex-1 overflow-y-auto">
           <Newsfeed items={mockPosts} activeFilter={activeFilter} />
