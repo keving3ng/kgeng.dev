@@ -1,16 +1,46 @@
-import { useState } from 'react'
-
-interface NewsfeedItem {
-  id: string
-  title: string
-  content: string
-  date: string
-  category: string
-}
+import { useState, useEffect } from 'react'
+import type { Post, PostWithContent } from '../types/post'
+import { getPost } from '../services/posts'
+import NotionRenderer from './NotionRenderer'
 
 interface NewsfeedProps {
-  items: NewsfeedItem[]
+  items: Post[]
   activeFilter: string | null
+}
+
+function PostContent({ slug }: { slug: string }) {
+  const [post, setPost] = useState<PostWithContent | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    getPost(slug)
+      .then(setPost)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [slug])
+
+  if (loading) {
+    return (
+      <div className="text-gray-400 dark:text-gray-500 text-sm">Loading...</div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500 dark:text-red-400 text-sm">{error}</div>
+    )
+  }
+
+  if (!post || !post.blocks || post.blocks.length === 0) {
+    return (
+      <div className="text-gray-400 dark:text-gray-500 text-sm italic">
+        No content
+      </div>
+    )
+  }
+
+  return <NotionRenderer blocks={post.blocks} />
 }
 
 function Newsfeed({ items, activeFilter }: NewsfeedProps) {
@@ -31,7 +61,7 @@ function Newsfeed({ items, activeFilter }: NewsfeedProps) {
   }
 
   const filteredItems = activeFilter
-    ? items.filter((item) => item.category === activeFilter)
+    ? items.filter((item) => item.tags.includes(activeFilter))
     : items
 
   if (filteredItems.length === 0) {
@@ -57,29 +87,40 @@ function Newsfeed({ items, activeFilter }: NewsfeedProps) {
                 onClick={() => toggleItem(item.id)}
                 className="w-full text-left flex items-start gap-2 group"
               >
-                <span className={`text-gray-400 dark:text-gray-500 mt-1 transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+                <span
+                  className={`text-gray-400 dark:text-gray-500 mt-1 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                >
                   ›
                 </span>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h2 className="text-lg font-medium group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
                       {item.title}
                     </h2>
-                    <span className="text-xs text-gray-400 dark:text-gray-500 lowercase">
-                      {item.category}
-                    </span>
+                    {item.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs text-gray-400 dark:text-gray-500 lowercase"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </button>
 
               {isExpanded && (
                 <div className="ml-5 mt-3">
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">
-                    {item.date}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {item.content}
-                  </p>
+                  {item.date && (
+                    <div className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+                      {new Date(item.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </div>
+                  )}
+                  <PostContent slug={item.slug} />
                 </div>
               )}
             </div>
@@ -91,5 +132,3 @@ function Newsfeed({ items, activeFilter }: NewsfeedProps) {
 }
 
 export default Newsfeed
-
-
