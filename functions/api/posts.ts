@@ -1,4 +1,4 @@
-import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse } from './_shared'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger } from './_shared'
 
 interface Env {
   NOTION_API_KEY: string
@@ -59,8 +59,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     )
 
     if (!response.ok) {
-      const error = await response.text()
-      console.error('Notion API error:', response.status, error)
+      const errorText = await response.text()
+      logger.error('Notion API error', { endpoint: 'posts', status: response.status, detail: errorText })
       return errorResponse(500, 'Failed to fetch posts', corsHeaders)
     }
 
@@ -90,7 +90,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     return jsonResponse
   } catch (error) {
-    console.error('Notion API error:', error)
+    logger.error('Unexpected error', { endpoint: 'posts', detail: String(error) })
     return errorResponse(500, 'An unexpected error occurred', corsHeaders)
   }
 }

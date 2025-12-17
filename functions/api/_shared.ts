@@ -1,5 +1,38 @@
 // Shared utilities for API security
 
+/**
+ * Structured logger for consistent log formatting
+ */
+type LogLevel = 'info' | 'warn' | 'error'
+
+interface LogContext {
+  endpoint?: string
+  status?: number
+  blockId?: string
+  [key: string]: unknown
+}
+
+function formatLog(level: LogLevel, message: string, context?: LogContext): string {
+  return JSON.stringify({
+    level,
+    message,
+    timestamp: new Date().toISOString(),
+    ...context,
+  })
+}
+
+export const logger = {
+  info: (message: string, context?: LogContext): void => {
+    console.log(formatLog('info', message, context))
+  },
+  warn: (message: string, context?: LogContext): void => {
+    console.warn(formatLog('warn', message, context))
+  },
+  error: (message: string, context?: LogContext): void => {
+    console.error(formatLog('error', message, context))
+  },
+}
+
 const ALLOWED_ORIGINS = [
   'https://kgeng.dev',
   'https://www.kgeng.dev',

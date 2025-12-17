@@ -1,4 +1,4 @@
-import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse } from '../_shared'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger } from '../_shared'
 
 interface Env {
   NOTION_API_KEY: string
@@ -57,8 +57,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     )
 
     if (!queryResponse.ok) {
-      const error = await queryResponse.text()
-      console.error('Notion API error:', error)
+      const errorText = await queryResponse.text()
+      logger.error('Notion API error', { endpoint: 'posts/slug', status: queryResponse.status, slug, detail: errorText })
       return errorResponse(500, 'Failed to fetch post', corsHeaders)
     }
 
@@ -87,8 +87,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       })
 
       if (!blocksResponse.ok) {
-        const error = await blocksResponse.text()
-        console.error('Notion API error:', error)
+        const errorText = await blocksResponse.text()
+        logger.error('Failed to fetch blocks', { endpoint: 'posts/slug', status: blocksResponse.status, slug, detail: errorText })
         return errorResponse(500, 'Failed to fetch content', corsHeaders)
       }
 
@@ -120,8 +120,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         })
 
         if (!response.ok) {
-          const error = await response.text()
-          console.error(`Failed to fetch children for block ${blockId}:`, response.status, error)
+          const errorText = await response.text()
+          logger.warn('Failed to fetch block children', { endpoint: 'posts/slug', status: response.status, blockId, detail: errorText })
           break // Return partial results rather than failing completely
         }
 
@@ -179,7 +179,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     return jsonResponse
   } catch (error) {
-    console.error('Notion API error:', error)
+    logger.error('Unexpected error', { endpoint: 'posts/slug', slug, detail: String(error) })
     return errorResponse(500, 'An unexpected error occurred', corsHeaders)
   }
 }

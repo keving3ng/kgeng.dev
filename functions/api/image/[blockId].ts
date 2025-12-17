@@ -1,4 +1,4 @@
-import { isAllowedImageUrl, checkRateLimit } from '../_shared'
+import { isAllowedImageUrl, checkRateLimit, logger } from '../_shared'
 
 interface Env {
   NOTION_API_KEY: string
@@ -36,7 +36,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
   } catch (e) {
     // R2 not available or error, continue to fetch from Notion
-    console.error('R2 cache error:', e)
+    logger.warn('R2 cache read error', { endpoint: 'image', blockId, detail: String(e) })
   }
 
   // 2. Fetch block from Notion to get fresh image URL
@@ -51,8 +51,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   )
 
   if (!blockResponse.ok) {
-    const error = await blockResponse.text()
-    console.error('Notion block fetch error:', blockResponse.status, error)
+    const errorText = await blockResponse.text()
+    logger.error('Notion block fetch error', { endpoint: 'image', status: blockResponse.status, blockId, detail: errorText })
     return new Response('Block not found', { status: 404 })
   }
 
@@ -80,7 +80,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   // 3. Validate the image URL is from an allowed domain
   if (!isAllowedImageUrl(imageUrl)) {
-    console.error('Blocked image URL from untrusted domain:', imageUrl)
+    logger.warn('Blocked image from untrusted domain', { endpoint: 'image', blockId, url: imageUrl })
     return new Response('Image source not allowed', { status: 403 })
   }
 
@@ -102,7 +102,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       })
     )
   } catch (e) {
-    console.error('R2 cache write error:', e)
+    logger.warn('R2 cache write error', { endpoint: 'image', blockId, detail: String(e) })
   }
 
   // 6. Return the image
