@@ -83,4 +83,27 @@ For local development, copy `.dev.vars.example` to `.dev.vars`:
 
 ### Styling
 
-All styling uses Tailwind CSS utility classes. Dark mode supported via `dark:` variants.
+All styling uses Tailwind CSS utility classes with a semantic color token system.
+
+**Theme System:**
+- Themes defined in `src/config/themes.ts` (light/dark)
+- CSS variables defined in `src/index.css` for each theme
+- Theme state managed via `ThemeContext` in `src/contexts/ThemeContext.tsx`
+- Toggle component: `ThemeToggle.tsx`
+- Defaults to system preference, no localStorage persistence
+
+**Semantic Color Tokens** (defined in `tailwind.config.js`):
+- `bg-surface` / `bg-surface-secondary` - Background colors
+- `text-content` / `text-content-secondary` / `text-content-muted` - Text colors
+- `border-border` - Border color
+
+**Usage:**
+```jsx
+// Correct - use semantic tokens
+<div className="bg-surface text-content border-border">
+
+// Avoid - hardcoded colors with dark: variants
+<div className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+```
+
+Light theme uses Solarized colors, dark theme uses gray-950 base.
