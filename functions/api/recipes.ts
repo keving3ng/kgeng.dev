@@ -60,13 +60,51 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const data = await response.json() as { results: any[] }
 
-    const recipes = data.results.map((page: any) => ({
-      id: page.id,
-      name: page.properties['Recipe Name']?.title?.[0]?.plain_text || 'Untitled',
-      url: page.properties['Link']?.url || null,
-      notes: page.properties['Notes']?.rich_text?.[0]?.plain_text || null,
-      tags: page.properties['Tags']?.multi_select?.map((tag: any) => tag.name) || [],
-    }))
+    // Check if each recipe has meaningful content (not just bookmarks or empty blocks)
+    const checkHasContent = async (pageId: string): Promise<boolean> => {
+      try {
+        const blocksResponse = await fetch(
+          `https://api.notion.com/v1/blocks/${pageId}/children?page_size=10`,
+          {
+            headers: {
+              Authorization: `Bearer ${NOTION_API_KEY}`,
+              'Notion-Version': '2022-06-28',
+            },
+          }
+        )
+        if (!blocksResponse.ok) return false
+        const blocksData = await blocksResponse.json() as { results: any[] }
+
+        // Filter out bookmark blocks and empty paragraphs - these don't count as content
+        const meaningfulBlocks = blocksData.results.filter((block: any) => {
+          // Skip bookmark blocks (link previews)
+          if (block.type === 'bookmark') return false
+          // Skip link_preview blocks
+          if (block.type === 'link_preview') return false
+          // Skip empty paragraph blocks
+          if (block.type === 'paragraph') {
+            const richText = block.paragraph?.rich_text || []
+            if (richText.length === 0) return false
+          }
+          return true
+        })
+
+        return meaningfulBlocks.length > 0
+      } catch {
+        return false
+      }
+    }
+
+    const recipes = await Promise.all(
+      data.results.map(async (page: any) => ({
+        id: page.id,
+        name: page.properties['Recipe Name']?.title?.[0]?.plain_text || 'Untitled',
+        url: page.properties['Link']?.url || null,
+        notes: page.properties['Notes']?.rich_text?.[0]?.plain_text || null,
+        tags: page.properties['Tags']?.multi_select?.map((tag: any) => tag.name) || [],
+        hasContent: await checkHasContent(page.id),
+      }))
+    )
 
     const jsonResponse = new Response(JSON.stringify(recipes), {
       headers: {
