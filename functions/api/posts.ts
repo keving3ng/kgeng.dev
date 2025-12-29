@@ -1,4 +1,5 @@
 import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger } from './_shared'
+import { NotionDatabaseQueryResponse, getTitle, getSlug, getTags, getDate } from './types/notion'
 
 interface Env {
   NOTION_API_KEY: string
@@ -64,15 +65,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return errorResponse(500, 'Failed to fetch posts', corsHeaders)
     }
 
-    const data = await response.json() as { results: any[] }
+    const data = await response.json() as NotionDatabaseQueryResponse
 
-    const posts = data.results.map((page: any) => ({
+    const posts = data.results.map((page) => ({
       id: page.id,
-      title: page.properties.Title?.title?.[0]?.plain_text || 'Untitled',
-      slug: page.properties.Slug?.rich_text?.[0]?.plain_text || page.id,
-      tags:
-        page.properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
-      date: page.properties.Date?.date?.start || null,
+      title: getTitle(page),
+      slug: getSlug(page),
+      tags: getTags(page),
+      date: getDate(page),
     }))
 
     const jsonResponse = new Response(JSON.stringify(posts), {

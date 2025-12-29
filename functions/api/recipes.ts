@@ -1,4 +1,5 @@
 import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger } from './_shared'
+import { NotionDatabaseQueryResponse, NotionBlockChildrenResponse, NotionBlock, getTitle, getTags, getUrl, getNotes } from './types/notion'
 
 interface Env {
   NOTION_API_KEY: string
@@ -58,7 +59,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return errorResponse(500, 'Failed to fetch recipes', corsHeaders)
     }
 
-    const data = await response.json() as { results: any[] }
+    const data = await response.json() as NotionDatabaseQueryResponse
 
     // Check if each recipe has meaningful content (not just bookmarks or empty blocks)
     const checkHasContent = async (pageId: string): Promise<boolean> => {
@@ -73,17 +74,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
           }
         )
         if (!blocksResponse.ok) return false
-        const blocksData = await blocksResponse.json() as { results: any[] }
+        const blocksData = await blocksResponse.json() as NotionBlockChildrenResponse
 
         // Filter out bookmark blocks and empty paragraphs - these don't count as content
-        const meaningfulBlocks = blocksData.results.filter((block: any) => {
+        const meaningfulBlocks = blocksData.results.filter((block: NotionBlock) => {
           // Skip bookmark blocks (link previews)
           if (block.type === 'bookmark') return false
           // Skip link_preview blocks
           if (block.type === 'link_preview') return false
           // Skip empty paragraph blocks
           if (block.type === 'paragraph') {
-            const richText = block.paragraph?.rich_text || []
+            const paragraph = block.paragraph as { rich_text?: unknown[] } | undefined
+            const richText = paragraph?.rich_text || []
             if (richText.length === 0) return false
           }
           return true
@@ -96,12 +98,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
 
     const recipes = await Promise.all(
-      data.results.map(async (page: any) => ({
+      data.results.map(async (page) => ({
         id: page.id,
-        name: page.properties['Recipe Name']?.title?.[0]?.plain_text || 'Untitled',
-        url: page.properties['Link']?.url || null,
-        notes: page.properties['Notes']?.rich_text?.[0]?.plain_text || null,
-        tags: page.properties['Tags']?.multi_select?.map((tag: any) => tag.name) || [],
+        name: getTitle(page, 'Recipe Name'),
+        url: getUrl(page),
+        notes: getNotes(page),
+        tags: getTags(page),
         hasContent: await checkHasContent(page.id),
       }))
     )

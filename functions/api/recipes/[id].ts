@@ -1,4 +1,5 @@
 import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, fetchNotionBlockChildren } from '../_shared'
+import { NotionPage, NotionBlock, getTitle, getTags, getUrl, getNotes } from '../types/notion'
 
 interface Env {
   NOTION_API_KEY: string
@@ -60,7 +61,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return errorResponse(500, 'Failed to fetch recipe', corsHeaders)
     }
 
-    const page = await pageResponse.json() as any
+    const page = await pageResponse.json() as NotionPage
 
     // Fetch all page blocks with pagination
     let fetchError: { status: number; detail: string } | null = null
@@ -90,7 +91,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
 
     // Recursively fetch children for ALL blocks that have them
-    const enrichBlocksWithChildren = async (blocks: any[]): Promise<any[]> => {
+    const enrichBlocksWithChildren = async (blocks: NotionBlock[]): Promise<NotionBlock[]> => {
       return Promise.all(
         blocks.map(async (block) => {
           if (block.has_children) {
@@ -107,10 +108,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const recipe = {
       id: page.id,
-      name: page.properties['Recipe Name']?.title?.[0]?.plain_text || 'Untitled',
-      url: page.properties['Link']?.url || null,
-      notes: page.properties['Notes']?.rich_text?.[0]?.plain_text || null,
-      tags: page.properties['Tags']?.multi_select?.map((tag: any) => tag.name) || [],
+      name: getTitle(page, 'Recipe Name'),
+      url: getUrl(page),
+      notes: getNotes(page),
+      tags: getTags(page),
       blocks: enrichedBlocks,
     }
 

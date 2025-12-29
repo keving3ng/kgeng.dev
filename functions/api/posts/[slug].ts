@@ -1,4 +1,5 @@
 import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, fetchNotionBlockChildren } from '../_shared'
+import { NotionDatabaseQueryResponse, NotionBlock, getTitle, getSlug, getTags, getDate } from '../types/notion'
 
 interface Env {
   NOTION_API_KEY: string
@@ -62,7 +63,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return errorResponse(500, 'Failed to fetch post', corsHeaders)
     }
 
-    const queryData = await queryResponse.json() as { results: any[] }
+    const queryData = await queryResponse.json() as NotionDatabaseQueryResponse
 
     if (queryData.results.length === 0) {
       return errorResponse(404, 'Post not found', corsHeaders)
@@ -98,7 +99,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
 
     // Recursively fetch children for ALL blocks that have them
-    const enrichBlocksWithChildren = async (blocks: any[]): Promise<any[]> => {
+    const enrichBlocksWithChildren = async (blocks: NotionBlock[]): Promise<NotionBlock[]> => {
       return Promise.all(
         blocks.map(async (block) => {
           if (block.has_children) {
@@ -115,11 +116,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const post = {
       id: page.id,
-      title: page.properties.Title?.title?.[0]?.plain_text || 'Untitled',
-      slug: page.properties.Slug?.rich_text?.[0]?.plain_text || page.id,
-      tags:
-        page.properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
-      date: page.properties.Date?.date?.start || null,
+      title: getTitle(page),
+      slug: getSlug(page),
+      tags: getTags(page),
+      date: getDate(page),
       blocks: enrichedBlocks,
     }
 
