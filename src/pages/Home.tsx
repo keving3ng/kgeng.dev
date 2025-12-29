@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
+import CVList from '../components/CVList'
 import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
 import { socialLinks, tools, lists } from '../config/navigation'
@@ -9,8 +10,11 @@ import { socialLinks, tools, lists } from '../config/navigation'
 function Home() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const { posts, loading, error } = usePosts()
+
+  const isCV = location.pathname === '/cv'
 
   // Derive filters from post tags
   const filters = useMemo(() => {
@@ -49,23 +53,35 @@ function Home() {
             </a>{' '}
             · side quester · kindmaxing and joybaiting
           </p>
+          <div className="flex gap-4 mt-3 text-sm">
+            <Link
+              to="/"
+              className={`transition-colors ${
+                !isCV
+                  ? 'text-content font-medium'
+                  : 'text-content-muted hover:text-content-secondary'
+              }`}
+            >
+              blog
+            </Link>
+            <Link
+              to="/cv"
+              className={`transition-colors ${
+                isCV
+                  ? 'text-content font-medium'
+                  : 'text-content-muted hover:text-content-secondary'
+              }`}
+            >
+              cv
+            </Link>
+          </div>
         </div>
         <ThemeToggle />
       </header>
 
-      {/* Mobile navigation */}
-      <MobileNav
-        filters={filters}
-        activeFilter={activeFilter}
-        onFilterChange={handleFilterChange}
-        links={socialLinks}
-        tools={tools}
-        lists={lists}
-      />
-
-      {/* Main content */}
-      <div className="flex md:h-[75vh]">
-        <Sidebar
+      {/* Mobile navigation - only show for blog */}
+      {!isCV && (
+        <MobileNav
           filters={filters}
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
@@ -73,20 +89,36 @@ function Home() {
           tools={tools}
           lists={lists}
         />
-        <main className="flex-1 overflow-y-auto">
-          {loading ? (
-            <div className="text-center py-16 text-content-muted">
-              Loading posts...
-            </div>
-          ) : error ? (
-            <div className="text-center py-16 text-red-500">
-              {error}
-            </div>
-          ) : (
-            <Newsfeed items={posts} activeFilter={activeFilter} singleSlug={slug} />
-          )}
-        </main>
-      </div>
+      )}
+
+      {/* Main content */}
+      {isCV ? (
+        <CVList />
+      ) : (
+        <div className="flex md:h-[75vh]">
+          <Sidebar
+            filters={filters}
+            activeFilter={activeFilter}
+            onFilterChange={handleFilterChange}
+            links={socialLinks}
+            tools={tools}
+            lists={lists}
+          />
+          <main className="flex-1 overflow-y-auto">
+            {loading ? (
+              <div className="text-center py-16 text-content-muted">
+                Loading posts...
+              </div>
+            ) : error ? (
+              <div className="text-center py-16 text-red-500">
+                {error}
+              </div>
+            ) : (
+              <Newsfeed items={posts} activeFilter={activeFilter} singleSlug={slug} />
+            )}
+          </main>
+        </div>
+      )}
     </div>
   )
 }
