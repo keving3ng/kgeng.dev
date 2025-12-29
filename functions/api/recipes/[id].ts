@@ -1,4 +1,4 @@
-import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, isLocalDevelopment, enrichBlocksWithChildren } from '../_shared'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, isLocalDevelopment, enrichBlocksWithChildren, fetchNotionBlockChildren } from '../_shared'
 import { API_CONFIG } from '../config'
 import { NotionPage, getTitle, getTags, getUrl, getNotes } from '../types/notion'
 
