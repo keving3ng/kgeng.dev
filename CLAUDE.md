@@ -46,11 +46,14 @@ Cloudflare Pages Functions handle API requests with shared utilities in `_shared
 - `logger` - Structured logging (info/warn/error)
 - `fetchNotionBlockChildren()` - Paginated Notion block fetching
 - `isAllowedImageUrl()` - Image URL domain validation
+- `enrichBlocksWithChildren()` - Recursively fetch children for blocks with `has_children`
+- `isLocalDevelopment()` - Check if running on localhost
 
 ### Routing
 
 React Router handles navigation in `src/App.tsx`:
 - `/` - Home (main newsfeed)
+- `/cv` - CV/resume page (static data from `src/config/cv.ts`)
 - `/blog` - Blog page
 - `/about` - About page
 - `/tools/*` - Tool pages (e.g., `/tools/splits`, `/tools/recipeer`)
@@ -95,6 +98,7 @@ All styling uses Tailwind CSS utility classes with a semantic color token system
 **Semantic Color Tokens** (defined in `tailwind.config.js`):
 - `bg-surface` / `bg-surface-secondary` - Background colors
 - `text-content` / `text-content-secondary` / `text-content-muted` - Text colors
+- `text-error` - Error text color
 - `border-border` - Border color
 
 **Usage:**
@@ -107,3 +111,53 @@ All styling uses Tailwind CSS utility classes with a semantic color token system
 ```
 
 Light theme uses Solarized colors, dark theme uses gray-950 base.
+
+## AI Maintenance Guidelines
+
+### File Organization
+
+- `functions/api/` - Cloudflare Pages Functions (server-side, use `EventContext`)
+- `functions/api/_shared.ts` - Shared utilities for all API endpoints
+- `functions/api/config.ts` - API configuration constants
+- `functions/api/types/notion.ts` - Notion API type definitions
+- `src/services/` - Client-side API wrappers (throw on error)
+- `src/hooks/` - React hooks (handle side effects)
+- `src/config/` - Static configuration (navigation, cv, themes, constants)
+- `src/components/` - React components (no direct API calls)
+
+### Implicit Patterns
+
+- Filter state `null` means "All Posts" (not empty string)
+- Post/recipe content is lazy-loaded on expand
+- Image proxy caches to R2, API responses cache via Cache API
+- All user-facing text is lowercase (apply `.toLowerCase()`)
+
+### Notion Database Schema
+
+**Posts:** Title, Slug, Tags (multi-select), Date, Published (checkbox)
+**Recipes:** Recipe Name, Link, Notes, Tags
+
+### When Adding New API Endpoints
+
+1. Add types to `functions/api/types/notion.ts`
+2. Use helpers from `_shared.ts` for CORS, rate limiting, logging
+3. Follow existing caching pattern (skip in dev, use Cache API in prod)
+4. Add endpoint to CLAUDE.md documentation
+
+### When Adding New Pages
+
+1. Add route to `src/App.tsx`
+2. If page has filters, use `usePostFilters` hook
+3. Use semantic color tokens (never hardcode colors)
+4. Update CLAUDE.md routing section
+
+### Configuration Constants
+
+**API Layer** (`functions/api/config.ts`):
+- Cache TTLs, rate limits, Notion API version
+
+**Client** (`src/config/constants.ts`):
+- Dev refresh interval, date formatting, timeouts
+
+**Allowed Origins** (`functions/api/_shared.ts`):
+- kgeng.dev, www.kgeng.dev, localhost:8788, localhost:5173
