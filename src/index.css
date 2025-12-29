@@ -17,6 +17,7 @@
     --color-content-secondary: #586e75;
     --color-content-muted: #657b83;
     --color-border: #eee8d5;
+    --color-error: #dc2626;
   }
 
   /* Dark theme */
@@ -27,6 +28,7 @@
     --color-content-secondary: #9ca3af;
     --color-content-muted: #6b7280;
     --color-border: #1f2937;
+    --color-error: #ef4444;
   }
 
   body {

@@ -29,7 +29,7 @@ function PostContent({ slug }: { slug: string }) {
 
   if (error) {
     return (
-      <div className="text-red-500 text-sm">{error}</div>
+      <div className="text-error text-sm">{error}</div>
     )
   }
 

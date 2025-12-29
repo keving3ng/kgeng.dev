@@ -21,7 +21,7 @@ function RecipeContent({ id }: { id: string }) {
   }
 
   if (error) {
-    return <div className="text-red-500 text-sm">{error}</div>
+    return <div className="text-error text-sm">{error}</div>
   }
 
   if (!recipe || !recipe.blocks || recipe.blocks.length === 0) {
@@ -106,7 +106,7 @@ function Recipes() {
             loading recipes...
           </p>
         ) : error ? (
-          <p className="text-sm text-red-500">{error}</p>
+          <p className="text-sm text-error">{error}</p>
         ) : filteredRecipes.length === 0 ? (
           <p className="text-sm text-content-muted italic">
             {activeTag ? `no recipes tagged "${activeTag}"` : 'no recipes yet...'}

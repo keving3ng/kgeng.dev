@@ -21,6 +21,9 @@ export default {
         border: {
           DEFAULT: 'var(--color-border)',
         },
+        error: {
+          DEFAULT: 'var(--color-error)',
+        },
       },
     },
   },

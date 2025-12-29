@@ -103,7 +103,7 @@ function Home() {
                 Loading posts...
               </div>
             ) : error ? (
-              <div className="text-center py-16 text-red-500">
+              <div className="text-center py-16 text-error">
                 {error}
               </div>
             ) : (
