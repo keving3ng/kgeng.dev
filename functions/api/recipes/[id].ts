@@ -1,18 +1,17 @@
-import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, fetchNotionBlockChildren } from '../_shared'
-import { NotionPage, NotionBlock, getTitle, getTags, getUrl, getNotes } from '../types/notion'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, isLocalDevelopment, enrichBlocksWithChildren } from '../_shared'
+import { API_CONFIG } from '../config'
+import { NotionPage, getTitle, getTags, getUrl, getNotes } from '../types/notion'
 
 interface Env {
   NOTION_API_KEY: string
   NOTION_RECIPES_DATABASE_ID: string
 }
 
-const CACHE_TTL = 3600 // 1 hour
-
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { NOTION_API_KEY, NOTION_RECIPES_DATABASE_ID } = context.env
   const id = context.params.id as string
   const url = new URL(context.request.url)
-  const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+  const isLocalDev = isLocalDevelopment(url)
   const requestOrigin = context.request.headers.get('Origin')
   const corsHeaders = getCorsHeaders(requestOrigin)
 
@@ -47,7 +46,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${NOTION_API_KEY}`,
-          'Notion-Version': '2022-06-28',
+          'Notion-Version': API_CONFIG.NOTION_API_VERSION,
         },
       }
     )
@@ -79,32 +78,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return errorResponse(500, 'Failed to fetch content', corsHeaders)
     }
 
-    // Helper to fetch children for nested blocks
-    const fetchAllChildren = async (blockId: string) => {
-      return fetchNotionBlockChildren({
-        blockId,
-        apiKey: NOTION_API_KEY,
-        onError: (status, detail) => {
-          logger.warn('Failed to fetch block children', { endpoint: 'recipes/id', status, blockId, detail })
-        },
-      })
-    }
-
-    // Recursively fetch children for ALL blocks that have them
-    const enrichBlocksWithChildren = async (blocks: NotionBlock[]): Promise<NotionBlock[]> => {
-      return Promise.all(
-        blocks.map(async (block) => {
-          if (block.has_children) {
-            const children = await fetchAllChildren(block.id)
-            const enrichedChildren = await enrichBlocksWithChildren(children)
-            return { ...block, children: enrichedChildren }
-          }
-          return block
-        })
-      )
-    }
-
-    const enrichedBlocks = await enrichBlocksWithChildren(allBlocks)
+    // Recursively fetch children for all blocks
+    const enrichedBlocks = await enrichBlocksWithChildren(allBlocks, {
+      apiKey: NOTION_API_KEY,
+      onError: (status, blockId, detail) => {
+        logger.warn('Failed to fetch block children', { endpoint: 'recipes/id', status, blockId, detail })
+      },
+    })
 
     const recipe = {
       id: page.id,
@@ -119,7 +99,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       headers: {
         'Content-Type': 'application/json',
         ...corsHeaders,
-        'Cache-Control': isLocalDev ? 'no-store' : `public, max-age=${CACHE_TTL}`,
+        'Cache-Control': isLocalDev ? 'no-store' : `public, max-age=${API_CONFIG.CACHE_TTL.DETAIL}`,
       },
     })
 

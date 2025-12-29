@@ -1,12 +1,11 @@
-import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger } from './_shared'
+import { getCorsHeaders, errorResponse, checkRateLimit, rateLimitResponse, logger, isLocalDevelopment } from './_shared'
+import { API_CONFIG } from './config'
 import { NotionDatabaseQueryResponse, getTitle, getSlug, getTags, getDate } from './types/notion'
 
 interface Env {
   NOTION_API_KEY: string
   NOTION_DATABASE_ID: string
 }
-
-const CACHE_TTL = 300 // 5 minutes
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { NOTION_API_KEY, NOTION_DATABASE_ID } = context.env
@@ -18,7 +17,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const url = new URL(context.request.url)
-  const isLocalDev = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+  const isLocalDev = isLocalDevelopment(url)
 
   // Rate limiting (skip in local development)
   if (!isLocalDev) {
@@ -46,7 +45,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${NOTION_API_KEY}`,
-          'Notion-Version': '2022-06-28',
+          'Notion-Version': API_CONFIG.NOTION_API_VERSION,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -79,7 +78,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       headers: {
         'Content-Type': 'application/json',
         ...corsHeaders,
-        'Cache-Control': isLocalDev ? 'no-store' : `public, max-age=${CACHE_TTL}`,
+        'Cache-Control': isLocalDev ? 'no-store' : `public, max-age=${API_CONFIG.CACHE_TTL.LIST}`,
       },
     })
 

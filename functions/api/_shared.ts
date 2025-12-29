@@ -1,5 +1,8 @@
 // Shared utilities for API security
 
+import { API_CONFIG } from './config'
+import { NotionBlock } from './types/notion'
+
 /**
  * Structured logger for consistent log formatting
  */
@@ -39,6 +42,13 @@ const ALLOWED_ORIGINS = [
   'http://localhost:8788',
   'http://127.0.0.1:8788',
 ]
+
+/**
+ * Check if request is from local development environment
+ */
+export function isLocalDevelopment(url: URL): boolean {
+  return url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+}
 
 /**
  * Get CORS headers with origin validation
@@ -99,11 +109,11 @@ export function errorResponse(
 }
 
 /**
- * Rate limiting configuration
+ * Rate limiting configuration (from centralized config)
  */
 const RATE_LIMIT = {
-  maxRequests: 60,      // requests per window
-  windowSeconds: 60,    // 1 minute window
+  maxRequests: API_CONFIG.RATE_LIMIT.MAX_REQUESTS,
+  windowSeconds: API_CONFIG.RATE_LIMIT.WINDOW_SECONDS,
 }
 
 /**
@@ -194,13 +204,13 @@ export async function fetchNotionBlockChildren<T = unknown>(
 
   do {
     const url = cursor
-      ? `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100&start_cursor=${cursor}`
-      : `https://api.notion.com/v1/blocks/${blockId}/children?page_size=100`
+      ? `https://api.notion.com/v1/blocks/${blockId}/children?page_size=${API_CONFIG.NOTION_PAGE_SIZE}&start_cursor=${cursor}`
+      : `https://api.notion.com/v1/blocks/${blockId}/children?page_size=${API_CONFIG.NOTION_PAGE_SIZE}`
 
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        'Notion-Version': '2022-06-28',
+        'Notion-Version': API_CONFIG.NOTION_API_VERSION,
       },
     })
 
@@ -216,4 +226,40 @@ export async function fetchNotionBlockChildren<T = unknown>(
   } while (cursor)
 
   return allResults
+}
+
+/**
+ * Options for enriching blocks with children
+ */
+interface EnrichBlocksOptions {
+  apiKey: string
+  onError?: (status: number, blockId: string, error: string) => void
+}
+
+/**
+ * Recursively fetch and attach children for all blocks that have them.
+ * This is used by detail endpoints (posts/[slug], recipes/[id]).
+ */
+export async function enrichBlocksWithChildren(
+  blocks: NotionBlock[],
+  options: EnrichBlocksOptions
+): Promise<NotionBlock[]> {
+  const { apiKey, onError } = options
+
+  return Promise.all(
+    blocks.map(async (block) => {
+      if (block.has_children) {
+        const children = await fetchNotionBlockChildren<NotionBlock>({
+          blockId: block.id,
+          apiKey,
+          onError: (status, detail) => {
+            onError?.(status, block.id, detail)
+          },
+        })
+        const enrichedChildren = await enrichBlocksWithChildren(children, options)
+        return { ...block, children: enrichedChildren }
+      }
+      return block
+    })
+  )
 }
