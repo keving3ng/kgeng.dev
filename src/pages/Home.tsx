@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import CVList from '../components/CVList'
 import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
+import { usePostFilters } from '../hooks/usePostFilters'
 import { socialLinks, tools, lists } from '../config/navigation'
 
 function Home() {
@@ -15,15 +16,7 @@ function Home() {
   const { posts, loading, error } = usePosts()
 
   const isCV = location.pathname === '/cv'
-
-  // Derive filters from post tags
-  const filters = useMemo(() => {
-    const tagSet = new Set<string>()
-    posts.forEach((post) => {
-      post.tags.forEach((tag) => tagSet.add(tag))
-    })
-    return ['All Posts', ...Array.from(tagSet).sort()]
-  }, [posts])
+  const filters = usePostFilters(posts)
 
   const handleFilterChange = (filter: string | null) => {
     // If viewing a single post, navigate back to home

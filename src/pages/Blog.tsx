@@ -1,22 +1,15 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
+import { usePostFilters } from '../hooks/usePostFilters'
 import { socialLinks, tools, lists } from '../config/navigation'
 
 function Blog() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const { posts, loading, error } = usePosts()
-
-  // Derive filters from post tags
-  const filters = useMemo(() => {
-    const tagSet = new Set<string>()
-    posts.forEach((post) => {
-      post.tags.forEach((tag) => tagSet.add(tag))
-    })
-    return ['All Posts', ...Array.from(tagSet).sort()]
-  }, [posts])
+  const filters = usePostFilters(posts)
 
   const handleFilterChange = (filter: string | null) => {
     setActiveFilter(filter === 'All Posts' ? null : filter)

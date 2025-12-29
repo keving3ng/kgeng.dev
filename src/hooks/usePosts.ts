@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { Post, PostWithContent } from '../types/post'
 import { getPosts, getPost } from '../services/posts'
-
-const DEV_REFRESH_INTERVAL = 30000 // 30 seconds
+import { DEV_REFRESH_INTERVAL } from '../config/constants'
 
 export function usePosts() {
   const [posts, setPosts] = useState<Post[]>([])

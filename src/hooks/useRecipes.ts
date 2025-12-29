@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { Recipe } from '../services/recipes'
 import { getRecipes } from '../services/recipes'
-
-const DEV_REFRESH_INTERVAL = 30000 // 30 seconds
+import { DEV_REFRESH_INTERVAL } from '../config/constants'
 
 export function useRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
