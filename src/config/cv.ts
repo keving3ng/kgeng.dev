@@ -40,8 +40,15 @@ export const experiences: Experience[] = [
   {
     company: 'RBC',
     role: 'Student Developer',
-    startDate: 'May 2020',
+    startDate: 'May 2021',
     endDate: 'Aug 2021',
+    logo: 'https://asset.brandfetch.io/idVfYwcuQa/id-2SMQL1v.svg',
+  },
+  {
+    company: 'RBC',
+    role: 'Student Developer',
+    startDate: 'May 2020',
+    endDate: 'Aug 2020',
     logo: 'https://asset.brandfetch.io/idVfYwcuQa/id-2SMQL1v.svg',
   },
   {
