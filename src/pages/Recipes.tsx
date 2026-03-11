@@ -35,7 +35,7 @@ function RecipeContent({ id }: { id: string }) {
 
 function Recipes() {
   const { recipes, loading, error } = useRecipes()
-  const [activeTag, setActiveTag] = useState<string | null>(null)
+  const [activeTags, setActiveTags] = useState<string[]>([])
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
   const toggleItem = (id: string) => {
@@ -62,9 +62,11 @@ function Recipes() {
   // Sort and filter recipes
   const filteredRecipes = useMemo(() => {
     const sorted = [...recipes].sort((a, b) => a.name.localeCompare(b.name))
-    if (!activeTag) return sorted
-    return sorted.filter((recipe) => recipe.tags.includes(activeTag))
-  }, [recipes, activeTag])
+    if (activeTags.length === 0) return sorted
+    return sorted.filter((recipe) =>
+      activeTags.every((tag) => recipe.tags.includes(tag))
+    )
+  }, [recipes, activeTags])
 
   return (
     <div className="min-h-screen bg-surface py-8 px-4">
@@ -75,9 +77,9 @@ function Recipes() {
         {allTags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
             <button
-              onClick={() => setActiveTag(null)}
+              onClick={() => setActiveTags([])}
               className={`text-sm px-3 py-1 rounded-full transition-colors ${
-                activeTag === null
+                activeTags.length === 0
                   ? 'bg-content text-surface'
                   : 'bg-surface-secondary text-content-secondary hover:bg-border'
               }`}
@@ -87,9 +89,15 @@ function Recipes() {
             {allTags.map((tag) => (
               <button
                 key={tag}
-                onClick={() => setActiveTag(tag)}
+                onClick={() =>
+                  setActiveTags((prev) =>
+                    prev.includes(tag)
+                      ? prev.filter((existing) => existing !== tag)
+                      : [...prev, tag]
+                  )
+                }
                 className={`text-sm px-3 py-1 rounded-full transition-colors ${
-                  activeTag === tag
+                  activeTags.includes(tag)
                     ? 'bg-content text-surface'
                     : 'bg-surface-secondary text-content-secondary hover:bg-border'
                 }`}
@@ -109,7 +117,9 @@ function Recipes() {
           <p className="text-sm text-error">{error}</p>
         ) : filteredRecipes.length === 0 ? (
           <p className="text-sm text-content-muted italic">
-            {activeTag ? `no recipes tagged "${activeTag}"` : 'no recipes yet...'}
+            {activeTags.length > 0
+              ? `no recipes tagged "${activeTags.map((tag) => tag.toLowerCase()).join(', ')}"`
+              : 'no recipes yet...'}
           </p>
         ) : (
           <div className="space-y-4">

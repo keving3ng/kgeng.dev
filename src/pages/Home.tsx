@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
@@ -8,15 +8,60 @@ import { usePosts } from '../hooks/usePosts'
 import { usePostFilters } from '../hooks/usePostFilters'
 import { socialLinks, tools, lists } from '../config/navigation'
 
+const DISPLAY_NAME = 'kevin geng'
+const DISPLAY_CHARS = DISPLAY_NAME.split('')
+
 function Home() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const location = useLocation()
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const [activeCharIndex, setActiveCharIndex] = useState<number>(-1)
+  const timeoutsRef = useRef<Array<ReturnType<typeof setTimeout>>>([])
   const { posts, loading, error } = usePosts()
 
   const isCV = location.pathname === '/cv'
   const filters = usePostFilters(posts)
+
+  useEffect(() => {
+    const media = window.matchMedia?.('(prefers-reduced-motion: reduce)')
+    if (media?.matches) return
+
+    const STEP_MS = 260
+    const WAVE_EVERY_MS = 4000
+
+    const clearWaveTimeouts = () => {
+      for (const t of timeoutsRef.current) clearTimeout(t)
+      timeoutsRef.current = []
+    }
+
+    const runWave = () => {
+      clearWaveTimeouts()
+      setActiveCharIndex(-1)
+
+      let i = 0
+      const tick = () => {
+        setActiveCharIndex(i)
+        i += 1
+        if (i < DISPLAY_CHARS.length) {
+          timeoutsRef.current.push(setTimeout(tick, STEP_MS))
+        } else {
+          timeoutsRef.current.push(setTimeout(() => setActiveCharIndex(-1), STEP_MS))
+        }
+      }
+
+      // small reset gap so index 0 always retriggers
+      timeoutsRef.current.push(setTimeout(tick, 50))
+    }
+
+    runWave()
+    const interval = setInterval(runWave, WAVE_EVERY_MS)
+
+    return () => {
+      clearInterval(interval)
+      clearWaveTimeouts()
+    }
+  }, [])
 
   const handleFilterChange = (filter: string | null) => {
     // If viewing a single post, navigate back to home
@@ -32,7 +77,22 @@ function Home() {
       <header className="mb-8 px-2 md:px-0 flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-medium text-content">
-            kevin geng
+            <span aria-label={DISPLAY_NAME}>
+              {DISPLAY_CHARS.map((char, i) => (
+                <span
+                  key={i}
+                  aria-hidden="true"
+                  className="name-ripple-char"
+                  style={
+                    activeCharIndex === i
+                      ? { animation: 'name-pop 260ms cubic-bezier(0.2, 0.8, 0.2, 1)' }
+                      : undefined
+                  }
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+            </span>
           </h1>
           <p className="text-sm text-content-muted mt-1">
             frontend @{' '}
