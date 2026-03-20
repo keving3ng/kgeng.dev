@@ -27,8 +27,8 @@ function Home() {
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     if (media?.matches) return
 
-    const STEP_MS = 260
-    const WAVE_EVERY_MS = 4000
+    const STEP_MS = 280
+    const WAVE_EVERY_MS = 11000
 
     const clearWaveTimeouts = () => {
       for (const t of timeoutsRef.current) clearTimeout(t)
@@ -85,7 +85,7 @@ function Home() {
                   className="name-ripple-char"
                   style={
                     activeCharIndex === i
-                      ? { animation: 'name-pop 260ms cubic-bezier(0.2, 0.8, 0.2, 1)' }
+                      ? { animation: 'name-pop 280ms cubic-bezier(0.2, 0.8, 0.2, 1)' }
                       : undefined
                   }
                 >
