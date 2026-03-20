@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import Sidebar, { MobileNav } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
@@ -16,8 +16,8 @@ function Home() {
   const navigate = useNavigate()
   const location = useLocation()
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
-  const [activeCharIndex, setActiveCharIndex] = useState<number>(-1)
-  const timeoutsRef = useRef<Array<ReturnType<typeof setTimeout>>>([])
+  const [waveTick, setWaveTick] = useState(0)
+  const [nameMotionEnabled, setNameMotionEnabled] = useState(false)
   const { posts, loading, error } = usePosts()
 
   const isCV = location.pathname === '/cv'
@@ -27,40 +27,15 @@ function Home() {
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     if (media?.matches) return
 
-    const STEP_MS = 280
+    setNameMotionEnabled(true)
+
     const WAVE_EVERY_MS = 11000
-
-    const clearWaveTimeouts = () => {
-      for (const t of timeoutsRef.current) clearTimeout(t)
-      timeoutsRef.current = []
-    }
-
-    const runWave = () => {
-      clearWaveTimeouts()
-      setActiveCharIndex(-1)
-
-      let i = 0
-      const tick = () => {
-        setActiveCharIndex(i)
-        i += 1
-        if (i < DISPLAY_CHARS.length) {
-          timeoutsRef.current.push(setTimeout(tick, STEP_MS))
-        } else {
-          timeoutsRef.current.push(setTimeout(() => setActiveCharIndex(-1), STEP_MS))
-        }
-      }
-
-      // small reset gap so index 0 always retriggers
-      timeoutsRef.current.push(setTimeout(tick, 50))
-    }
+    const runWave = () => setWaveTick((t) => t + 1)
 
     runWave()
     const interval = setInterval(runWave, WAVE_EVERY_MS)
 
-    return () => {
-      clearInterval(interval)
-      clearWaveTimeouts()
-    }
+    return () => clearInterval(interval)
   }, [])
 
   const handleFilterChange = (filter: string | null) => {
@@ -80,12 +55,14 @@ function Home() {
             <span aria-label={DISPLAY_NAME}>
               {DISPLAY_CHARS.map((char, i) => (
                 <span
-                  key={i}
+                  key={`${waveTick}-${i}`}
                   aria-hidden="true"
                   className="name-ripple-char"
                   style={
-                    activeCharIndex === i
-                      ? { animation: 'name-pop 280ms cubic-bezier(0.2, 0.8, 0.2, 1)' }
+                    nameMotionEnabled
+                      ? {
+                          animation: `name-pop 400ms cubic-bezier(0.4, 0, 0.2, 1) ${i * 48}ms both`,
+                        }
                       : undefined
                   }
                 >
