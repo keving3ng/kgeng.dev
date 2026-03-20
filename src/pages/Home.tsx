@@ -148,7 +148,7 @@ function Home() {
       {isCV ? (
         <CVList />
       ) : (
-        <div className="flex md:h-[75vh]">
+        <div className="flex min-h-0 md:h-[75vh]">
           <Sidebar
             filters={filters}
             activeFilter={activeFilter}
@@ -157,7 +157,7 @@ function Home() {
             tools={tools}
             lists={lists}
           />
-          <main className="flex-1 overflow-y-auto">
+          <main className="min-h-0 flex-1 overflow-y-auto">
             {loading ? (
               <div className="text-center py-16 text-content-muted">
                 Loading posts...
