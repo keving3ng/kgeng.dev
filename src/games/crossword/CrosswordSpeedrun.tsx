@@ -10,7 +10,7 @@ import {
   type CrosswordScore,
 } from './highScores'
 import { buildSolutionGrid, deriveClues } from './validatePuzzles'
-import { useGameTimer } from './useGameTimer'
+import { useGameTimer } from '../useGameTimer'
 
 const SIZE = 4
 

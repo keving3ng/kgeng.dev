@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import WelcomeGame from './WelcomeGame'
 import CrosswordSpeedrun from './crossword/CrosswordSpeedrun'
+import QuickRun from './quick-run/QuickRun'
 
 /**
  * Add new games here: create a component under `src/games/`, import it, and append
@@ -30,6 +31,13 @@ export const GAME_LIST: GameDefinition[] = [
     blurb: '4×4 word square · hints · local bests',
     glyph: '▦',
     Component: CrosswordSpeedrun,
+  },
+  {
+    slug: 'quick-run',
+    title: 'quick run',
+    blurb: 'maze path from memory · arrow keys · timer',
+    glyph: '◎',
+    Component: QuickRun,
   },
 ]
 
