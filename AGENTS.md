@@ -1,163 +1,192 @@
 # AGENTS.md
 
-This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
+**Canonical project context for AI coding agents** (Cursor, Claude Code, Codex, etc.). Prefer reading this file over inferring conventions from scattered files.
 
-## Commands
+---
+
+## 1. Verify before you finish
+
+After substantive edits:
 
 ```bash
-npm run dev      # Start full stack dev server (localhost:8788)
-npm run build    # TypeScript check + production build
-npm run lint     # ESLint with zero warnings policy
-npm run preview  # Preview production build with Functions
+npm run check
 ```
 
-## Architecture
+(`check` runs **build** → **lint** → **test`.)
 
-Personal website/blog built with React + TypeScript + Vite + Tailwind CSS, deployed on Cloudflare Pages.
+- **Build** runs `tsc && vite build` (typecheck + production bundle).
+- **Lint** uses ESLint with **zero warnings** (`--max-warnings 0`). Fix or remove unused disables.
+- **Test** runs Vitest once (`vitest run`); use `npm run test:watch` while iterating.
 
-### Content Management
+---
 
-Posts are managed in Notion and fetched via the Notion API:
-- **Database schema**: Title, Slug, Tags (multi-select), Date, Published (checkbox)
-- **API proxy**: Cloudflare Pages Functions in `functions/api/`
-- **Client service**: `src/services/posts.ts` fetches from `/api/posts`
+## 2. Non‑negotiables
 
-### API Layer (`functions/api/`)
+| Rule | Detail |
+|------|--------|
+| Colors | Tailwind **semantic tokens** only (`bg-surface`, `text-content`, `border-border`, …). No `bg-white dark:bg-…` style hardcoding. |
+| Copy | User-facing strings **lowercase** in UI (`.toLowerCase()` where appropriate). |
+| API surface | New HTTP behavior → Cloudflare Pages Functions under `functions/api/`, reuse `_shared.ts` (CORS, rate limit, logging). |
+| Client API | Call `/api/…` via `src/services/` wrappers; components do not embed `fetch` to Notion. |
 
-Cloudflare Pages Functions handle API requests with shared utilities in `_shared.ts`:
+---
 
-**Endpoints:**
-- `GET /api/posts` - List all published posts
-- `GET /api/posts/[slug]` - Get single post with Notion blocks
-- `GET /api/recipes` - List recipes from Notion
-- `GET /api/image/[blockId]` - Image proxy with R2 caching
+## 3. Commands
 
-**Security & Features:**
-- **CORS**: Restricted to allowed origins (kgeng.dev, localhost)
-- **Rate limiting**: 60 requests/minute per IP via Cache API
-- **Image proxy validation**: Whitelist of allowed domains (Notion S3, Unsplash)
-- **Error sanitization**: Generic messages to clients, detailed logs server-side
-- **Structured logging**: JSON-formatted logs with timestamps and context
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Full stack: Vite + Wrangler Pages dev (**localhost:8788**). |
+| `npm run check` | **build** + **lint** + **test** — run this before finishing substantive work. |
+| `npm run build` | TypeScript + Vite production build. |
+| `npm run lint` | ESLint, zero warnings. |
+| `npm run test` | Vitest, single run (CI-style). |
+| `npm run test:watch` | Vitest watch mode. |
+| `npm run preview` | Preview production `dist` with Wrangler Pages. |
 
-**Shared utilities** (`_shared.ts`):
-- `getCorsHeaders()` - Origin-validated CORS headers
-- `errorResponse()` - Sanitized JSON error responses
-- `checkRateLimit()` - IP-based rate limiting
-- `logger` - Structured logging (info/warn/error)
-- `fetchNotionBlockChildren()` - Paginated Notion block fetching
-- `isAllowedImageUrl()` - Image URL domain validation
-- `enrichBlocksWithChildren()` - Recursively fetch children for blocks with `has_children`
-- `isLocalDevelopment()` - Check if running on localhost
+**Local secrets:** copy `.dev.vars.example` → `.dev.vars` (`NOTION_API_KEY`, `NOTION_DATABASE_ID`, `NOTION_RECIPES_DATABASE_ID`).
 
-### Routing
+**CI:** `.github/workflows/ci.yml` runs **`npm run check`** on pushes and pull requests to **`main`**.
 
-React Router handles navigation in `src/App.tsx`:
-- `/` - Home (main newsfeed)
-- `/cv` - CV/resume page (static data from `src/config/cv.ts`)
-- `/blog` - Blog page
-- `/about` - About page
-- `/tools/*` - Tool pages (e.g., `/tools/splits`, `/tools/recipeer`)
-- `/picks` - Recommendations list (static)
-- `/recipes` - Recipe list (from Notion)
+---
 
-### Layout Structure
+## 4. Tests (Vitest)
 
-The site uses a centered layout with a sidebar + newsfeed pattern:
-- `Layout.tsx` - Outer container, centers content horizontally/vertically with max-width
-- `Sidebar.tsx` - Left sidebar with filters (tags), tools, and external links
-- `Newsfeed.tsx` - Scrollable feed of collapsible articles, fetches content on expand
-- `ErrorBoundary.tsx` - Catches React errors with fallback UI and retry button
+- **Config:** `vite.config.ts` (`test` block). **Discovery:** `src/**/*.test.{ts,tsx}`.
+- **Placement:** Co-locate tests beside the module under test (e.g. `paths.test.ts` next to `paths.ts`) so agents find specs next to implementation.
+- **Imports:** Use `import { describe, it, expect } from 'vitest'` (no global test APIs—ESLint stays simple).
+- **Environment:** Default is **`node`** (fast, no DOM). For components or DOM-dependent hooks, put `// @vitest-environment jsdom` at the **top** of that test file and add devDependencies **`jsdom`**, **`@testing-library/react`**, **`@testing-library/jest-dom`** when you introduce the first such test.
+- **Workers / E2E:** Cloudflare Pages Functions and browser E2E are **not** wired yet; add `@cloudflare/vitest-pool-workers` or Playwright only when you need them—don’t block simple unit tests on that.
 
-### Key Patterns
+---
 
-- **Filters**: Defined in page components, passed to Sidebar. "All Posts" maps to `null` filter state.
-- **Collapsible articles**: Newsfeed items expand/collapse via caret toggle, content fetched lazily.
-- **Notion blocks**: `NotionRenderer.tsx` converts Notion API blocks to React components.
-- **Lowercase styling**: Tags and links display lowercase via `.toLowerCase()` in render.
-- **External links**: Marked with ↗ arrow to distinguish from internal navigation.
-- **Centralized config**: Navigation links/tools/lists defined in `src/config/navigation.ts`.
+## 5. Stack & entry points
 
-### Environment Variables
+- **Stack:** React 18 + TypeScript + Vite + Tailwind + React Router; **deploy:** Cloudflare Pages (Functions + optional R2 for image cache).
+- **Client bootstrap:** `src/main.tsx` → `src/App.tsx`.
+- **Routes:** Registered in **`src/config/routes.tsx`** (`appRoutes`); **`src/config/paths.ts`** holds canonical path strings and `postPath(slug)` for permalinks. Do not scatter `"/tools/..."` literals—extend `paths` and wire the route once.
 
-For local development, copy `.dev.vars.example` to `.dev.vars`:
-- `NOTION_API_KEY` - Notion integration token
-- `NOTION_DATABASE_ID` - ID of the posts database
-- `NOTION_RECIPES_DATABASE_ID` - ID of the recipes database
+| Path | Page / behavior |
+|------|-----------------|
+| `/`, `/cv`, `/post/:slug` | `Home` (newsfeed; slug/cv are variants on home) |
+| `/blog` | `Blog` |
+| `/about` | `About` |
+| `/tools/splits`, `/tools/recipeer`, `/tools/boba` | Tool pages |
+| `/picks` | `Picks` |
+| `/projects` | `Projects` |
+| `/recipes` | `Recipes` |
+| `/games` | `Games` (hub + discovery selector) |
+| `/games/:gameSlug` | `GameRoute` → game component from `src/games/registry.ts` |
 
-### Styling
+- **Nav config:** `src/config/navigation.ts` (`tools`, `lists`, social links)—URLs must match `paths.ts`.
 
-All styling uses Tailwind CSS utility classes with a semantic color token system.
+---
 
-**Theme System:**
-- Themes defined in `src/config/themes.ts` (light/dark)
-- CSS variables defined in `src/index.css` for each theme
-- Theme state managed via `ThemeContext` in `src/contexts/ThemeContext.tsx`
-- Toggle component: `ThemeToggle.tsx`
-- Defaults to system preference, no localStorage persistence
+## 6. Task playbooks
 
-**Semantic Color Tokens** (defined in `tailwind.config.js`):
-- `bg-surface` / `bg-surface-secondary` - Background colors
-- `text-content` / `text-content-secondary` / `text-content-muted` - Text colors
-- `text-error` - Error text color
-- `border-border` - Border color
+### Add or change a **client page / route**
 
-**Usage:**
+1. Add/update component under `src/pages/`.
+2. Add the path to **`src/config/paths.ts`** (if it’s a named page, not only a param route).
+3. Append `{ path, Component }` to **`appRoutes`** in **`src/config/routes.tsx`**.
+4. If it should appear in the sidebar, update **`src/config/navigation.ts`** (and any filters if it’s feed-related — see `usePostFilters` on blog-style pages).
+5. Use semantic color tokens and lowercase UI copy.
+6. Run **`npm run check`**.
+
+### Add a **tool** (e.g. under `/tools/...`)
+
+1. New page in `src/pages/`.
+2. Add `paths.tools.*` (or a new segment) in **`paths.ts`**, then register in **`routes.tsx`**.
+3. Entry in **`navigation.ts`** → `tools` array.
+
+### Add a **mini-game** (under `/games/...`)
+
+1. Create a component under **`src/games/`** (see **`WelcomeGame.tsx`**).
+2. Register it in **`src/games/registry.ts`** (`GAME_LIST` — unique **`slug`**).
+3. Hub UI (**`src/pages/Games.tsx`**) reads the registry automatically; routing is **`/games/:gameSlug`** via **`GameRoute`** (already wired in **`routes.tsx`**).
+4. Use **`gamePath(slug)`** from **`paths.ts`** for links; **`PageHeader`** accepts **`backTo={paths.games}`** and **`backLabel="← games"`** on game pages.
+5. Run **`npm run check`**.
+
+### Add or extend **unit tests**
+
+1. Co-locate **`*.test.ts`** / **`*.test.tsx`** next to the module (see §4).
+2. Prefer testing pure functions, derived data, and config over full-page snapshots unless you have jsdom + Testing Library set up.
+3. Run **`npm run test`** (or **`npm run test:watch`**) and finish with **`npm run check`**.
+
+### Add a **Pages Function / API** endpoint
+
+1. Implement under `functions/api/` (follow existing file layout).
+2. Types in `functions/api/types/notion.ts` if Notion-related.
+3. Use `_shared.ts`: `getCorsHeaders`, `checkRateLimit`, `errorResponse`, `logger`; match caching pattern (dev vs Cache API in prod — mirror siblings).
+4. Allowed origins live in `_shared.ts` (kgeng.dev, www, localhost ports).
+5. Document the new route in **this file** (§8).
+6. Run **`npm run check`**.
+
+---
+
+## 7. Architecture (reference)
+
+**Content:** Posts and recipes live in **Notion**; the app talks only to **`/api/*`** (proxied by Cloudflare Pages Functions).
+
+**Layout pattern:** `Layout` + `Sidebar` + `Newsfeed`-style pages. Filters: **`null` = “all posts”** (not `""`). Articles expand for lazy-loaded body content.
+
+**Notion rendering:** `NotionRenderer.tsx` maps API blocks to React.
+
+**Theme:** `ThemeContext` + CSS variables in `src/index.css`; themes in `src/config/themes.ts`. Default follows system preference; no localStorage persistence.
+
+**File map**
+
+| Area | Location |
+|------|----------|
+| Pages Functions | `functions/api/` |
+| Shared API helpers | `functions/api/_shared.ts` |
+| API constants (TTL, limits, Notion version) | `functions/api/config.ts` |
+| Client API wrappers | `src/services/` |
+| Hooks | `src/hooks/` |
+| Static config (nav, cv, themes, paths, routes) | `src/config/` |
+| Mini-games (registry + game components) | `src/games/` |
+| Presentational components | `src/components/` (no direct Notion/API calls) |
+| Unit tests | `src/**/*.test.{ts,tsx}` (Vitest) |
+
+---
+
+## 8. HTTP API (summary)
+
+| Method & path | Role |
+|---------------|------|
+| `GET /api/posts` | List published posts |
+| `GET /api/posts/[slug]` | Single post + Notion blocks |
+| `GET /api/recipes` | Recipes list |
+| `GET /api/image/[blockId]` | Image proxy + R2 cache |
+
+**Cross-cutting:** CORS to allowed origins, rate limit ~60/min/IP, image URL allowlist (Notion S3, Unsplash), sanitized client errors + structured server logs.
+
+**Useful `_shared` exports:** `getCorsHeaders`, `errorResponse`, `checkRateLimit`, `logger`, `fetchNotionBlockChildren`, `isAllowedImageUrl`, `enrichBlocksWithChildren`, `isLocalDevelopment`.
+
+---
+
+## 9. Notion schemas
+
+- **Posts:** Title, Slug, Tags (multi-select), Date, Published (checkbox).
+- **Recipes:** Recipe Name, Link, Notes, Tags.
+
+---
+
+## 10. Styling tokens (Tailwind)
+
+Semantic tokens (see `tailwind.config.js`): `bg-surface`, `bg-surface-secondary`, `text-content`, `text-content-secondary`, `text-content-muted`, `text-error`, `border-border`.
+
 ```jsx
-// Correct - use semantic tokens
-<div className="bg-surface text-content border-border">
+// Good
+<div className="bg-surface text-content border-border" />
 
-// Avoid - hardcoded colors with dark: variants
-<div className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+// Avoid
+<div className="bg-white dark:bg-gray-950 …" />
 ```
 
-Light theme uses Solarized colors, dark theme uses gray-950 base.
+Light theme: Solarized-based; dark: gray-950 base.
 
-## AI Maintenance Guidelines
+---
 
-### File Organization
+## 11. Duplication policy
 
-- `functions/api/` - Cloudflare Pages Functions (server-side, use `EventContext`)
-- `functions/api/_shared.ts` - Shared utilities for all API endpoints
-- `functions/api/config.ts` - API configuration constants
-- `functions/api/types/notion.ts` - Notion API type definitions
-- `src/services/` - Client-side API wrappers (throw on error)
-- `src/hooks/` - React hooks (handle side effects)
-- `src/config/` - Static configuration (navigation, cv, themes, constants)
-- `src/components/` - React components (no direct API calls)
-
-### Implicit Patterns
-
-- Filter state `null` means "All Posts" (not empty string)
-- Post/recipe content is lazy-loaded on expand
-- Image proxy caches to R2, API responses cache via Cache API
-- All user-facing text is lowercase (apply `.toLowerCase()`)
-
-### Notion Database Schema
-
-**Posts:** Title, Slug, Tags (multi-select), Date, Published (checkbox)
-**Recipes:** Recipe Name, Link, Notes, Tags
-
-### When Adding New API Endpoints
-
-1. Add types to `functions/api/types/notion.ts`
-2. Use helpers from `_shared.ts` for CORS, rate limiting, logging
-3. Follow existing caching pattern (skip in dev, use Cache API in prod)
-4. Add endpoint to AGENTS.md documentation
-
-### When Adding New Pages
-
-1. Add route to `src/App.tsx`
-2. If page has filters, use `usePostFilters` hook
-3. Use semantic color tokens (never hardcode colors)
-4. Update AGENTS.md routing section
-
-### Configuration Constants
-
-**API Layer** (`functions/api/config.ts`):
-- Cache TTLs, rate limits, Notion API version
-
-**Client** (`src/config/constants.ts`):
-- Dev refresh interval, date formatting, timeouts
-
-**Allowed Origins** (`functions/api/_shared.ts`):
-- kgeng.dev, www.kgeng.dev, localhost:8788, localhost:5173
+**Do not** copy this file into other markdown files. **`CLAUDE.md`** exists only so tools that auto-load it can be pointed at the same rules; it should remain a short pointer to this document.

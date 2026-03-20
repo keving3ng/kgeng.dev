@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Post, PostWithContent } from '../types/post'
 import { getPost } from '../services/posts'
+import { postPath } from '../config/paths'
 import NotionRenderer from './NotionRenderer'
 
 interface NewsfeedProps {
@@ -49,7 +50,7 @@ function CopyLinkButton({ slug }: { slug: string }) {
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation()
-    const url = `${window.location.origin}/post/${slug}`
+    const url = `${window.location.origin}${postPath(slug)}`
     navigator.clipboard.writeText(url)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)

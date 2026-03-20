@@ -1,19 +1,16 @@
 import Sidebar from '../components/Sidebar'
 import ThemeToggle from '../components/ThemeToggle'
+import { socialLinks } from '../config/navigation'
+import { paths } from '../config/paths'
 
-const links = [
-  { label: 'GitHub', url: 'https://github.com/keving3ng' },
-  { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
-  { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
-]
 const tools = [
-  { label: 'splits', url: '/tools/splits' },
-  { label: 'recipeer', url: '/tools/recipeer' },
+  { label: 'splits', url: paths.tools.splits },
+  { label: 'recipeer', url: paths.tools.recipeer },
 ]
 
 const lists = [
-  { label: 'picks', url: '/picks' },
-  { label: 'recipes', url: '/recipes' },
+  { label: 'picks', url: paths.picks },
+  { label: 'recipes', url: paths.recipes },
 ]
 
 function About() {
@@ -27,7 +24,7 @@ function About() {
           filters={[]}
           activeFilter={null}
           onFilterChange={() => {}}
-          links={links}
+          links={socialLinks}
           tools={tools}
           lists={lists}
         />

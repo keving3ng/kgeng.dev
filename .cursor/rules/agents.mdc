@@ -1,0 +1,9 @@
+---
+description: kgeng.dev — handbook location and verify command
+alwaysApply: true
+---
+
+# Project context
+
+- Read **`AGENTS.md`** at the repo root for commands, routing (`src/config/paths.ts`, `src/config/routes.tsx`), API/Notion rules, tests, and task playbooks.
+- After substantive edits, run **`npm run check`** (build + lint + test). Use **`npm run test:watch`** while iterating on tests.

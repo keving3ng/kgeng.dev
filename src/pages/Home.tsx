@@ -7,6 +7,7 @@ import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
 import { usePostFilters } from '../hooks/usePostFilters'
 import { socialLinks, tools, lists } from '../config/navigation'
+import { paths } from '../config/paths'
 
 const DISPLAY_NAME = 'kevin geng'
 const DISPLAY_CHARS = DISPLAY_NAME.split('')
@@ -20,7 +21,7 @@ function Home() {
   const [nameMotionEnabled, setNameMotionEnabled] = useState(false)
   const { posts, loading, error } = usePosts()
 
-  const isCV = location.pathname === '/cv'
+  const isCV = location.pathname === paths.cv
   const filters = usePostFilters(posts)
 
   useEffect(() => {
@@ -41,7 +42,7 @@ function Home() {
   const handleFilterChange = (filter: string | null) => {
     // If viewing a single post, navigate back to home
     if (slug) {
-      navigate('/')
+      navigate(paths.home)
     }
     setActiveFilter(filter === 'All Posts' ? null : filter)
   }
@@ -85,7 +86,7 @@ function Home() {
           </p>
           <div className="flex gap-4 mt-3 text-sm">
             <Link
-              to="/"
+              to={paths.home}
               className={`transition-colors ${
                 !isCV
                   ? 'text-content font-medium'
@@ -95,7 +96,7 @@ function Home() {
               blog
             </Link>
             <Link
-              to="/cv"
+              to={paths.cv}
               className={`transition-colors ${
                 isCV
                   ? 'text-content font-medium'

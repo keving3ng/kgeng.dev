@@ -1,4 +1,6 @@
-// Centralized navigation configuration
+// Centralized navigation configuration (URLs must match `config/paths.ts`)
+
+import { paths } from './paths'
 
 export interface NavLink {
   label: string
@@ -12,12 +14,14 @@ export const socialLinks: NavLink[] = [
 ]
 
 export const tools: NavLink[] = [
-  { label: 'splits', url: '/tools/splits' },
-  { label: 'recipeer', url: '/tools/recipeer' },
+  { label: 'splits', url: paths.tools.splits },
+  { label: 'recipeer', url: paths.tools.recipeer },
+  { label: 'boba', url: paths.tools.boba },
 ]
 
 export const lists: NavLink[] = [
-  { label: 'projects', url: '/projects' },
-  { label: 'picks', url: '/picks' },
-  { label: 'recipes', url: '/recipes' },
+  { label: 'projects', url: paths.projects },
+  { label: 'games', url: paths.games },
+  { label: 'picks', url: paths.picks },
+  { label: 'recipes', url: paths.recipes },
 ]
