@@ -43,9 +43,9 @@ npm run check
 | `npm run test:watch` | Vitest watch mode. |
 | `npm run preview` | Preview production `dist` with Wrangler Pages. |
 
-**Local secrets:** copy `.dev.vars.example` → `.dev.vars` (`NOTION_API_KEY`, `NOTION_DATABASE_ID`, `NOTION_RECIPES_DATABASE_ID`).
+**Local secrets:** add a root **`.dev.vars`** (gitignored) with `NOTION_API_KEY`, `NOTION_DATABASE_ID`, and `NOTION_RECIPES_DATABASE_ID` from your Notion integration — no committed template file.
 
-**CI:** `.github/workflows/ci.yml` runs **`npm run check`** on pushes and pull requests to **`main`**.
+**CI:** `.github/workflows/ci.yml` runs **`npm run check`** on pushes to **`main`**, on pull requests, and via **workflow dispatch** (manual). Concurrency cancels superseded runs on the same PR/branch; the job uses a **15m** timeout and **`contents: read`** permission only.
 
 ---
 
