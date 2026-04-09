@@ -10,7 +10,6 @@ export const paths = {
   tools: {
     splits: '/tools/splits',
     recipeer: '/tools/recipeer',
-    boba: '/tools/boba',
   },
   picks: '/picks',
   projects: '/projects',

@@ -90,7 +90,7 @@ export default function QuickRun() {
   const frenzyLevels = useMemo(() => {
     if (mode !== 'frenzy') return null
     void frenzySeed
-    return Array.from({ length: frenzyMazeCount }, (_, i) => generateFrenzyLevel(i))
+    return Array.from({ length: frenzyMazeCount }, (_, i) => generateFrenzyLevel(i, frenzyMazeCount))
   }, [mode, frenzySeed, frenzyMazeCount])
 
   const levelDef = useMemo((): LevelDefinition => {
@@ -679,7 +679,7 @@ export default function QuickRun() {
 
                 {(runStatus === 'won' || runStatus === 'lost') && (
                   <div
-                    className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-surface/90 px-4 py-6 text-center backdrop-blur-sm pointer-events-none"
+                    className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-surface px-4 py-6 text-center shadow-lg pointer-events-none"
                     role="region"
                     aria-live="polite"
                     aria-label={runStatus === 'won' ? 'run complete' : 'run ended'}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { generateRandomMazeLines } from './generateRandomMaze'
+import { generateFrenzyLevel, generateRandomMazeLines } from './generateRandomMaze'
 import { LEVELS, getParsedLevel } from './levels'
 import { parseLevel, shortestPathCells, shortestPathLength } from './maze'
 
@@ -71,5 +71,36 @@ describe('generateRandomMazeLines', () => {
       const p = parseLevel(lines)
       expect(shortestPathLength(p.wall, p.start, p.goal), `trial ${i}`).not.toBeNull()
     }
+  })
+})
+
+describe('generateFrenzyLevel', () => {
+  it('produces solvable mazes across difficulty range', () => {
+    for (const total of [5, 10, 20] as const) {
+      for (let i = 0; i < total; i++) {
+        const def = generateFrenzyLevel(i, total)
+        const p = parseLevel(def.lines)
+        const dist = shortestPathLength(p.wall, p.start, p.goal)
+        expect(dist, `frenzy ${i + 1}/${total}`).not.toBeNull()
+      }
+    }
+  })
+
+  it('later levels tend to have larger grids', () => {
+    const sizes: number[] = []
+    const TOTAL = 20
+    const TRIALS = 8
+    for (let i = 0; i < TOTAL; i++) {
+      let sum = 0
+      for (let t = 0; t < TRIALS; t++) {
+        const def = generateFrenzyLevel(i, TOTAL)
+        const p = parseLevel(def.lines)
+        sum += p.rows * p.cols
+      }
+      sizes.push(sum / TRIALS)
+    }
+    const earlyAvg = (sizes[0]! + sizes[1]! + sizes[2]!) / 3
+    const lateAvg = (sizes[TOTAL - 3]! + sizes[TOTAL - 2]! + sizes[TOTAL - 1]!) / 3
+    expect(lateAvg).toBeGreaterThan(earlyAvg)
   })
 })

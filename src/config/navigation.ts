@@ -16,7 +16,6 @@ export const socialLinks: NavLink[] = [
 export const tools: NavLink[] = [
   { label: 'splits', url: paths.tools.splits },
   { label: 'recipeer', url: paths.tools.recipeer },
-  { label: 'boba', url: paths.tools.boba },
 ]
 
 export const lists: NavLink[] = [

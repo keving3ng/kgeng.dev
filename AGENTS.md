@@ -70,7 +70,7 @@ npm run check
 | `/`, `/cv`, `/post/:slug` | `Home` (newsfeed; slug/cv are variants on home) |
 | `/blog` | `Blog` |
 | `/about` | `About` |
-| `/tools/splits`, `/tools/recipeer`, `/tools/boba` | Tool pages |
+| `/tools/splits`, `/tools/recipeer` | Tool pages |
 | `/picks` | `Picks` |
 | `/projects` | `Projects` |
 | `/recipes` | `Recipes` |

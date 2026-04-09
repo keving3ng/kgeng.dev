@@ -8,7 +8,7 @@ describe('paths', () => {
 
   it('keeps tool routes under /tools', () => {
     expect(paths.tools.splits).toBe('/tools/splits')
-    expect(paths.tools.boba).toBe('/tools/boba')
+    expect(paths.tools.recipeer).toBe('/tools/recipeer')
   })
 
   it('exposes games hub path', () => {
