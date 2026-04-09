@@ -9,6 +9,7 @@ import Projects from '../pages/Projects'
 import Recipes from '../pages/Recipes'
 import Games from '../pages/Games'
 import GameRoute from '../pages/GameRoute'
+import NotFound from '../pages/NotFound'
 import { paths } from './paths'
 
 export interface AppRoute {
@@ -30,4 +31,6 @@ export const appRoutes: AppRoute[] = [
   { path: paths.recipes, Component: Recipes },
   { path: paths.games, Component: Games },
   { path: '/games/:gameSlug', Component: GameRoute },
+  /** Catch-all; must stay last. */
+  { path: '*', Component: NotFound },
 ]
