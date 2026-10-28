@@ -9,7 +9,6 @@ export interface NavLink {
 
 export const socialLinks: NavLink[] = [
   { label: 'GitHub', url: 'https://github.com/keving3ng' },
-  { label: 'Twitter', url: 'https://twitter.com/keving3ng' },
   { label: 'LinkedIn', url: 'https://linkedin.com/in/keving3ng' },
 ]
 

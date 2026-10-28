@@ -79,5 +79,4 @@ export const contact = {
   email: 'hello@kgeng.dev',
   github: 'https://github.com/keving3ng',
   linkedin: 'https://linkedin.com/in/keving3ng',
-  twitter: 'https://twitter.com/keving3ng',
 }
