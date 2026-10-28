@@ -65,7 +65,7 @@ export default function MobileSiteNav() {
           </div>
           <div className="space-y-5">
             <div className="space-y-1">
-              {[{ label: 'blog', url: paths.home }, { label: 'cv', url: paths.cv }, ...lists].map((link) => (
+              {[{ label: 'blog', url: paths.home }, { label: 'cv', url: paths.cv }, { label: 'projects', url: paths.projects }, ...lists].map((link) => (
                 <Link key={link.url} to={link.url} onClick={closeMenu} className="block py-2 text-sm hover:text-content-secondary">
                   {link.label.toLowerCase()}
                 </Link>

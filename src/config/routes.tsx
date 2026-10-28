@@ -5,7 +5,6 @@ import About from '../pages/About'
 import Splits from '../pages/Splits'
 import Recipeer from '../pages/Recipeer'
 import Picks from '../pages/Picks'
-import Projects from '../pages/Projects'
 import Recipes from '../pages/Recipes'
 import Games from '../pages/Games'
 import GameRoute from '../pages/GameRoute'
@@ -27,7 +26,7 @@ export const appRoutes: AppRoute[] = [
   { path: paths.tools.splits, Component: Splits },
   { path: paths.tools.recipeer, Component: Recipeer },
   { path: paths.picks, Component: Picks },
-  { path: paths.projects, Component: Projects },
+  { path: paths.projects, Component: Home },
   { path: paths.recipes, Component: Recipes },
   { path: paths.games, Component: Games },
   { path: '/games/:gameSlug', Component: GameRoute },

@@ -101,7 +101,7 @@ describe('mobile site navigation', () => {
   it('retains desktop navigation and filters', () => {
     const onFilterChange = vi.fn()
     render(<MemoryRouter><Sidebar filters={['All Posts', 'dev']} activeFilter="dev" onFilterChange={onFilterChange} links={socialLinks} tools={tools} lists={lists} /></MemoryRouter>)
-    expect(screen.getByRole('link', { name: 'projects' })).toHaveAttribute('href', paths.projects)
+    expect(screen.getByRole('link', { name: 'games' })).toHaveAttribute('href', paths.games)
     expect(screen.getByRole('link', { name: 'splits' })).toHaveAttribute('href', paths.tools.splits)
     fireEvent.click(screen.getByRole('button', { name: 'all posts' }))
     expect(onFilterChange).toHaveBeenCalledWith(null)

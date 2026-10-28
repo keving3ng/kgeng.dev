@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import Sidebar, { MobilePostFilters } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import CVList from '../components/CVList'
+import ProjectsList from '../components/ProjectsList'
 import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
 import { usePostFilters } from '../hooks/usePostFilters'
@@ -22,6 +23,8 @@ function Home() {
   const { posts, loading, error } = usePosts()
 
   const isCV = location.pathname === paths.cv
+  const isProjects = location.pathname === paths.projects
+  const isBlog = !isCV && !isProjects
   const filters = usePostFilters(posts)
 
   useEffect(() => {
@@ -88,7 +91,7 @@ function Home() {
             <Link
               to={paths.home}
               className={`transition-colors ${
-                !isCV
+                isBlog
                   ? 'text-content font-medium'
                   : 'text-content-muted hover:text-content-secondary'
               }`}
@@ -105,6 +108,16 @@ function Home() {
             >
               cv
             </Link>
+            <Link
+              to={paths.projects}
+              className={`transition-colors ${
+                isProjects
+                  ? 'text-content font-medium'
+                  : 'text-content-muted hover:text-content-secondary'
+              }`}
+            >
+              projects
+            </Link>
           </div>
         </div>
         <ThemeToggle />
@@ -113,6 +126,8 @@ function Home() {
       {/* Main content */}
       {isCV ? (
         <CVList />
+      ) : isProjects ? (
+        <ProjectsList />
       ) : (
         <div className="flex min-h-0 md:h-[75vh]">
           <Sidebar

@@ -18,7 +18,6 @@ export const tools: NavLink[] = [
 ]
 
 export const lists: NavLink[] = [
-  { label: 'projects', url: paths.projects },
   { label: 'games', url: paths.games },
   { label: 'picks', url: paths.picks },
   { label: 'recipes', url: paths.recipes },
