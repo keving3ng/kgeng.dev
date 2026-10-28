@@ -75,7 +75,7 @@ function Home() {
           <p className="text-sm text-content-muted mt-1">
             frontend @{' '}
             <a
-              href="https://faire.com"
+              href="https://faire.com/careers"
               target="_blank"
               rel="noopener noreferrer"
               className="text-content-secondary hover:text-content transition-colors"
