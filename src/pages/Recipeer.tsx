@@ -423,7 +423,7 @@ function Recipeer() {
         {/* Clear button */}
         <button
           onClick={clearAll}
-          className="text-sm text-content-muted hover:text-content-secondary transition-colors"
+          className="min-h-[44px] inline-flex items-center text-sm text-content-muted hover:text-content-secondary transition-colors"
         >
           clear all
         </button>

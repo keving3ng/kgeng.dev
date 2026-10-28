@@ -38,7 +38,7 @@ export default function MobileSiteNav() {
           dialogRef.current?.showModal()
           setIsOpen(true)
         }}
-        className="rounded border border-border px-3 py-2 text-sm text-content hover:bg-surface-secondary transition-colors"
+        className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded border border-border px-3 py-2 text-sm text-content hover:bg-surface-secondary transition-colors"
       >
         menu
       </button>
@@ -58,7 +58,7 @@ export default function MobileSiteNav() {
             <button
               type="button"
               onClick={closeMenu}
-              className="rounded px-2 py-1 text-sm text-content-muted hover:text-content"
+              className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded px-2 py-1 text-sm text-content-muted hover:text-content"
             >
               close
             </button>
@@ -66,21 +66,21 @@ export default function MobileSiteNav() {
           <div className="space-y-5">
             <div className="space-y-1">
               {[{ label: 'blog', url: paths.home }, { label: 'cv', url: paths.cv }, { label: 'projects', url: paths.projects }, ...lists].map((link) => (
-                <Link key={link.url} to={link.url} onClick={closeMenu} className="block py-2 text-sm hover:text-content-secondary">
+                <Link key={link.url} to={link.url} onClick={closeMenu} className="min-h-[44px] flex items-center py-2 text-sm hover:text-content-secondary">
                   {link.label.toLowerCase()}
                 </Link>
               ))}
             </div>
             <div className="space-y-1 border-t border-border pt-5">
               {tools.map((tool) => (
-                <Link key={tool.url} to={tool.url} onClick={closeMenu} className="block py-2 text-sm hover:text-content-secondary">
+                <Link key={tool.url} to={tool.url} onClick={closeMenu} className="min-h-[44px] flex items-center py-2 text-sm hover:text-content-secondary">
                   {tool.label.toLowerCase()}
                 </Link>
               ))}
             </div>
             <div className="space-y-1 border-t border-border pt-5">
               {socialLinks.map((link) => (
-                <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="block py-2 text-sm text-content-muted hover:text-content-secondary">
+                <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="min-h-[44px] flex items-center py-2 text-sm text-content-muted hover:text-content-secondary">
                   {link.label.toLowerCase()} ↗
                 </a>
               ))}

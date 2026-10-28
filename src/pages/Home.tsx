@@ -90,7 +90,7 @@ function Home() {
           <div className="flex gap-4 mt-3 text-sm">
             <Link
               to={paths.home}
-              className={`transition-colors ${
+              className={`min-h-[44px] inline-flex items-center transition-colors ${
                 isBlog
                   ? 'text-content font-medium'
                   : 'text-content-muted hover:text-content-secondary'
@@ -100,7 +100,7 @@ function Home() {
             </Link>
             <Link
               to={paths.cv}
-              className={`transition-colors ${
+              className={`min-h-[44px] inline-flex items-center transition-colors ${
                 isCV
                   ? 'text-content font-medium'
                   : 'text-content-muted hover:text-content-secondary'
@@ -110,7 +110,7 @@ function Home() {
             </Link>
             <Link
               to={paths.projects}
-              className={`transition-colors ${
+              className={`min-h-[44px] inline-flex items-center transition-colors ${
                 isProjects
                   ? 'text-content font-medium'
                   : 'text-content-muted hover:text-content-secondary'

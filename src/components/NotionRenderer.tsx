@@ -12,7 +12,7 @@ function RichTextRenderer({ richText }: { richText: RichText[] }) {
 
         if (text.annotations.code) {
           content = (
-            <code className="bg-surface-secondary px-1.5 py-0.5 rounded text-sm font-mono">
+            <code className="bg-surface-secondary px-1.5 py-0.5 rounded text-sm font-mono break-words">
               {content}
             </code>
           )
@@ -108,8 +108,8 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
 
     case 'code':
       return (
-        <pre className="bg-surface-secondary p-4 rounded-lg mb-4 overflow-x-auto">
-          <code className="text-sm font-mono">
+        <pre className="bg-surface-secondary p-4 rounded-lg mb-4 overflow-x-auto max-w-full text-xs sm:text-sm">
+          <code className="font-mono">
             <RichTextRenderer richText={block.code.rich_text} />
           </code>
         </pre>
@@ -205,7 +205,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
 
     case 'column_list':
       return (
-        <div className="flex gap-4 mb-4">
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
           {block.children?.map((child) => (
             <BlockRenderer key={child.id} block={child} />
           ))}
@@ -244,7 +244,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
 
 export default function NotionRenderer({ blocks }: NotionRendererProps) {
   return (
-    <div className="notion-content">
+    <div className="notion-content break-words overflow-hidden max-w-full">
       {blocks.map((block) => (
         <BlockRenderer key={block.id} block={block} />
       ))}

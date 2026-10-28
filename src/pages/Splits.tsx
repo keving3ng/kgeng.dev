@@ -248,7 +248,7 @@ function Splits() {
 
           <button
             onClick={addItem}
-            className="text-sm text-content-muted hover:text-content-secondary mb-4 transition-colors"
+            className="min-h-[44px] inline-flex items-center text-sm text-content-muted hover:text-content-secondary mb-4 transition-colors"
           >
             + add item
           </button>
@@ -283,12 +283,12 @@ function Splits() {
                   onChange={(e) => updateItem(item.id, 'cost', e.target.value)}
                   className="w-full text-sm px-2 py-1.5 border border-border rounded bg-surface text-content placeholder-content-muted"
                 />
-                <div className="flex gap-1 flex-wrap">
+                <div className="flex gap-1.5 flex-wrap">
                   {activePeople.map((person) => (
                     <button
                       key={person}
                       onClick={() => togglePerson(item.id, person)}
-                      className={`text-xs px-2 py-1 rounded transition-colors ${
+                      className={`text-xs min-h-[38px] min-w-[38px] md:min-h-[28px] md:min-w-[28px] flex items-center justify-center px-2 py-1 rounded transition-colors ${
                         item.selectedPeople.includes(person)
                           ? 'bg-border text-content'
                           : 'bg-surface-secondary text-content-muted'
@@ -300,7 +300,8 @@ function Splits() {
                 </div>
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="text-content-muted hover:text-content-secondary transition-colors text-lg justify-self-center md:justify-self-start"
+                  aria-label="Remove item"
+                  className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-content-muted hover:text-content-secondary transition-colors text-lg justify-self-center md:justify-self-start"
                 >
                   ×
                 </button>
@@ -480,7 +481,7 @@ function Splits() {
         {/* Clear button */}
         <button
           onClick={clearAll}
-          className="text-sm text-content-muted hover:text-content-secondary transition-colors"
+          className="min-h-[44px] inline-flex items-center text-sm text-content-muted hover:text-content-secondary transition-colors"
         >
           clear all
         </button>

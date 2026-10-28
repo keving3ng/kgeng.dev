@@ -523,7 +523,7 @@ export default function QuickRun() {
                   role="radio"
                   aria-checked={mode === 'normal'}
                   onClick={() => setMode('normal')}
-                  className={`min-w-[4.5rem] flex-1 rounded-md px-2 py-1 text-center font-medium transition-colors ${
+                  className={`min-w-[4.5rem] min-h-[44px] flex-1 inline-flex items-center justify-center rounded-md px-2 py-1 text-center font-medium transition-colors ${
                     mode === 'normal'
                       ? 'bg-surface-secondary text-content shadow-sm'
                       : 'text-content-muted hover:text-content-secondary'
@@ -536,7 +536,7 @@ export default function QuickRun() {
                   role="radio"
                   aria-checked={mode === 'hard'}
                   onClick={() => setMode('hard')}
-                  className={`min-w-[4.5rem] flex-1 rounded-md px-2 py-1 text-center font-medium transition-colors ${
+                  className={`min-w-[4.5rem] min-h-[44px] flex-1 inline-flex items-center justify-center rounded-md px-2 py-1 text-center font-medium transition-colors ${
                     mode === 'hard'
                       ? 'bg-surface-secondary text-content shadow-sm'
                       : 'text-content-muted hover:text-content-secondary'
@@ -549,7 +549,7 @@ export default function QuickRun() {
                   role="radio"
                   aria-checked={mode === 'frenzy'}
                   onClick={() => setMode('frenzy')}
-                  className={`min-w-[4.5rem] flex-1 rounded-md px-2 py-1 text-center font-medium transition-colors ${
+                  className={`min-w-[4.5rem] min-h-[44px] flex-1 inline-flex items-center justify-center rounded-md px-2 py-1 text-center font-medium transition-colors ${
                     mode === 'frenzy'
                       ? 'bg-surface-secondary text-content shadow-sm'
                       : 'text-content-muted hover:text-content-secondary'
@@ -674,6 +674,44 @@ export default function QuickRun() {
                   )
                 })
               )}
+                  </div>
+                </div>
+
+                {/* Mobile on-screen direction controls */}
+                <div className="flex flex-col items-center gap-2 mt-4 sm:hidden" aria-label="mobile directional controls">
+                  <button
+                    type="button"
+                    onClick={() => applyDirection('up')}
+                    aria-label="move up"
+                    className="min-h-[44px] min-w-[44px] rounded-lg border border-border bg-surface flex items-center justify-center text-lg active:bg-surface-secondary shadow-sm"
+                  >
+                    ↑
+                  </button>
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={() => applyDirection('left')}
+                      aria-label="move left"
+                      className="min-h-[44px] min-w-[44px] rounded-lg border border-border bg-surface flex items-center justify-center text-lg active:bg-surface-secondary shadow-sm"
+                    >
+                      ←
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyDirection('down')}
+                      aria-label="move down"
+                      className="min-h-[44px] min-w-[44px] rounded-lg border border-border bg-surface flex items-center justify-center text-lg active:bg-surface-secondary shadow-sm"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyDirection('right')}
+                      aria-label="move right"
+                      className="min-h-[44px] min-w-[44px] rounded-lg border border-border bg-surface flex items-center justify-center text-lg active:bg-surface-secondary shadow-sm"
+                    >
+                      →
+                    </button>
                   </div>
                 </div>
 

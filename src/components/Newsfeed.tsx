@@ -59,8 +59,9 @@ function CopyLinkButton({ slug }: { slug: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="text-content-muted/50 hover:text-content-muted transition-colors text-xs"
+      className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-2 rounded -m-2 text-content-muted/50 hover:text-content-muted transition-colors text-xs"
       title="Copy link"
+      aria-label="Copy link"
     >
       {copied ? '✓' : '#'}
     </button>

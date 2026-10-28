@@ -316,14 +316,14 @@ export default function CrosswordSpeedrun() {
               <button
                 type="button"
                 onClick={newPuzzle}
-                className="rounded-full border border-border bg-surface-secondary px-4 py-2 text-sm text-content-secondary transition-colors hover:border-content-muted/40 hover:text-content"
+                className="min-h-[44px] inline-flex items-center justify-center rounded-full border border-border bg-surface-secondary px-4 py-2 text-sm text-content-secondary transition-colors hover:border-content-muted/40 hover:text-content"
               >
                 new puzzle
               </button>
               <button
                 type="button"
                 onClick={resetRun}
-                className="rounded-full border border-dashed border-border px-4 py-2 text-sm text-content-muted transition-colors hover:border-content-muted/50 hover:text-content-secondary"
+                className="min-h-[44px] inline-flex items-center justify-center rounded-full border border-dashed border-border px-4 py-2 text-sm text-content-muted transition-colors hover:border-content-muted/50 hover:text-content-secondary"
               >
                 reset run
               </button>

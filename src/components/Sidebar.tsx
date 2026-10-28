@@ -60,16 +60,16 @@ export function MobilePostFilters({
           onClick={() => setIsOpen((open) => !open)}
           aria-expanded={isOpen}
           aria-controls={menuId}
-          className="min-h-10 px-2 text-xs text-content-muted hover:text-content-secondary transition-colors rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-content-muted"
+          className="min-h-[44px] min-w-[44px] inline-flex items-center px-3 text-xs text-content-muted hover:text-content-secondary transition-colors rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-content-muted"
         >
-          filter: {activeLabel} <span aria-hidden="true">⌄</span>
+          filter: {activeLabel} <span aria-hidden="true" className="ml-1">⌄</span>
         </button>
         {isOpen && (
           <div
             id={menuId}
             role="group"
             aria-label="article filters"
-            className="absolute right-0 top-full z-30 mt-1 min-w-40 max-h-[60vh] overflow-y-auto rounded-lg border border-border bg-surface-secondary p-2 shadow-sm"
+            className="absolute right-0 top-full z-30 mt-1 min-w-40 max-h-[60vh] overflow-y-auto rounded-lg border border-border bg-surface-secondary p-1.5 shadow-sm"
           >
             {filters.map((filter) => {
               const isActive =
@@ -80,7 +80,7 @@ export function MobilePostFilters({
                   key={filter}
                   onClick={() => handleFilterClick(filter)}
                   aria-pressed={isActive}
-                  className={`block w-full text-left text-sm px-3 py-2 rounded transition-colors hover:bg-surface ${
+                  className={`flex items-center min-h-[44px] w-full text-left text-sm px-3 py-2 rounded transition-colors hover:bg-surface ${
                     isActive
                       ? 'text-content font-medium'
                       : 'text-content-muted'
