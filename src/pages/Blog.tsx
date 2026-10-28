@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Sidebar from '../components/Sidebar'
+import Sidebar, { MobilePostFilters } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import ThemeToggle from '../components/ThemeToggle'
 import { usePosts } from '../hooks/usePosts'
@@ -30,6 +30,11 @@ function Blog() {
         lists={lists}
       />
       <main className="flex-1">
+        <MobilePostFilters
+          filters={filters}
+          activeFilter={activeFilter}
+          onFilterChange={handleFilterChange}
+        />
         {loading ? (
           <div className="text-center py-16 text-content-muted">
             Loading posts...

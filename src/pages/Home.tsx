@@ -110,15 +110,6 @@ function Home() {
         <ThemeToggle />
       </header>
 
-      {/* Article filters - only show for blog */}
-      {!isCV && (
-        <MobilePostFilters
-          filters={filters}
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-        />
-      )}
-
       {/* Main content */}
       {isCV ? (
         <CVList />
@@ -133,6 +124,13 @@ function Home() {
             lists={lists}
           />
           <main className="min-h-0 flex-1 overflow-y-auto">
+            {!slug && (
+              <MobilePostFilters
+                filters={filters}
+                activeFilter={activeFilter}
+                onFilterChange={handleFilterChange}
+              />
+            )}
             {loading ? (
               <div className="text-center py-16 text-content-muted">
                 Loading posts...

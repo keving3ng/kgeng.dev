@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 interface PostFilterProps {
@@ -13,51 +13,64 @@ interface SidebarProps extends PostFilterProps {
   lists?: { label: string; url: string }[]
 }
 
-// Mobile bottom sheet
+// Article-only mobile menu
 export function MobilePostFilters({
   filters,
   activeFilter,
   onFilterChange,
 }: PostFilterProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuId = useId()
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const dismissOutside = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setIsOpen(false)
+    }
+    const dismissOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setIsOpen(false)
+      triggerRef.current?.focus()
+    }
+
+    document.addEventListener('pointerdown', dismissOutside)
+    document.addEventListener('keydown', dismissOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', dismissOutside)
+      document.removeEventListener('keydown', dismissOnEscape)
+    }
+  }, [isOpen])
 
   const handleFilterClick = (filter: string) => {
     onFilterChange(filter === 'All Posts' ? null : filter)
     setIsOpen(false)
+    triggerRef.current?.focus()
   }
 
   const activeLabel = activeFilter?.toLowerCase() || 'all posts'
 
   return (
-    <div className="md:hidden px-2">
-      {/* Trigger button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="text-sm text-content-muted mb-4"
-      >
-        filter: <span className="text-content">{activeLabel}</span> ↓
-      </button>
-
-      {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-content/20 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Bottom sheet */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 bg-surface-secondary border-t border-border rounded-t-2xl z-50 transition-transform duration-300 ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
-        <div className="p-6 pb-8 max-h-[70vh] overflow-y-auto">
-          {/* Handle */}
-          <div className="w-10 h-1 bg-content-muted/50 rounded-full mx-auto mb-6" />
-
-          {/* Filters */}
-          <div className="space-y-2 mb-6">
+    <div className="md:hidden flex justify-end px-2 mb-2">
+      <div ref={menuRef} className="relative">
+        <button
+          ref={triggerRef}
+          onClick={() => setIsOpen((open) => !open)}
+          aria-expanded={isOpen}
+          aria-controls={menuId}
+          className="min-h-10 px-2 text-xs text-content-muted hover:text-content-secondary transition-colors rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-content-muted"
+        >
+          filter: {activeLabel} <span aria-hidden="true">⌄</span>
+        </button>
+        {isOpen && (
+          <div
+            id={menuId}
+            role="group"
+            aria-label="article filters"
+            className="absolute right-0 top-full z-30 mt-1 min-w-40 max-h-[60vh] overflow-y-auto rounded-lg border border-border bg-surface-secondary p-2 shadow-sm"
+          >
             {filters.map((filter) => {
               const isActive =
                 filter === 'All Posts' ? activeFilter === null : activeFilter === filter
@@ -66,7 +79,8 @@ export function MobilePostFilters({
                 <button
                   key={filter}
                   onClick={() => handleFilterClick(filter)}
-                  className={`block w-full text-left text-sm py-2 transition-colors ${
+                  aria-pressed={isActive}
+                  className={`block w-full text-left text-sm px-3 py-2 rounded transition-colors hover:bg-surface ${
                     isActive
                       ? 'text-content font-medium'
                       : 'text-content-muted'
@@ -77,7 +91,7 @@ export function MobilePostFilters({
               )
             })}
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
