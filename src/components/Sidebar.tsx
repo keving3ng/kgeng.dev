@@ -1,24 +1,24 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-interface SidebarProps {
+interface PostFilterProps {
   filters: string[]
   activeFilter: string | null
   onFilterChange: (filter: string | null) => void
+}
+
+interface SidebarProps extends PostFilterProps {
   links: { label: string; url: string }[]
   tools: { label: string; url: string }[]
   lists?: { label: string; url: string }[]
 }
 
 // Mobile bottom sheet
-export function MobileNav({
+export function MobilePostFilters({
   filters,
   activeFilter,
   onFilterChange,
-  links,
-  tools,
-  lists = [],
-}: SidebarProps) {
+}: PostFilterProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleFilterClick = (filter: string) => {
@@ -41,7 +41,7 @@ export function MobileNav({
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-40"
+          className="fixed inset-0 bg-content/20 z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -76,62 +76,6 @@ export function MobileNav({
                 </button>
               )
             })}
-          </div>
-
-          {/* Divider */}
-          <div className="border-t border-border my-4" />
-
-          {/* Lists */}
-          {lists.length > 0 && (
-            <>
-              <div className="space-y-2 mb-4">
-                {lists.map((list) => (
-                  <Link
-                    key={list.url}
-                    to={list.url}
-                    onClick={() => setIsOpen(false)}
-                    className="block text-sm text-content-muted py-1"
-                  >
-                    {list.label}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Divider */}
-              <div className="border-t border-border my-4" />
-            </>
-          )}
-
-          {/* Links */}
-          <div className="space-y-2 mb-4">
-            {links.map((link) => (
-              <a
-                key={link.url}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-content-muted py-1"
-              >
-                {link.label.toLowerCase()} ↗
-              </a>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div className="border-t border-border my-4" />
-
-          {/* Tools */}
-          <div className="space-y-2">
-            {tools.map((tool) => (
-              <Link
-                key={tool.url}
-                to={tool.url}
-                onClick={() => setIsOpen(false)}
-                className="block text-sm text-content-muted py-1"
-              >
-                {tool.label}
-              </Link>
-            ))}
           </div>
         </div>
       </div>

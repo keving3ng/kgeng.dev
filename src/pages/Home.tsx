@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
-import Sidebar, { MobileNav } from '../components/Sidebar'
+import Sidebar, { MobilePostFilters } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import CVList from '../components/CVList'
 import ThemeToggle from '../components/ThemeToggle'
@@ -110,15 +110,12 @@ function Home() {
         <ThemeToggle />
       </header>
 
-      {/* Mobile navigation - only show for blog */}
+      {/* Article filters - only show for blog */}
       {!isCV && (
-        <MobileNav
+        <MobilePostFilters
           filters={filters}
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
-          links={socialLinks}
-          tools={tools}
-          lists={lists}
         />
       )}
 
