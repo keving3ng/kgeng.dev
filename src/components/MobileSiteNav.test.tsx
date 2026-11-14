@@ -5,6 +5,9 @@ import '@testing-library/jest-dom/vitest'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import Layout from './Layout'
 import Sidebar, { MobilePostFilters } from './Sidebar'
+import ThemeToggle from './ThemeToggle'
+import NotionRenderer from './NotionRenderer'
+import { ThemeProvider } from '../contexts/ThemeContext'
 import { lists, socialLinks, tools } from '../config/navigation'
 import { paths } from '../config/paths'
 
@@ -18,6 +21,16 @@ beforeAll(() => {
     this.open = false
     this.dispatchEvent(new Event('close'))
   }
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }))
 })
 
 afterEach(() => {
@@ -105,5 +118,42 @@ describe('mobile site navigation', () => {
     expect(screen.getByRole('link', { name: 'splits' })).toHaveAttribute('href', paths.tools.splits)
     fireEvent.click(screen.getByRole('button', { name: 'all posts' }))
     expect(onFilterChange).toHaveBeenCalledWith(null)
+  })
+
+  it('enforces 44px touch targets on controls and responsive code blocks', () => {
+    render(
+      <ThemeProvider>
+        <MemoryRouter>
+          <Layout>
+            <ThemeToggle />
+            <MobilePostFilters filters={['All Posts', 'dev']} activeFilter={null} onFilterChange={vi.fn()} />
+            <NotionRenderer
+              blocks={[
+                {
+                  id: '1',
+                  type: 'code',
+                  code: {
+                    rich_text: [
+                      {
+                        type: 'text',
+                        text: { content: 'const a = 1;', link: null },
+                        plain_text: 'const a = 1;',
+                        annotations: { bold: false, italic: false, strikethrough: false, underline: false, code: false, color: 'default' },
+                        href: null,
+                      },
+                    ],
+                    language: 'javascript',
+                  },
+                },
+              ]}
+            />
+          </Layout>
+        </MemoryRouter>
+      </ThemeProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'menu' })).toHaveClass('min-h-[44px]', 'min-w-[44px]')
+    expect(screen.getByRole('button', { name: /Current theme:/ })).toHaveClass('min-h-[44px]', 'min-w-[44px]')
+    expect(screen.getByRole('button', { name: /filter:/ })).toHaveClass('min-h-[44px]')
+    expect(document.querySelector('pre')).toHaveClass('overflow-x-auto', 'max-w-full')
   })
 })

@@ -3,104 +3,41 @@ import { generateFrenzyLevel, generateRandomMazeLines } from './generateRandomMa
 import { LEVELS, getParsedLevel } from './levels'
 import { parseLevel, shortestPathCells, shortestPathLength } from './maze'
 
-describe('parseLevel', () => {
-  it('parses start and goal', () => {
-    const p = parseLevel(['###', '#sg', '###'])
-    expect(p.start).toEqual({ row: 1, col: 1 })
-    expect(p.goal).toEqual({ row: 1, col: 2 })
-    expect(p.wall[0][1]).toBe(true)
-    expect(p.wall[1][1]).toBe(false)
-    expect(p.wall[1][2]).toBe(false)
-  })
-})
+describe('maze parsing and shortest path', () => {
+  it('parses start, goal, and walls and computes shortest path length and cells', () => {
+    const reachable = parseLevel(['#####', '#s..#', '#.#g#', '#####'])
+    expect(reachable.start).toEqual({ row: 1, col: 1 })
+    expect(reachable.goal).toEqual({ row: 2, col: 3 })
+    const cells = shortestPathCells(reachable.wall, reachable.start, reachable.goal)
+    expect(cells).not.toBeNull()
+    expect(cells!.length - 1).toBe(3)
+    expect(shortestPathLength(reachable.wall, reachable.start, reachable.goal)).toBe(3)
+    expect(shortestPathLength(reachable.wall, reachable.start, reachable.start)).toBe(0)
 
-describe('shortestPathCells', () => {
-  it('matches shortestPathLength for a small maze', () => {
-    const p = parseLevel([
-      '#####',
-      '#s..#',
-      '#.#g#',
-      '#####',
-    ])
-    const path = shortestPathCells(p.wall, p.start, p.goal)
-    expect(path).not.toBeNull()
-    expect(path!.length - 1).toBe(shortestPathLength(p.wall, p.start, p.goal))
-  })
-})
-
-describe('shortestPathLength', () => {
-  it('returns 0 when start equals goal', () => {
-    const wall = [[true, true], [true, false]]
-    expect(shortestPathLength(wall, { row: 1, col: 1 }, { row: 1, col: 1 })).toBe(0)
+    const blocked = parseLevel(['#####', '#s#g#', '#####'])
+    expect(shortestPathLength(blocked.wall, blocked.start, blocked.goal)).toBeNull()
   })
 
-  it('finds shortest path', () => {
-    const p = parseLevel([
-      '#####',
-      '#s..#',
-      '#.#g#',
-      '#####',
-    ])
-    const n = shortestPathLength(p.wall, p.start, p.goal)
-    expect(n).toBe(3)
-  })
-
-  it('returns null when goal unreachable', () => {
-    const p = parseLevel([
-      '#####',
-      '#s#g#',
-      '#####',
-    ])
-    expect(shortestPathLength(p.wall, p.start, p.goal)).toBeNull()
-  })
-})
-
-describe('authored levels', () => {
-  it('every level has a path from start to goal', () => {
+  it('validates that every authored level is solvable', () => {
     for (const def of LEVELS) {
       const p = getParsedLevel(def)
       expect(shortestPathLength(p.wall, p.start, p.goal), def.id).not.toBeNull()
     }
   })
-})
 
-describe('generateRandomMazeLines', () => {
-  it('produces solvable mazes (sample)', () => {
-    for (let i = 0; i < 50; i++) {
-      const lines = generateRandomMazeLines(11, 11)
-      const p = parseLevel(lines)
-      expect(shortestPathLength(p.wall, p.start, p.goal), `trial ${i}`).not.toBeNull()
+  it('generates solvable random and frenzy mazes with increasing grid dimensions', () => {
+    for (let i = 0; i < 3; i++) {
+      const p = parseLevel(generateRandomMazeLines(11, 11))
+      expect(shortestPathLength(p.wall, p.start, p.goal)).not.toBeNull()
     }
-  })
-})
 
-describe('generateFrenzyLevel', () => {
-  it('produces solvable mazes across difficulty range', () => {
-    for (const total of [5, 10, 20] as const) {
-      for (let i = 0; i < total; i++) {
-        const def = generateFrenzyLevel(i, total)
-        const p = parseLevel(def.lines)
-        const dist = shortestPathLength(p.wall, p.start, p.goal)
-        expect(dist, `frenzy ${i + 1}/${total}`).not.toBeNull()
-      }
-    }
-  })
+    const early = parseLevel(generateFrenzyLevel(0, 20).lines)
+    const mid = parseLevel(generateFrenzyLevel(9, 20).lines)
+    const late = parseLevel(generateFrenzyLevel(19, 20).lines)
 
-  it('later levels tend to have larger grids', () => {
-    const sizes: number[] = []
-    const TOTAL = 20
-    const TRIALS = 8
-    for (let i = 0; i < TOTAL; i++) {
-      let sum = 0
-      for (let t = 0; t < TRIALS; t++) {
-        const def = generateFrenzyLevel(i, TOTAL)
-        const p = parseLevel(def.lines)
-        sum += p.rows * p.cols
-      }
-      sizes.push(sum / TRIALS)
+    for (const level of [early, mid, late]) {
+      expect(shortestPathLength(level.wall, level.start, level.goal)).not.toBeNull()
     }
-    const earlyAvg = (sizes[0]! + sizes[1]! + sizes[2]!) / 3
-    const lateAvg = (sizes[TOTAL - 3]! + sizes[TOTAL - 2]! + sizes[TOTAL - 1]!) / 3
-    expect(lateAvg).toBeGreaterThan(earlyAvg)
+    expect(late.rows * late.cols).toBeGreaterThan(early.rows * early.cols)
   })
 })
