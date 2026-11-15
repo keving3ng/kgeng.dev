@@ -149,6 +149,13 @@ Legacy `/blog`, `/work`, `/projects`, `/recipes` redirect (see `legacyRedirects`
 | `GET /api/recipes` | Recipes list |
 | `GET /api/recipes/[id]` | Single recipe + Notion blocks |
 | `GET /api/image/[blockId]` | Image proxy + R2 cache |
+| `POST /api/trips/auth` | Verify `ADMIN_SECRET` for trip CMS |
+| `GET, POST /api/trips` | List trips / create trip |
+| `GET, PATCH, DELETE /api/trips/[slug]` | Fetch full trip tree / update / delete |
+| `POST, PATCH, DELETE /api/trips/[slug]/regions` | Manage & reorder trip regions |
+| `POST, PATCH, DELETE /api/trips/[slug]/spots` | Manage & drag-drop reorder trip spots |
+| `POST, DELETE /api/trips/images` | Upload / delete spot photos in R2 |
+| `GET /api/trips/media/[key]` | Serve uploaded trip photos from R2 |
 
 **Cross-cutting:** CORS to allowed origins, rate limit ~60/min/IP, image URL allowlist (Notion S3, Unsplash), sanitized client errors + structured server logs.
 

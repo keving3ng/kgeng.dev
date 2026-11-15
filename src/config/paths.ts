@@ -13,6 +13,7 @@ export const paths = {
   },
   picks: '/picks',
   recipes: '/picks/recipes',
+  trips: '/trips',
   test: '/test',
 } as const
 
@@ -33,6 +34,11 @@ export const legacyRedirects: Record<string, string> = {
 /** Permalink path for a blog post (matches `/post/:slug`). */
 export function postPath(slug: string): string {
   return `/post/${encodeURIComponent(slug)}`
+}
+
+/** Permalink path for a trip (matches `/trips/:slug`). */
+export function tripPath(slug: string): string {
+  return `/trips/${encodeURIComponent(slug)}`
 }
 
 /** Permalink path for a project detail page (matches `/work/:slug`). */

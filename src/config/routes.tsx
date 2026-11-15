@@ -9,6 +9,8 @@ import Recipeer from '../pages/Recipeer'
 import Picks from '../pages/Picks'
 import Recipes from '../pages/Recipes'
 import RecipeDetail from '../pages/RecipeDetail'
+import Trips from '../pages/Trips'
+import TripDetail from '../pages/TripDetail'
 import AnimationTest from '../pages/AnimationTest'
 import NotFound from '../pages/NotFound'
 import { Navigate } from 'react-router-dom'
@@ -32,6 +34,8 @@ export const appRoutes: AppRoute[] = [
   { path: paths.picks, Component: Picks },
   { path: paths.recipes, Component: Recipes },
   { path: '/picks/recipes/:id', Component: RecipeDetail },
+  { path: paths.trips, Component: Trips },
+  { path: '/trips/:slug', Component: TripDetail },
   { path: paths.test, Component: AnimationTest },
   ...Object.entries(legacyRedirects).map(([from, to]) => ({
     path: from,

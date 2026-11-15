@@ -5,3 +5,9 @@ pages_build_output_dir = "dist"
 [[r2_buckets]]
 binding = "IMAGES"
 bucket_name = "kgengdev-media"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kgeng-trips"
+database_id = "ea22efca-4212-41d7-b4a4-d437c24c963c"
+migrations_dir = "migrations"
