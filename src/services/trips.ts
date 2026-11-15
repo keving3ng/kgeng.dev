@@ -127,6 +127,7 @@ export async function createSpot(
     regionId: string
     name: string
     bucket: SpotBucket
+    recommended?: boolean
     category?: string
     note?: string
     url?: string
@@ -150,6 +151,7 @@ export async function updateSpot(
     id: string
     name?: string
     bucket?: SpotBucket
+    recommended?: boolean
     category?: string | null
     note?: string | null
     url?: string | null

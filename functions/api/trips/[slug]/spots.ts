@@ -6,9 +6,9 @@ import {
   jsonResponse,
 } from '../_helpers'
 
-type SpotBucket = 'recommended' | 'visited' | 'saved'
+type SpotBucket = 'visited' | 'saved'
 
-const VALID_BUCKETS = new Set<SpotBucket>(['recommended', 'visited', 'saved'])
+const VALID_BUCKETS = new Set<SpotBucket>(['visited', 'saved'])
 
 export const onRequestOptions: PagesFunction<TripsEnv> = async ({ request }) => {
   return handleOptions(request)
@@ -24,6 +24,7 @@ export const onRequestPost: PagesFunction<TripsEnv> = async ({ request, env, par
       regionId?: string
       name?: string
       bucket?: SpotBucket
+      recommended?: boolean
       category?: string
       note?: string
       url?: string
@@ -33,7 +34,8 @@ export const onRequestPost: PagesFunction<TripsEnv> = async ({ request, env, par
 
     const regionId = body.regionId?.trim()
     const name = body.name?.trim().toLowerCase()
-    const bucket = body.bucket ?? 'recommended'
+    const bucket = body.bucket ?? 'visited'
+    const recommended = bucket === 'visited' && Boolean(body.recommended)
 
     if (!regionId || !name || !VALID_BUCKETS.has(bucket)) {
       return errorResponse(400, 'regionId, name, and valid bucket are required', corsHeaders)
@@ -62,10 +64,22 @@ export const onRequestPost: PagesFunction<TripsEnv> = async ({ request, env, par
     const spotUrl = body.url?.trim() || null
 
     await env.DB!.prepare(
-      `INSERT INTO spots (id, region_id, name, bucket, category, note, url, lat, lng, sort_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO spots (id, region_id, name, bucket, recommended, category, note, url, lat, lng, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-      .bind(id, regionId, name, bucket, category, note, spotUrl, body.lat ?? null, body.lng ?? null, sortOrder)
+      .bind(
+        id,
+        regionId,
+        name,
+        bucket,
+        recommended ? 1 : 0,
+        category,
+        note,
+        spotUrl,
+        body.lat ?? null,
+        body.lng ?? null,
+        sortOrder,
+      )
       .run()
 
     return jsonResponse(
@@ -74,6 +88,7 @@ export const onRequestPost: PagesFunction<TripsEnv> = async ({ request, env, par
         regionId,
         name,
         bucket,
+        recommended,
         category,
         note,
         url: spotUrl,
@@ -101,6 +116,7 @@ export const onRequestPatch: PagesFunction<TripsEnv> = async ({ request, env, pa
       id?: string
       name?: string
       bucket?: SpotBucket
+      recommended?: boolean
       category?: string | null
       note?: string | null
       url?: string | null
@@ -113,11 +129,14 @@ export const onRequestPatch: PagesFunction<TripsEnv> = async ({ request, env, pa
       const validItems = body.reorder.filter((item) => item.id && VALID_BUCKETS.has(item.bucket))
       const stmts = validItems.map((item) =>
         env.DB!.prepare(
-          `UPDATE spots SET bucket = ?, sort_order = ?
+          `UPDATE spots
+           SET bucket = ?,
+               sort_order = ?,
+               recommended = CASE WHEN ? != 'visited' THEN 0 ELSE recommended END
            WHERE id = ? AND region_id IN (
              SELECT r.id FROM regions r JOIN trips t ON r.trip_id = t.id WHERE t.slug = ?
            )`,
-        ).bind(item.bucket, item.sortOrder, item.id, tripSlug),
+        ).bind(item.bucket, item.sortOrder, item.bucket, item.id, tripSlug),
       )
       if (stmts.length > 0) await env.DB!.batch(stmts)
       return jsonResponse({ ok: true }, 200, corsHeaders)
@@ -130,10 +149,17 @@ export const onRequestPatch: PagesFunction<TripsEnv> = async ({ request, env, pa
       return errorResponse(400, 'invalid bucket', corsHeaders)
     }
 
+    const recommendedParam = body.recommended !== undefined ? (body.recommended ? 1 : 0) : null
+
     await env.DB!.prepare(
       `UPDATE spots
        SET name = COALESCE(?, name),
            bucket = COALESCE(?, bucket),
+           recommended = CASE
+             WHEN COALESCE(?, bucket) != 'visited' THEN 0
+             WHEN ? IS NOT NULL THEN ?
+             ELSE recommended
+           END,
            category = COALESCE(?, category),
            note = COALESCE(?, note),
            url = COALESCE(?, url),
@@ -146,6 +172,9 @@ export const onRequestPatch: PagesFunction<TripsEnv> = async ({ request, env, pa
       .bind(
         body.name !== undefined ? body.name.trim().toLowerCase() : null,
         body.bucket ?? null,
+        body.bucket ?? null,
+        recommendedParam,
+        recommendedParam,
         body.category !== undefined ? (body.category?.trim().toLowerCase() || '') : null,
         body.note !== undefined ? (body.note?.trim().toLowerCase() || '') : null,
         body.url !== undefined ? (body.url?.trim() || '') : null,

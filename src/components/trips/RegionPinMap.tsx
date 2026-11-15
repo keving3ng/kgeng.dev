@@ -82,7 +82,8 @@ export default function RegionPinMap({
 
     for (const spot of spots) {
       if (spot.lat === null || spot.lng === null) continue
-      const color = BUCKET_META[spot.bucket].accent
+      const isRecommended = spot.bucket === 'visited' && spot.recommended
+      const color = isRecommended ? '#f59e0b' : BUCKET_META[spot.bucket].accent
       const isSelected = spot.id === activeSpotId
 
       const marker = L.circleMarker([spot.lat, spot.lng], {
@@ -94,7 +95,10 @@ export default function RegionPinMap({
         fillOpacity: 0.92,
       })
 
-      marker.bindTooltip(`${spot.name} (${BUCKET_META[spot.bucket].label})`, {
+      const statusLabel = isRecommended
+        ? `${BUCKET_META[spot.bucket].label} ★ recommended`
+        : BUCKET_META[spot.bucket].label
+      marker.bindTooltip(`${spot.name} (${statusLabel})`, {
         direction: 'top',
       })
 

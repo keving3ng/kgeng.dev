@@ -34,6 +34,7 @@ interface SpotRow {
   region_id: string
   name: string
   bucket: 'recommended' | 'visited' | 'saved'
+  recommended?: number
   category: string | null
   note: string | null
   url: string | null
@@ -138,7 +139,8 @@ export const onRequestGet: PagesFunction<TripsEnv> = async ({ request, env, para
       id: string
       regionId: string
       name: string
-      bucket: 'recommended' | 'visited' | 'saved'
+      bucket: 'visited' | 'saved'
+      recommended: boolean
       category: string | null
       note: string | null
       url: string | null
@@ -150,11 +152,14 @@ export const onRequestGet: PagesFunction<TripsEnv> = async ({ request, env, para
 
     for (const s of spotRows ?? []) {
       const list = spotsByRegion.get(s.region_id) ?? []
+      const bucket: 'visited' | 'saved' = s.bucket === 'saved' ? 'saved' : 'visited'
+      const recommended = bucket === 'visited' && (Boolean(s.recommended) || s.bucket === 'recommended')
       list.push({
         id: s.id,
         regionId: s.region_id,
         name: s.name,
-        bucket: s.bucket,
+        bucket,
+        recommended,
         category: s.category,
         note: s.note,
         url: s.url,

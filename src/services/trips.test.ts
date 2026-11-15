@@ -3,6 +3,7 @@ import {
   getTrips,
   getTrip,
   verifyTripAdmin,
+  updateSpot,
   reorderSpots,
   uploadSpotImage,
 } from './trips'
@@ -60,6 +61,22 @@ describe('trips service', () => {
         Authorization: 'Bearer tok',
       },
       body: JSON.stringify({ reorder: [{ id: 's1', bucket: 'visited', sortOrder: 0 }] }),
+    })
+  })
+
+  it('updates spot recommended badge', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    )
+
+    await updateSpot('tok', 'taiwan', { id: 's1', recommended: true })
+    expect(fetchMock).toHaveBeenCalledWith('/api/trips/taiwan/spots', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer tok',
+      },
+      body: JSON.stringify({ id: 's1', recommended: true }),
     })
   })
 

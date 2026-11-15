@@ -10,6 +10,7 @@ interface SpotCardProps {
   onDragEnd: () => void
   onUpdate: (patch: {
     name?: string
+    recommended?: boolean
     category?: string | null
     note?: string | null
     url?: string | null
@@ -37,6 +38,7 @@ export default function SpotCard({
 }: SpotCardProps) {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(spot.name)
+  const [recommended, setRecommended] = useState(spot.recommended)
   const [category, setCategory] = useState(spot.category ?? '')
   const [note, setNote] = useState(spot.note ?? '')
   const [url, setUrl] = useState(spot.url ?? '')
@@ -50,6 +52,7 @@ export default function SpotCard({
     try {
       await onUpdate({
         name: name.trim(),
+        recommended: spot.bucket === 'visited' ? recommended : false,
         category: category.trim() || null,
         note: note.trim() || null,
         url: url.trim() || null,
@@ -115,6 +118,19 @@ export default function SpotCard({
             rows={2}
             className="w-full rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-content outline-none focus:border-content-muted"
           />
+          {spot.bucket === 'visited' && (
+            <label className="inline-flex items-center gap-2 text-xs text-content-secondary cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={recommended}
+                onChange={(e) => setRecommended(e.target.checked)}
+                className="rounded border-border"
+              />
+              <span>
+                <span aria-hidden="true" style={{ color: '#f59e0b' }}>★</span> recommend this spot
+              </span>
+            </label>
+          )}
           <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
             <button
               type="button"
@@ -173,6 +189,34 @@ export default function SpotCard({
                     {spot.category}
                   </span>
                 )}
+                {spot.bucket === 'visited' && spot.recommended && !editMode && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-secondary px-2 py-0.5 text-[11px] font-medium text-content">
+                    <span aria-hidden="true" style={{ color: '#f59e0b' }}>
+                      ★
+                    </span>
+                    recommended
+                  </span>
+                )}
+                {editMode && spot.bucket === 'visited' && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      void onUpdate({ recommended: !spot.recommended })
+                    }}
+                    aria-pressed={spot.recommended}
+                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition-colors ${
+                      spot.recommended
+                        ? 'border-content bg-surface-secondary font-medium text-content'
+                        : 'border-border text-content-muted hover:text-content'
+                    }`}
+                  >
+                    <span aria-hidden="true" style={{ color: spot.recommended ? '#f59e0b' : undefined }}>
+                      {spot.recommended ? '★' : '☆'}
+                    </span>
+                    {spot.recommended ? 'recommended' : 'recommend'}
+                  </button>
+                )}
               </div>
               {spot.note && (
                 <p className="mt-1 text-xs leading-relaxed text-content-secondary">{spot.note}</p>
@@ -186,7 +230,14 @@ export default function SpotCard({
               >
                 <button
                   type="button"
-                  onClick={() => setEditing(true)}
+                  onClick={() => {
+                    setName(spot.name)
+                    setRecommended(spot.recommended)
+                    setCategory(spot.category ?? '')
+                    setNote(spot.note ?? '')
+                    setUrl(spot.url ?? '')
+                    setEditing(true)
+                  }}
                   className="rounded border border-border px-1.5 py-0.5 text-content-muted hover:text-content"
                 >
                   edit

@@ -61,6 +61,7 @@ export default function TripDetail() {
   // Quick add spot state
   const [addingBucket, setAddingBucket] = useState<SpotBucket | null>(null)
   const [newSpotName, setNewSpotName] = useState('')
+  const [newSpotRecommended, setNewSpotRecommended] = useState(false)
   const [newSpotCategory, setNewSpotCategory] = useState('')
   const [newSpotNote, setNewSpotNote] = useState('')
   const [newSpotUrl, setNewSpotUrl] = useState('')
@@ -197,6 +198,7 @@ export default function TripDetail() {
       regionId: selectedRegion.id,
       name: newSpotName.trim(),
       bucket,
+      recommended: bucket === 'visited' ? newSpotRecommended : false,
       category: newSpotCategory.trim() || undefined,
       note: newSpotNote.trim() || undefined,
       url: newSpotUrl.trim() || undefined,
@@ -209,6 +211,7 @@ export default function TripDetail() {
       ),
     })
     setNewSpotName('')
+    setNewSpotRecommended(false)
     setNewSpotCategory('')
     setNewSpotNote('')
     setNewSpotUrl('')
@@ -223,7 +226,11 @@ export default function TripDetail() {
     if (movingIdx === -1) return
 
     const [moving] = regionSpots.splice(movingIdx, 1)
-    const updatedSpot: TripSpot = { ...moving, bucket: targetBucket }
+    const updatedSpot: TripSpot = {
+      ...moving,
+      bucket: targetBucket,
+      recommended: targetBucket === 'visited' ? moving.recommended : false,
+    }
 
     if (beforeSpotId && beforeSpotId !== moving.id) {
       const targetIdx = regionSpots.findIndex((s) => s.id === beforeSpotId)
@@ -234,7 +241,7 @@ export default function TripDetail() {
     }
 
     // Recompute sortOrder per bucket
-    const bucketCounts: Record<SpotBucket, number> = { recommended: 0, visited: 0, saved: 0 }
+    const bucketCounts: Record<SpotBucket, number> = { visited: 0, saved: 0 }
     const normalized = regionSpots.map((s) => {
       const order = bucketCounts[s.bucket]++
       return { ...s, sortOrder: order }
@@ -258,7 +265,15 @@ export default function TripDetail() {
 
   const handleUpdateSpot = async (
     spotId: string,
-    patch: { name?: string; category?: string | null; note?: string | null; url?: string | null; lat?: number | null; lng?: number | null },
+    patch: {
+      name?: string
+      recommended?: boolean
+      category?: string | null
+      note?: string | null
+      url?: string | null
+      lat?: number | null
+      lng?: number | null
+    },
   ) => {
     if (!token || !selectedRegion || !data) return
     setData({
@@ -450,6 +465,19 @@ export default function TripDetail() {
                           </span>
                         )
                       })}
+                      {(() => {
+                        const recommendedCount = selectedRegion.spots.filter(
+                          (s) => s.bucket === 'visited' && s.recommended,
+                        ).length
+                        return recommendedCount > 0 ? (
+                          <span className="inline-flex items-center gap-1 text-content-secondary">
+                            <span aria-hidden="true" style={{ color: '#f59e0b' }}>
+                              ★
+                            </span>
+                            {recommendedCount} recommended
+                          </span>
+                        ) : null
+                      })()}
                     </div>
                   </div>
 
@@ -486,7 +514,7 @@ export default function TripDetail() {
                   />
                 )}
 
-                {/* 3-bucket drag-and-drop breakdown */}
+                {/* 2-bucket drag-and-drop breakdown */}
                 {editMode && (
                   <p className="text-xs text-content-muted">
                     drag and drop spots within or between sections to organize them.
@@ -537,7 +565,10 @@ export default function TripDetail() {
                     {editMode && (
                       <button
                         type="button"
-                        onClick={() => setAddingBucket(addingBucket === bucket ? null : bucket)}
+                        onClick={() => {
+                          setAddingBucket(addingBucket === bucket ? null : bucket)
+                          setNewSpotRecommended(false)
+                        }}
                         className="rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-content-secondary hover:text-content"
                       >
                         + add
@@ -581,6 +612,22 @@ export default function TripDetail() {
                         rows={2}
                         className="w-full rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-content outline-none focus:border-content-muted"
                       />
+                      {bucket === 'visited' && (
+                        <label className="inline-flex items-center gap-2 text-xs text-content-secondary cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={newSpotRecommended}
+                            onChange={(e) => setNewSpotRecommended(e.target.checked)}
+                            className="rounded border-border"
+                          />
+                          <span>
+                            <span aria-hidden="true" style={{ color: '#f59e0b' }}>
+                              ★
+                            </span>{' '}
+                            recommend this spot
+                          </span>
+                        </label>
+                      )}
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"

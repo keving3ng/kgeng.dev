@@ -1,13 +1,8 @@
-export type SpotBucket = 'recommended' | 'visited' | 'saved'
+export type SpotBucket = 'visited' | 'saved'
 
-export const SPOT_BUCKETS: SpotBucket[] = ['recommended', 'visited', 'saved']
+export const SPOT_BUCKETS: SpotBucket[] = ['visited', 'saved']
 
 export const BUCKET_META: Record<SpotBucket, { label: string; hint: string; accent: string }> = {
-  recommended: {
-    label: 'recommended',
-    hint: 'must-go favorites & highlights',
-    accent: '#f59e0b',
-  },
   visited: {
     label: 'visited',
     hint: 'places i actually went to',
@@ -45,6 +40,7 @@ export interface TripSpot {
   regionId: string
   name: string
   bucket: SpotBucket
+  recommended: boolean
   category: string | null
   note: string | null
   url: string | null
