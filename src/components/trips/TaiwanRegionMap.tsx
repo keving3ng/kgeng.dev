@@ -66,10 +66,10 @@ export default function TaiwanRegionMap({
       </div>
 
       <svg
-        viewBox={taiwan.viewBox}
+        viewBox="285 295 745 995"
         role="img"
         aria-label="interactive map of taiwan regions"
-        className="h-[360px] w-full max-w-[340px] sm:h-[440px] sm:max-w-[400px] select-none drop-shadow-sm"
+        className="mx-auto h-[360px] w-full max-w-[340px] sm:h-[440px] sm:max-w-[400px] select-none drop-shadow-sm"
       >
         {(taiwan.locations as SvgLocation[]).map((loc) => {
           const owner = countyToRegion.get(loc.id)
