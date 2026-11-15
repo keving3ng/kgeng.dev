@@ -3,12 +3,31 @@ import { API_CONFIG } from '../config'
 import { NotionDatabaseQueryResponse, getTitle, getSlug, getTags, getDate } from '../types/notion'
 
 interface Env {
-  NOTION_API_KEY: string
-  NOTION_DATABASE_ID: string
+  DB?: D1Database
+  NOTION_API_KEY?: string
+  NOTION_DATABASE_ID?: string
+}
+
+interface PostDetailRow {
+  id: string
+  title: string
+  slug: string
+  tags: string
+  date: string | null
+  blocks: string
+}
+
+function parseJsonArray<T>(raw: string): T[] {
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? (parsed as T[]) : []
+  } catch {
+    return []
+  }
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const { NOTION_API_KEY, NOTION_DATABASE_ID } = context.env
+  const { DB, NOTION_API_KEY, NOTION_DATABASE_ID } = context.env
   const slug = context.params.slug as string
   const url = new URL(context.request.url)
   const isLocalDev = isLocalDevelopment(url)
@@ -21,6 +40,51 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (!allowed) {
       return rateLimitResponse(corsHeaders)
     }
+  }
+
+  // Prefer D1 CMS posts once at least one post has been imported
+  if (DB) {
+    try {
+      const countRow = await DB.prepare('SELECT COUNT(*) AS total FROM posts').first<{ total: number }>()
+      if (Number(countRow?.total ?? 0) > 0) {
+        const row = await DB.prepare(
+          'SELECT id, title, slug, tags, date, blocks FROM posts WHERE slug = ? AND published = 1',
+        )
+          .bind(slug)
+          .first<PostDetailRow>()
+
+        if (!row) {
+          return errorResponse(404, 'Post not found', corsHeaders)
+        }
+
+        const post = {
+          id: row.id,
+          title: row.title,
+          slug: row.slug,
+          tags: parseJsonArray<string>(row.tags).filter((x) => typeof x === 'string'),
+          date: row.date,
+          blocks: parseJsonArray(row.blocks),
+        }
+
+        return new Response(JSON.stringify(post), {
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+            'Cache-Control': isLocalDev ? 'no-store' : 'public, max-age=60',
+          },
+        })
+      }
+    } catch (err) {
+      logger.warn('D1 post detail read failed, falling back to Notion', {
+        endpoint: 'posts/slug',
+        slug,
+        detail: err instanceof Error ? err.message : String(err),
+      })
+    }
+  }
+
+  if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
+    return errorResponse(500, 'Server configuration error', corsHeaders)
   }
 
   const cacheKey = new Request(context.request.url)

@@ -69,6 +69,12 @@ export default function Trips() {
         <div className="flex items-center gap-2 shrink-0">
           {isAuthenticated && (
             <>
+              <Link
+                to={paths.cmsPosts}
+                className="rounded-full border border-border px-3 py-1 text-xs text-content-secondary hover:text-content transition-colors"
+              >
+                blog
+              </Link>
               <button
                 type="button"
                 onClick={() => setEditMode(!editMode)}

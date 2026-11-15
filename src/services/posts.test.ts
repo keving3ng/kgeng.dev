@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { getPosts, getPost } from './posts'
+import {
+  getPosts,
+  getPost,
+  getCmsPosts,
+  syncPostsFromNotion,
+  updateCmsPost,
+} from './posts'
 
 describe('posts service', () => {
   afterEach(() => {
@@ -60,5 +66,50 @@ describe('posts service', () => {
     )
 
     await expect(getPost('broken')).rejects.toThrow('Failed to fetch post')
+  })
+
+  it('fetches CMS posts with bearer token', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify([]), { status: 200 }),
+    )
+
+    await getCmsPosts('secret')
+    expect(fetchMock).toHaveBeenCalledWith('/api/cms/posts', {
+      headers: { Authorization: 'Bearer secret' },
+    })
+  })
+
+  it('syncs posts from Notion via CMS endpoint', async () => {
+    const mockRes = { synced: 3, created: 1, updated: 2 }
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(mockRes), { status: 200 }),
+    )
+
+    const res = await syncPostsFromNotion('secret', 'page-123')
+    expect(fetchMock).toHaveBeenCalledWith('/api/cms/posts/sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer secret',
+      },
+      body: JSON.stringify({ notionPageId: 'page-123' }),
+    })
+    expect(res).toEqual(mockRes)
+  })
+
+  it('updates CMS post metadata', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    )
+
+    await updateCmsPost('secret', { id: 'p1', published: false })
+    expect(fetchMock).toHaveBeenCalledWith('/api/cms/posts', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer secret',
+      },
+      body: JSON.stringify({ id: 'p1', published: false }),
+    })
   })
 })

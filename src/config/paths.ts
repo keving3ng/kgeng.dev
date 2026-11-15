@@ -15,6 +15,7 @@ export const paths = {
   recipes: '/picks/recipes',
   trips: '/trips',
   cms: '/cms',
+  cmsPosts: '/cms/posts',
   test: '/test',
 } as const
 

@@ -10,6 +10,21 @@ export interface PostWithContent extends Post {
   blocks: NotionBlock[]
 }
 
+export interface CmsPostSummary extends Post {
+  notionPageId: string | null
+  published: boolean
+  blockCount: number
+  syncedAt: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SyncPostsResult {
+  synced: number
+  created: number
+  updated: number
+}
+
 // Notion block types we support
 export type NotionBlock =
   | ParagraphBlock

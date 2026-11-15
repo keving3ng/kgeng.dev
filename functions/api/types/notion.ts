@@ -143,6 +143,13 @@ export function getDate(page: NotionPage): string | null {
 }
 
 /**
+ * Safely extract published checkbox from a Notion page.
+ */
+export function getPublished(page: NotionPage): boolean {
+  return Boolean(page.properties.Published?.checkbox)
+}
+
+/**
  * Safely extract URL from a Notion page (for recipes).
  */
 export function getUrl(page: NotionPage): string | null {

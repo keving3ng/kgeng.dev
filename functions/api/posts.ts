@@ -3,18 +3,32 @@ import { API_CONFIG } from './config'
 import { NotionDatabaseQueryResponse, getTitle, getSlug, getTags, getDate } from './types/notion'
 
 interface Env {
-  NOTION_API_KEY: string
-  NOTION_DATABASE_ID: string
+  DB?: D1Database
+  NOTION_API_KEY?: string
+  NOTION_DATABASE_ID?: string
+}
+
+interface PostRow {
+  id: string
+  title: string
+  slug: string
+  tags: string
+  date: string | null
+}
+
+function parseTags(raw: string): string[] {
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const { NOTION_API_KEY, NOTION_DATABASE_ID } = context.env
+  const { DB, NOTION_API_KEY, NOTION_DATABASE_ID } = context.env
   const requestOrigin = context.request.headers.get('Origin')
   const corsHeaders = getCorsHeaders(requestOrigin)
-
-  if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
-    return errorResponse(500, 'Server configuration error', corsHeaders)
-  }
 
   const url = new URL(context.request.url)
   const isLocalDev = isLocalDevelopment(url)
@@ -25,6 +39,43 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (!allowed) {
       return rateLimitResponse(corsHeaders)
     }
+  }
+
+  // Prefer D1 CMS posts once at least one post has been imported
+  if (DB) {
+    try {
+      const countRow = await DB.prepare('SELECT COUNT(*) AS total FROM posts').first<{ total: number }>()
+      if (Number(countRow?.total ?? 0) > 0) {
+        const { results } = await DB.prepare(
+          'SELECT id, title, slug, tags, date FROM posts WHERE published = 1 ORDER BY COALESCE(date, created_at) DESC, created_at DESC',
+        ).all<PostRow>()
+
+        const posts = (results ?? []).map((row) => ({
+          id: row.id,
+          title: row.title,
+          slug: row.slug,
+          tags: parseTags(row.tags),
+          date: row.date,
+        }))
+
+        return new Response(JSON.stringify(posts), {
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+            'Cache-Control': isLocalDev ? 'no-store' : 'public, max-age=60',
+          },
+        })
+      }
+    } catch (err) {
+      logger.warn('D1 posts read failed, falling back to Notion', {
+        endpoint: 'posts',
+        detail: err instanceof Error ? err.message : String(err),
+      })
+    }
+  }
+
+  if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
+    return errorResponse(500, 'Server configuration error', corsHeaders)
   }
 
   const cacheKey = new Request(context.request.url)
