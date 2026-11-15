@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ThemeToggle from '../components/ThemeToggle'
-import AdminPasscodeModal from '../components/trips/AdminPasscodeModal'
 import { useTripAdmin } from '../hooks/useTripAdmin'
 import { createTrip, getTrips } from '../services/trips'
 import { paths, tripPath } from '../config/paths'
@@ -11,12 +10,11 @@ export default function Trips() {
   const [trips, setTrips] = useState<TripSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showAuthModal, setShowAuthModal] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newSubtitle, setNewSubtitle] = useState('')
   const [creating, setCreating] = useState(false)
 
-  const { token, isAuthenticated, editMode, setEditMode, unlock, lock } = useTripAdmin()
+  const { token, isAuthenticated, editMode, setEditMode, lock } = useTripAdmin()
 
   const loadTrips = useCallback(() => {
     setLoading(true)
@@ -69,7 +67,7 @@ export default function Trips() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <>
               <button
                 type="button"
@@ -90,14 +88,6 @@ export default function Trips() {
                 lock
               </button>
             </>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setShowAuthModal(true)}
-              className="rounded-full border border-border bg-surface-secondary px-3 py-1 text-xs text-content-secondary hover:text-content transition-colors"
-            >
-              edit
-            </button>
           )}
           <ThemeToggle />
         </div>
@@ -170,12 +160,6 @@ export default function Trips() {
           ))}
         </div>
       )}
-
-      <AdminPasscodeModal
-        open={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onVerify={unlock}
-      />
     </div>
   )
 }

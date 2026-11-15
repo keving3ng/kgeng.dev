@@ -4,7 +4,6 @@ import ThemeToggle from '../components/ThemeToggle'
 import TaiwanRegionMap from '../components/trips/TaiwanRegionMap'
 import RegionPinMap from '../components/trips/RegionPinMap'
 import SpotCard from '../components/trips/SpotCard'
-import AdminPasscodeModal from '../components/trips/AdminPasscodeModal'
 import { useTripAdmin } from '../hooks/useTripAdmin'
 import {
   createRegion,
@@ -40,8 +39,7 @@ export default function TripDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const { token, isAuthenticated, editMode, setEditMode, unlock, lock } = useTripAdmin()
-  const [showAuthModal, setShowAuthModal] = useState(false)
+  const { token, isAuthenticated, editMode, setEditMode, lock } = useTripAdmin()
 
   // Map / Spot interaction state
   const [activeSpotId, setActiveSpotId] = useState<string | null>(null)
@@ -369,7 +367,7 @@ export default function TripDetail() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <>
               <button
                 type="button"
@@ -397,14 +395,6 @@ export default function TripDetail() {
                 lock
               </button>
             </>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setShowAuthModal(true)}
-              className="rounded-full border border-border bg-surface-secondary px-3 py-1 text-xs text-content-secondary hover:text-content transition-colors"
-            >
-              edit
-            </button>
           )}
           <ThemeToggle />
         </div>
@@ -825,12 +815,6 @@ export default function TripDetail() {
           </div>
         </div>
       )}
-
-      <AdminPasscodeModal
-        open={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onVerify={unlock}
-      />
     </div>
   )
 }

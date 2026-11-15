@@ -14,6 +14,7 @@ export const paths = {
   picks: '/picks',
   recipes: '/picks/recipes',
   trips: '/trips',
+  cms: '/cms',
   test: '/test',
 } as const
 

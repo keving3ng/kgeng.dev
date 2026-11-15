@@ -8,7 +8,7 @@ export function useTripAdmin() {
     if (typeof window === 'undefined') return null
     return window.sessionStorage.getItem(STORAGE_KEY)
   })
-  const [editMode, setEditMode] = useState(false)
+  const [editMode, setEditMode] = useState<boolean>(() => Boolean(token))
 
   const unlock = useCallback(async (passcode: string): Promise<boolean> => {
     const ok = await verifyTripAdmin(passcode)
