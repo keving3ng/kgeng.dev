@@ -33,7 +33,6 @@ export const fortunes: string[] = [
   'weighing flour to the gram, estimating tickets in vibes.',
   'calling mine, then letting the linter handle it.',
   'tiki-taka between microservices.',
-  'my gaiwan has fewer leaks than this memory profile.',
   'matcha whisked, tickets triaged.',
   'pourover ratios: 1:16 water, 100:1 tabs open.',
   'blooming the grounds while webpack wakes up.',
