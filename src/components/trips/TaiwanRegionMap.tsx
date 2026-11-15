@@ -8,10 +8,33 @@ interface SvgLocation {
   path: string
 }
 
-const CLIPPED_REGIONS: Record<string, { countyId: string; clipId: string; label: string }> = {
-  alishan: { countyId: 'chiayi-county', clipId: 'clip-alishan-mountain', label: 'alishan' },
-  tainan: { countyId: 'tainan-city', clipId: 'clip-tainan-city', label: 'tainan' },
-  kaohsiung: { countyId: 'kaohsiung-city', clipId: 'clip-kaohsiung-city', label: 'kaohsiung' },
+const CLIPPED_REGIONS: Record<
+  string,
+  {
+    countyId: string
+    clipId: string
+    label: string
+    rect: { x: number; y: number; width: number; height: number; rx: number }
+  }
+> = {
+  alishan: {
+    countyId: 'chiayi-county',
+    clipId: 'clip-alishan-mountain',
+    label: 'alishan',
+    rect: { x: 622, y: 795, width: 110, height: 105, rx: 14 },
+  },
+  tainan: {
+    countyId: 'tainan-city',
+    clipId: 'clip-tainan-city',
+    label: 'tainan',
+    rect: { x: 475, y: 930, width: 90, height: 88, rx: 14 },
+  },
+  kaohsiung: {
+    countyId: 'kaohsiung-city',
+    clipId: 'clip-kaohsiung-city',
+    label: 'kaohsiung',
+    rect: { x: 512, y: 1015, width: 90, height: 120, rx: 14 },
+  },
 }
 
 interface TaiwanRegionMapProps {
@@ -78,15 +101,19 @@ export default function TaiwanRegionMap({
         className="mx-auto h-[360px] w-full max-w-[340px] sm:h-[440px] sm:max-w-[400px] select-none touch-manipulation drop-shadow-sm"
       >
         <defs>
-          <clipPath id="clip-alishan-mountain">
-            <rect x="622" y="795" width="110" height="105" rx="14" />
-          </clipPath>
-          <clipPath id="clip-tainan-city">
-            <rect x="475" y="930" width="90" height="88" rx="14" />
-          </clipPath>
-          <clipPath id="clip-kaohsiung-city">
-            <rect x="512" y="1015" width="90" height="120" rx="14" />
-          </clipPath>
+          {Object.values(CLIPPED_REGIONS).map((spec) => (
+            <clipPath key={spec.clipId} id={spec.clipId}>
+              <rect {...spec.rect} />
+            </clipPath>
+          ))}
+          {Object.values(CLIPPED_REGIONS).map((spec) => {
+            const loc = (taiwan.locations as SvgLocation[]).find((l) => l.id === spec.countyId)
+            return loc ? (
+              <clipPath key={`county-${spec.countyId}`} id={`clip-county-${spec.countyId}`}>
+                <path d={loc.path} />
+              </clipPath>
+            ) : null
+          })}
         </defs>
         {[...(taiwan.locations as SvgLocation[])]
           .sort((a, b) => {
@@ -152,13 +179,7 @@ export default function TaiwanRegionMap({
                   }}
                 />
                 {isClippedRegion && owner && clipSpec && (
-                  <g
-                    style={
-                      isSelected
-                        ? { filter: 'drop-shadow(0 0 2.5px var(--color-content))' }
-                        : undefined
-                    }
-                  >
+                  <g>
                     <path
                       d={loc.path}
                       clipPath={`url(#${clipSpec.clipId})`}
@@ -181,6 +202,17 @@ export default function TaiwanRegionMap({
                         setHoveredRegionId(null)
                       }}
                       onClick={() => onSelectRegion(owner.id)}
+                    />
+                    <rect
+                      {...clipSpec.rect}
+                      clipPath={`url(#clip-county-${clipSpec.countyId})`}
+                      fill="none"
+                      pointerEvents="none"
+                      style={{
+                        stroke: isSelected ? 'var(--color-content)' : 'var(--color-surface)',
+                        strokeWidth: isSelected ? 4 : 2,
+                        transition: 'stroke-width 150ms ease',
+                      }}
                     />
                   </g>
                 )}
