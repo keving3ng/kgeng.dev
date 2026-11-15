@@ -15,7 +15,6 @@ export const paths = {
   trips: '/trips',
   cms: '/cms',
   cmsPosts: '/cms/posts',
-  test: '/test',
 } as const
 
 /** Index filtered to projects (there is no standalone `/work` list page). */

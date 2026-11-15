@@ -4,11 +4,10 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import '@testing-library/jest-dom/vitest'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import Layout from './Layout'
-import Sidebar, { MobilePostFilters } from './Sidebar'
 import ThemeToggle from './ThemeToggle'
 import NotionRenderer from './NotionRenderer'
 import { ThemeProvider } from '../contexts/ThemeContext'
-import { lists, mainNav, socialLinks, tools } from '../config/navigation'
+import { mainNav, socialLinks, tools } from '../config/navigation'
 import { paths } from '../config/paths'
 
 beforeAll(() => {
@@ -102,31 +101,12 @@ describe('mobile site navigation', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('keeps mobile article filters separate from site links', () => {
-    const onFilterChange = vi.fn()
-    render(<MobilePostFilters filters={['All Posts', 'dev']} activeFilter={null} onFilterChange={onFilterChange} />)
-    fireEvent.click(screen.getByRole('button', { name: /filter:/ }))
-    expect(screen.queryAllByRole('link')).toHaveLength(0)
-    fireEvent.click(screen.getByRole('button', { name: 'dev' }))
-    expect(onFilterChange).toHaveBeenCalledWith('dev')
-  })
-
-  it('retains desktop navigation and filters', () => {
-    const onFilterChange = vi.fn()
-    render(<MemoryRouter><Sidebar filters={['All Posts', 'dev']} activeFilter="dev" onFilterChange={onFilterChange} links={socialLinks} tools={tools} lists={lists} /></MemoryRouter>)
-    expect(screen.getByRole('link', { name: 'picks' })).toHaveAttribute('href', paths.picks)
-    expect(screen.getByRole('link', { name: 'splits' })).toHaveAttribute('href', paths.tools.splits)
-    fireEvent.click(screen.getByRole('button', { name: 'all posts' }))
-    expect(onFilterChange).toHaveBeenCalledWith(null)
-  })
-
   it('enforces 44px touch targets on controls and responsive code blocks', () => {
     render(
       <ThemeProvider>
         <MemoryRouter>
           <Layout>
             <ThemeToggle />
-            <MobilePostFilters filters={['All Posts', 'dev']} activeFilter={null} onFilterChange={vi.fn()} />
             <NotionRenderer
               blocks={[
                 {
@@ -153,7 +133,6 @@ describe('mobile site navigation', () => {
     )
     expect(screen.getByRole('button', { name: 'menu' })).toHaveClass('min-h-[44px]', 'min-w-[44px]')
     expect(screen.getByRole('button', { name: /Current theme:/ })).toHaveClass('min-h-[44px]', 'min-w-[44px]')
-    expect(screen.getByRole('button', { name: /filter:/ })).toHaveClass('min-h-[44px]')
     expect(document.querySelector('pre')).toHaveClass('overflow-x-auto', 'max-w-full')
   })
 })

@@ -4,7 +4,7 @@ import { render, screen, cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { ThemeProvider } from '../contexts/ThemeContext'
-import Home from './Home'
+import CV from './CV'
 import { paths } from '../config/paths'
 
 beforeAll(() => {
@@ -20,25 +20,29 @@ beforeAll(() => {
   }))
 })
 
+vi.mock('../hooks/usePosts', () => ({
+  usePosts: () => ({ posts: [], loading: false, error: null }),
+}))
+
 afterEach(() => {
   cleanup()
 })
 
-function renderHome(route: string) {
-  return render(
-    <ThemeProvider>
-      <MemoryRouter initialEntries={[route]}>
-        <Home />
-      </MemoryRouter>
-    </ThemeProvider>
-  )
-}
-
-describe('Home (cv)', () => {
-  it('renders CVList on /cv', () => {
-    renderHome(paths.cv)
+describe('CV', () => {
+  it('renders terminal breadcrumb and CV sections on /cv', () => {
+    render(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={[paths.cv]}>
+          <CV />
+        </MemoryRouter>
+      </ThemeProvider>,
+    )
 
     expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toHaveTextContent('kgeng@dev:~/about/cv$')
+    expect(screen.getByText('experience')).toBeInTheDocument()
     expect(screen.getByText('education')).toBeInTheDocument()
+    expect(screen.getByText('skills')).toBeInTheDocument()
+    expect(screen.getByText('contact')).toBeInTheDocument()
+    expect(screen.getByText('esc back')).toBeInTheDocument()
   })
 })
