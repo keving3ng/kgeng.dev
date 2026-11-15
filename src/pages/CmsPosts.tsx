@@ -118,26 +118,31 @@ export default function CmsPosts() {
     <div className="min-h-screen pb-16">
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="mb-2 flex items-center gap-3 text-xs text-content-muted">
-            <Link to={paths.cms} className="hover:text-content transition-colors">
-              ← cms
-            </Link>
-            <span>/</span>
-            <Link to={paths.writing} className="hover:text-content transition-colors">
-              writing
-            </Link>
-            <span>/</span>
-            <Link to={paths.trips} className="hover:text-content transition-colors">
-              trips
-            </Link>
-          </div>
+          <Link
+            to={paths.cms}
+            className="inline-block text-xs text-content-muted hover:text-content transition-colors mb-2"
+          >
+            ← cms
+          </Link>
           <h1 className="text-2xl font-medium text-content">blog management</h1>
           <p className="mt-1 text-sm text-content-secondary">
             sync articles from notion into d1. edit content and metadata in notion.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <Link
+            to={paths.writing}
+            className="rounded-full border border-border px-3 py-1.5 text-xs text-content-secondary hover:text-content transition-colors"
+          >
+            writing
+          </Link>
+          <Link
+            to={paths.trips}
+            className="rounded-full border border-border px-3 py-1.5 text-xs text-content-secondary hover:text-content transition-colors"
+          >
+            trips
+          </Link>
           <button
             type="button"
             onClick={() => {
