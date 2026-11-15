@@ -409,78 +409,91 @@ export default function TripDetail() {
             apply d1 migrations (`0001_trips.sql` & `0002_seed_taiwan.sql`) to initialize this trip.
           </p>
         </div>
-      ) : selectedRegion ? (
-        <div className="space-y-6">
-          {/* Region header */}
-          <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-border bg-surface-secondary/40 p-5">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2.5">
-                <span
-                  className="h-3.5 w-3.5 rounded-full shrink-0"
-                  style={{ backgroundColor: selectedRegion.color }}
-                />
-                <h2 className="text-xl font-medium text-content">{selectedRegion.name}</h2>
-              </div>
-              {selectedRegion.summary && (
-                <p className="text-sm text-content-secondary">{selectedRegion.summary}</p>
-              )}
-              <div className="flex flex-wrap gap-3 pt-1 text-xs text-content-muted">
-                {SPOT_BUCKETS.map((b) => {
-                  const count = selectedRegion.spots.filter((s) => s.bucket === b).length
-                  return (
-                    <span key={b} className="inline-flex items-center gap-1.5">
-                      <span
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: BUCKET_META[b].accent }}
-                      />
-                      {count} {BUCKET_META[b].label}
-                    </span>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {editMode && (
-                <button
-                  type="button"
-                  onClick={() => setShowPinMapInEdit((v) => !v)}
-                  className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-content-secondary hover:text-content"
-                >
-                  {showPinMapInEdit || hasPinnedSpots ? 'hide pin map' : '+ pin map'}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => selectRegion(null)}
-                className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs text-content-secondary hover:text-content transition-colors"
-              >
-                ← back to map
-              </button>
-            </div>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] items-start">
+          <div className="lg:sticky lg:top-6">
+            <TaiwanRegionMap
+              regions={data.regions}
+              selectedRegionId={selectedRegion?.id ?? null}
+              onSelectRegion={(id) => selectRegion(id === selectedRegion?.id ? null : id)}
+              paintingRegionId={editMode ? paintingRegionId : null}
+              onToggleMapCounty={handleToggleMapCounty}
+            />
           </div>
 
-          {/* Optional hybrid Leaflet pin map */}
-          {(hasPinnedSpots || Boolean(pickingSpotId) || (editMode && showPinMapInEdit)) && (
-            <RegionPinMap
-              centerLat={selectedRegion.centerLat ?? 23.6978}
-              centerLng={selectedRegion.centerLng ?? 120.9605}
-              spots={selectedRegion.spots}
-              activeSpotId={activeSpotId}
-              onSelectSpot={setActiveSpotId}
-              pickingCoords={Boolean(pickingSpotId)}
-              onPickCoords={handlePickCoords}
-            />
-          )}
+          <div className="min-w-0">
+            {selectedRegion ? (
+              <div className="space-y-4">
+                {/* Region header */}
+                <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-border bg-surface-secondary/40 p-4">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="h-3.5 w-3.5 rounded-full shrink-0"
+                        style={{ backgroundColor: selectedRegion.color }}
+                      />
+                      <h2 className="text-lg font-medium text-content">{selectedRegion.name}</h2>
+                    </div>
+                    {selectedRegion.summary && (
+                      <p className="text-xs text-content-secondary">{selectedRegion.summary}</p>
+                    )}
+                    <div className="flex flex-wrap gap-3 pt-1 text-xs text-content-muted">
+                      {SPOT_BUCKETS.map((b) => {
+                        const count = selectedRegion.spots.filter((s) => s.bucket === b).length
+                        return (
+                          <span key={b} className="inline-flex items-center gap-1.5">
+                            <span
+                              className="h-2 w-2 rounded-full"
+                              style={{ backgroundColor: BUCKET_META[b].accent }}
+                            />
+                            {count} {BUCKET_META[b].label}
+                          </span>
+                        )
+                      })}
+                    </div>
+                  </div>
 
-          {/* 3-bucket drag-and-drop breakdown */}
-          {editMode && (
-            <p className="text-xs text-content-muted">
-              drag and drop spots within or between columns to organize them.
-            </p>
-          )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {editMode && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPinMapInEdit((v) => !v)}
+                        className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-content-secondary hover:text-content"
+                      >
+                        {showPinMapInEdit || hasPinnedSpots ? 'hide pin map' : '+ pin map'}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => selectRegion(null)}
+                      className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-content-secondary hover:text-content transition-colors"
+                    >
+                      ← all regions
+                    </button>
+                  </div>
+                </div>
 
-          <div className="grid gap-5 lg:grid-cols-3">
+                {/* Optional hybrid Leaflet pin map */}
+                {(hasPinnedSpots || Boolean(pickingSpotId) || (editMode && showPinMapInEdit)) && (
+                  <RegionPinMap
+                    centerLat={selectedRegion.centerLat ?? 23.6978}
+                    centerLng={selectedRegion.centerLng ?? 120.9605}
+                    spots={selectedRegion.spots}
+                    activeSpotId={activeSpotId}
+                    onSelectSpot={setActiveSpotId}
+                    pickingCoords={Boolean(pickingSpotId)}
+                    onPickCoords={handlePickCoords}
+                  />
+                )}
+
+                {/* 3-bucket drag-and-drop breakdown */}
+                {editMode && (
+                  <p className="text-xs text-content-muted">
+                    drag and drop spots within or between sections to organize them.
+                  </p>
+                )}
+
+                <div className="space-y-4">
             {SPOT_BUCKETS.map((bucket) => {
               const meta = BUCKET_META[bucket]
               const bucketSpots = selectedRegion.spots.filter((s) => s.bucket === bucket)
@@ -634,19 +647,10 @@ export default function TripDetail() {
                 </section>
               )
             })}
-          </div>
-        </div>
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr] items-start">
-          <TaiwanRegionMap
-            regions={data.regions}
-            selectedRegionId={null}
-            onSelectRegion={(id) => selectRegion(id)}
-            paintingRegionId={editMode ? paintingRegionId : null}
-            onToggleMapCounty={handleToggleMapCounty}
-          />
-
-          <div className="space-y-4">
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-content">
                 regions ({data.regions.length})
@@ -792,6 +796,8 @@ export default function TripDetail() {
                   </button>
                 </div>
               </form>
+            )}
+              </div>
             )}
           </div>
         </div>
