@@ -8,6 +8,12 @@ interface SvgLocation {
   path: string
 }
 
+const CLIPPED_REGIONS: Record<string, { countyId: string; clipId: string; label: string }> = {
+  alishan: { countyId: 'chiayi-county', clipId: 'clip-alishan-mountain', label: 'alishan' },
+  tainan: { countyId: 'tainan-city', clipId: 'clip-tainan-city', label: 'tainan' },
+  kaohsiung: { countyId: 'kaohsiung-city', clipId: 'clip-kaohsiung-city', label: 'kaohsiung' },
+}
+
 interface TaiwanRegionMapProps {
   regions: TripRegion[]
   selectedRegionId: string | null
@@ -75,17 +81,24 @@ export default function TaiwanRegionMap({
           <clipPath id="clip-alishan-mountain">
             <rect x="622" y="795" width="110" height="105" rx="14" />
           </clipPath>
+          <clipPath id="clip-tainan-city">
+            <rect x="475" y="930" width="90" height="88" rx="14" />
+          </clipPath>
+          <clipPath id="clip-kaohsiung-city">
+            <rect x="512" y="1015" width="90" height="120" rx="14" />
+          </clipPath>
         </defs>
         {(taiwan.locations as SvgLocation[]).map((loc) => {
           const owner = countyToRegion.get(loc.id)
-          const isAlishanClip = Boolean(!paintingRegionId && owner?.slug === 'alishan' && loc.id === 'chiayi-county')
+          const clipSpec = owner ? CLIPPED_REGIONS[owner.slug] : undefined
+          const isClippedRegion = Boolean(!paintingRegionId && clipSpec && clipSpec.countyId === loc.id)
           const isSelected = Boolean(owner && owner.id === selectedRegionId)
           const isHovered = Boolean(owner && owner.id === hoveredRegionId)
           const isPaintingTarget = Boolean(paintingRegionId && owner?.id === paintingRegionId)
 
-          const fill = owner && !isAlishanClip ? owner.color : 'var(--color-surface-secondary)'
+          const fill = owner && !isClippedRegion ? owner.color : 'var(--color-surface-secondary)'
           const fillOpacity =
-            owner && !isAlishanClip
+            owner && !isClippedRegion
               ? isSelected || isHovered || isPaintingTarget
                 ? 0.95
                 : 0.72
@@ -98,7 +111,7 @@ export default function TaiwanRegionMap({
               <path
                 d={loc.path}
                 aria-label={
-                  owner && !isAlishanClip
+                  owner && !isClippedRegion
                     ? `${loc.name.toLowerCase()} (${owner.name})`
                     : loc.name.toLowerCase()
                 }
@@ -106,17 +119,19 @@ export default function TaiwanRegionMap({
                   fill,
                   fillOpacity,
                   stroke:
-                    isSelected && !isAlishanClip ? 'var(--color-content)' : 'var(--color-surface)',
-                  strokeWidth: isSelected && !isAlishanClip ? 4 : 2,
+                    isSelected && !isClippedRegion ? 'var(--color-content)' : 'var(--color-surface)',
+                  strokeWidth: isSelected && !isClippedRegion ? 4 : 2,
                   transition:
                     'fill-opacity 150ms ease, transform 150ms ease, stroke-width 150ms ease',
                 }}
                 className={
-                  (owner && !isAlishanClip) || paintingRegionId ? 'cursor-pointer' : 'cursor-default'
+                  (owner && !isClippedRegion) || paintingRegionId
+                    ? 'cursor-pointer'
+                    : 'cursor-default'
                 }
                 onMouseEnter={() => {
                   setHoveredCountyName(loc.name)
-                  if (owner && !isAlishanClip) setHoveredRegionId(owner.id)
+                  if (owner && !isClippedRegion) setHoveredRegionId(owner.id)
                 }}
                 onMouseLeave={() => {
                   setHoveredCountyName(null)
@@ -125,16 +140,16 @@ export default function TaiwanRegionMap({
                 onClick={() => {
                   if (paintingRegionId && onToggleMapCounty) {
                     onToggleMapCounty(paintingRegionId, loc.id)
-                  } else if (owner && !isAlishanClip) {
+                  } else if (owner && !isClippedRegion) {
                     onSelectRegion(owner.id)
                   }
                 }}
               />
-              {isAlishanClip && owner && (
+              {isClippedRegion && owner && clipSpec && (
                 <path
                   d={loc.path}
-                  clipPath="url(#clip-alishan-mountain)"
-                  aria-label={`alishan (${owner.name})`}
+                  clipPath={`url(#${clipSpec.clipId})`}
+                  aria-label={`${clipSpec.label} (${owner.name})`}
                   style={{
                     fill: owner.color,
                     fillOpacity: activeFillOpacity,
@@ -145,7 +160,7 @@ export default function TaiwanRegionMap({
                   }}
                   className="cursor-pointer"
                   onMouseEnter={() => {
-                    setHoveredCountyName('alishan')
+                    setHoveredCountyName(clipSpec.label)
                     setHoveredRegionId(owner.id)
                   }}
                   onMouseLeave={() => {
