@@ -39,7 +39,7 @@ export default function CmsLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-surface text-content flex items-center justify-center px-4">
+    <div className="min-h-screen bg-surface text-content flex items-center justify-center px-4 pb-24">
       <div className="w-full max-w-xs space-y-4 text-center">
         <pre className="inline-block text-left text-xs leading-tight text-content-muted font-mono select-none">
           {ASCII_CAT}
