@@ -75,10 +75,7 @@ export default function CmsLogin() {
             </Link>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-content-muted pt-1">
-            <Link to={paths.home} className="hover:text-content transition-colors">
-              ← home
-            </Link>
+          <div className="flex items-center justify-end text-xs text-content-muted pt-1">
             <button
               type="button"
               onClick={lock}

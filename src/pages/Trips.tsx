@@ -55,10 +55,10 @@ export default function Trips() {
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
           <Link
-            to={paths.home}
+            to={isAuthenticated ? paths.cms : paths.home}
             className="inline-block text-xs text-content-muted hover:text-content transition-colors mb-2"
           >
-            ← home
+            {isAuthenticated ? '← cms' : '← home'}
           </Link>
           <h1 className="text-2xl font-medium text-content">trips</h1>
           <p className="mt-1 text-sm text-content-secondary">

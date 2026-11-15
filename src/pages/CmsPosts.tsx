@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ThemeToggle from '../components/ThemeToggle'
-import { paths, postPath } from '../config/paths'
+import { paths } from '../config/paths'
 import { useTripAdmin } from '../hooks/useTripAdmin'
 import {
   deleteCmsPost,
@@ -132,12 +132,6 @@ export default function CmsPosts() {
 
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <Link
-            to={paths.writing}
-            className="rounded-full border border-border px-3 py-1.5 text-xs text-content-secondary hover:text-content transition-colors"
-          >
-            writing
-          </Link>
-          <Link
             to={paths.trips}
             className="rounded-full border border-border px-3 py-1.5 text-xs text-content-secondary hover:text-content transition-colors"
           >
@@ -249,16 +243,7 @@ export default function CmsPosts() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-content-muted">
-                      {post.published ? (
-                        <Link
-                          to={postPath(post.slug)}
-                          className="hover:text-content hover:underline"
-                        >
-                          /post/{post.slug} ↗
-                        </Link>
-                      ) : (
-                        <span>/post/{post.slug}</span>
-                      )}
+                      <span>/post/{post.slug}</span>
                       {post.date && <span>{post.date}</span>}
                       <span>{post.blockCount} blocks</span>
                       <span>synced {post.syncedAt.slice(0, 10)}</span>
