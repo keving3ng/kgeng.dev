@@ -46,6 +46,7 @@ const toolMeta: Record<string, { description: string; date: string }> = {
 const pageRows: IndexRow[] = [
   { id: 'page:picks', name: 'picks', type: 'page', description: 'things i\'ve enjoyed and would recommend.', date: '2026-11', href: paths.picks },
   { id: 'page:recipes', name: 'recipes', type: 'page', description: 'a collection of recipes i\'ve saved.', date: '2026-11', href: paths.recipes },
+  { id: 'page:trips', name: 'trips', type: 'page', description: 'interactive travel maps and saved spots.', date: '2026-11', href: paths.trips },
   { id: 'page:about', name: 'about', type: 'page', description: 'a little more about me.', date: '2026-11', href: paths.about },
   { id: 'page:cv', name: 'cv', type: 'page', description: 'experience, education, and background.', date: '2026-11', href: paths.cv },
 ]

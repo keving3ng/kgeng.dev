@@ -20,6 +20,7 @@ export const tools: NavLink[] = [
 export const lists: NavLink[] = [
   { label: 'picks', url: paths.picks },
   { label: 'recipes', url: paths.recipes },
+  { label: 'trips', url: paths.trips },
 ]
 
 /** Top-level "directories" shown as header tabs (desktop) and in the mobile menu. */
