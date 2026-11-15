@@ -67,14 +67,15 @@ npm run check
 
 | Path | Page / behavior |
 |------|-----------------|
-| `/` | `Index` (terminal-style index of projects, tools, posts; desktop-only command prompt) |
-| `/work` | `Work` (projects) |
-| `/writing`, `/post/:slug`, `/cv` | `Home` (newsfeed / cv variants) |
+| `/` | `Index` (terminal-style index of projects, tools, posts, pages; desktop-only command prompt) |
+| `/work/:slug` | `ProjectDetail` (terminal project page) |
+| `/writing`, `/cv` | `Home` (newsfeed / cv variants) |
+| `/post/:slug` | `PostDetail` (terminal post page) |
 | `/about` | `About` |
 | `/tools/splits`, `/tools/recipeer` | Tool pages |
-| `/picks`, `/picks/recipes` | `Picks`, `Recipes` |
+| `/picks`, `/picks/recipes`, `/picks/recipes/:id` | `Picks`, `Recipes`, `RecipeDetail` |
 
-Legacy `/blog`, `/projects`, `/recipes` redirect (see `legacyRedirects` in `paths.ts`). The games section was removed.
+Legacy `/blog`, `/work`, `/projects`, `/recipes` redirect (see `legacyRedirects` in `paths.ts`). The games section was removed.
 
 - **Nav config:** `src/config/navigation.ts` (`tools`, `lists`, social links)—URLs must match `paths.ts`.
 

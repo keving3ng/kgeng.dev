@@ -1,4 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+/** Navigates back in browser history when available, otherwise falls back to `fallback`. */
+export function useGoBack(fallback: string) {
+  const navigate = useNavigate()
+  return useCallback(() => {
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+    if (idx > 0) navigate(-1)
+    else navigate(fallback)
+  }, [navigate, fallback])
+}
 
 function isTerminalTarget(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest('[data-terminal]') !== null

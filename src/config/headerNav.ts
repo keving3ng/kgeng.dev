@@ -1,4 +1,4 @@
-import { paths, toolsIndexPath } from './paths'
+import { paths, projectsIndexPath, toolsIndexPath } from './paths'
 
 export interface PromptSegment {
   label: string
@@ -7,13 +7,28 @@ export interface PromptSegment {
 }
 
 /** Clickable breadcrumb segments for the `kgeng@dev:~/…$` prompt. */
-export function promptSegments(pathname: string): PromptSegment[] {
+export function promptSegments(pathname: string, currentLabel?: string): PromptSegment[] {
   if (pathname === paths.home) return [{ label: '~', to: null }]
   if (pathname.startsWith('/post/')) {
     return [
       { label: '~', to: paths.home },
       { label: 'writing', to: paths.writing },
-      { label: pathname.slice('/post/'.length), to: null },
+      { label: currentLabel ?? decodeURIComponent(pathname.slice('/post/'.length)), to: null },
+    ]
+  }
+  if (pathname.startsWith('/work/')) {
+    return [
+      { label: '~', to: paths.home },
+      { label: 'work', to: projectsIndexPath },
+      { label: currentLabel ?? decodeURIComponent(pathname.slice('/work/'.length)), to: null },
+    ]
+  }
+  if (pathname.startsWith('/picks/recipes/')) {
+    return [
+      { label: '~', to: paths.home },
+      { label: 'picks', to: paths.picks },
+      { label: 'recipes', to: paths.recipes },
+      { label: currentLabel ?? decodeURIComponent(pathname.slice('/picks/recipes/'.length)), to: null },
     ]
   }
   if (pathname === paths.cv) {
@@ -51,6 +66,8 @@ export function promptPath(pathname: string): string {
 export function parentPath(pathname: string): string | null {
   if (pathname === paths.home) return null
   if (pathname === paths.recipes) return paths.picks
+  if (pathname.startsWith('/picks/recipes/')) return paths.recipes
+  if (pathname.startsWith('/work/')) return paths.home
   if (pathname.startsWith('/post/')) return paths.writing
   if (pathname === paths.cv) return paths.about
   return paths.home

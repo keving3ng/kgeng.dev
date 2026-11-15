@@ -1,6 +1,6 @@
 import { projects } from './projects'
 import { tools } from './navigation'
-import { paths, postPath } from './paths'
+import { paths, postPath, projectPath } from './paths'
 import type { Post } from '../types/post'
 
 export type RowType = 'project' | 'tool' | 'post' | 'page'
@@ -52,13 +52,12 @@ const pageRows: IndexRow[] = [
 export function buildIndexRows(posts: Post[]): IndexRow[] {
   return [
     ...projects.map((p): IndexRow => ({
-      id: `project:${p.name}`,
+      id: `project:${p.slug}`,
       name: p.name,
       type: 'project',
       description: p.description,
       date: p.updatedAt ?? null,
-      href: p.url,
-      external: Boolean(p.url),
+      href: projectPath(p.slug),
     })),
     ...tools.map((t): IndexRow => ({
       id: `tool:${t.label}`,

@@ -42,14 +42,14 @@ function renderIndex(route = '/') {
 describe('Index', () => {
   it('lists projects, tools and posts together', () => {
     renderIndex()
-    expect(screen.getByText('matchamap ↗')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'matchamap' })).toHaveAttribute('href', '/work/matchamap')
     expect(screen.getByRole('link', { name: 'splits' })).toHaveAttribute('href', '/tools/splits')
     expect(screen.getByRole('link', { name: 'hello world' })).toHaveAttribute('href', '/post/hello-world')
   })
 
   it('filters by type from the url and via the filter buttons', () => {
     renderIndex('/?type=tool')
-    expect(screen.queryByText('matchamap ↗')).toBeNull()
+    expect(screen.queryByRole('link', { name: 'matchamap' })).toBeNull()
     expect(screen.getByRole('link', { name: 'splits' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'post' }))
     expect(screen.queryByRole('link', { name: 'splits' })).toBeNull()

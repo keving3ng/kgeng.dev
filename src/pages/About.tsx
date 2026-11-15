@@ -1,14 +1,13 @@
-import { useCallback, useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
-import { useTerminalNav } from '../hooks/useTerminalNav'
+import { useGoBack, useTerminalNav } from '../hooks/useTerminalNav'
 import { buildIndexRows } from '../config/indexRows'
 import { paths } from '../config/paths'
 
 function About() {
-  const navigate = useNavigate()
-  const goBack = useCallback(() => navigate(paths.home), [navigate])
+  const goBack = useGoBack(paths.home)
 
   useTerminalNav({
     filters: ['about'],

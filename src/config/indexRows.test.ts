@@ -22,7 +22,7 @@ describe('buildIndexRows', () => {
     ])
     const post = rows.find((r) => r.id === 'post:test-post')
     const tool = rows.find((r) => r.id === 'tool:splits')
-    const project = rows.find((r) => r.id === 'project:kgeng.dev')
+    const project = rows.find((r) => r.id === 'project:kgeng-dev')
     const page = rows.find((r) => r.id === 'page:picks')
 
     expect(formatShortDate(post?.date)).toBe('apr 2026')

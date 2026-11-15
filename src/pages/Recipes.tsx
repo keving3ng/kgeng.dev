@@ -1,56 +1,23 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
-import NotionRenderer from '../components/NotionRenderer'
 import { useRecipes } from '../hooks/useRecipes'
-import { useTerminalNav } from '../hooks/useTerminalNav'
-import { getRecipe, type RecipeWithContent } from '../services/recipes'
+import { useTerminalNav, useGoBack } from '../hooks/useTerminalNav'
+import { staticRecipesAsList } from '../config/recipes'
 import { buildIndexRows } from '../config/indexRows'
-import { paths } from '../config/paths'
-
-function RecipeContent({ id }: { id: string }) {
-  const [recipe, setRecipe] = useState<RecipeWithContent | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    getRecipe(id)
-      .then(setRecipe)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false))
-  }, [id])
-
-  if (loading) {
-    return <div className="text-content-muted text-sm">loading...</div>
-  }
-
-  if (error) {
-    return <div className="text-error text-sm">{error}</div>
-  }
-
-  if (!recipe || !recipe.blocks || recipe.blocks.length === 0) {
-    return <div className="text-content-muted text-sm italic">no content</div>
-  }
-
-  return <NotionRenderer blocks={recipe.blocks} />
-}
+import { paths, recipePath } from '../config/paths'
 
 function Recipes() {
   const navigate = useNavigate()
-  const { recipes, loading, error } = useRecipes()
+  const { recipes: notionRecipes, loading, error } = useRecipes()
   const [activeTag, setActiveTag] = useState<string>('all')
   const [query, setQuery] = useState('')
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
-  const toggleItem = useCallback((id: string) => {
-    setExpandedItems((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }, [])
+  const recipes = useMemo(
+    () => [...staticRecipesAsList(), ...notionRecipes],
+    [notionRecipes],
+  )
 
   const tagOptions = useMemo(() => {
     const tagSet = new Set<string>()
@@ -75,13 +42,13 @@ function Recipes() {
     (index: number) => {
       const recipe = filteredRecipes[index]
       if (!recipe) return
-      if (recipe.hasContent) toggleItem(recipe.id)
+      if (recipe.hasContent) navigate(recipePath(recipe.id))
       else if (recipe.url) window.open(recipe.url, '_blank', 'noopener,noreferrer')
     },
-    [filteredRecipes, toggleItem],
+    [filteredRecipes, navigate],
   )
 
-  const goBack = useCallback(() => navigate(paths.picks), [navigate])
+  const goBack = useGoBack(paths.picks)
 
   const { selected } = useTerminalNav({
     filters: tagOptions,
@@ -150,8 +117,6 @@ function Recipes() {
           ) : (
             <ul className="space-y-3 md:space-y-1">
               {filteredRecipes.map((recipe, i) => {
-                const isExpanded = expandedItems.has(recipe.id)
-                const hasToggle = recipe.hasContent
                 const primaryTag = recipe.tags[0]?.toLowerCase() ?? 'recipe'
 
                 return (
@@ -161,49 +126,50 @@ function Recipes() {
                       if (el && selected === i) el.scrollIntoView?.({ block: 'nearest' })
                     }}
                     aria-current={selected === i ? 'true' : undefined}
-                    className={`text-sm ${selected === i ? 'bg-surface-secondary' : ''}`}
+                    className={`grid grid-cols-[auto_1fr] md:grid-cols-[7rem_16rem_1fr] gap-x-4 text-sm ${
+                      selected === i ? 'bg-surface-secondary' : ''
+                    }`}
                   >
-                    <div className="grid grid-cols-[auto_1fr] md:grid-cols-[7rem_16rem_1fr] gap-x-4">
-                      <span className="text-content font-medium whitespace-nowrap">
-                        <span aria-hidden="true" className="hidden md:inline text-content-muted font-normal">
-                          {selected === i ? '> ' : '  '}
-                        </span>
-                        {primaryTag}
+                    <span className="text-content font-medium whitespace-nowrap">
+                      <span aria-hidden="true" className="hidden md:inline text-content-muted font-normal">
+                        {selected === i ? '> ' : '  '}
                       </span>
-                      <span className="min-w-0 break-words flex items-baseline gap-2">
-                        {hasToggle ? (
-                          <button
-                            type="button"
-                            onClick={() => toggleItem(recipe.id)}
-                            className="text-left text-content hover:text-content-secondary transition-colors"
-                          >
-                            <span className="text-content-muted mr-1">{isExpanded ? '▾' : '›'}</span>
-                            {recipe.name.toLowerCase()}
-                          </button>
-                        ) : (
-                          <span className="text-content">{recipe.name.toLowerCase()}</span>
-                        )}
-                        {recipe.url && (
-                          <a
-                            href={recipe.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-content-muted hover:text-content-secondary transition-colors"
-                          >
-                            ↗
-                          </a>
-                        )}
-                      </span>
-                      <span className="col-span-2 md:col-span-1 text-content-muted">
-                        {recipe.notes ?? ''}
-                      </span>
-                    </div>
-
-                    {hasToggle && isExpanded && (
-                      <div className="mt-2 mb-3 pl-4 md:pl-[7rem] border-l-2 border-border">
-                        <RecipeContent id={recipe.id} />
-                      </div>
-                    )}
+                      {primaryTag}
+                    </span>
+                    <span className="min-w-0 break-words flex items-baseline gap-2">
+                      {recipe.hasContent ? (
+                        <Link
+                          to={recipePath(recipe.id)}
+                          className="text-content hover:text-content-secondary transition-colors"
+                        >
+                          {recipe.name.toLowerCase()}
+                        </Link>
+                      ) : recipe.url ? (
+                        <a
+                          href={recipe.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-content hover:text-content-secondary transition-colors"
+                        >
+                          {recipe.name.toLowerCase()} ↗
+                        </a>
+                      ) : (
+                        <span className="text-content">{recipe.name.toLowerCase()}</span>
+                      )}
+                      {recipe.hasContent && recipe.url && (
+                        <a
+                          href={recipe.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-content-muted hover:text-content-secondary transition-colors"
+                        >
+                          ↗
+                        </a>
+                      )}
+                    </span>
+                    <span className="col-span-2 md:col-span-1 text-content-muted">
+                      {recipe.notes ?? ''}
+                    </span>
                   </li>
                 )
               })}
@@ -214,7 +180,7 @@ function Recipes() {
         <div className="shrink-0 mt-4 border-t border-border pt-3 space-y-2">
           <p className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-content-muted">
             <span>{recipes.length} recipes</span>
-            <span className="hidden md:inline">←→ filter · ↑↓ select · ↵ toggle · esc back</span>
+            <span className="hidden md:inline">←→ filter · ↑↓ select · ↵ open · esc back</span>
           </p>
           <TerminalPrompt rows={promptRows} />
         </div>

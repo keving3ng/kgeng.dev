@@ -12,7 +12,7 @@ describe('runCommand', () => {
     expect(runCommand('foo', { rows }).output).toEqual(['command not found: foo'])
   })
   it('cd navigates and rejects unknown dirs', () => {
-    expect(runCommand('cd work', { rows }).navigate).toBe('/work')
+    expect(runCommand('cd work', { rows }).navigate).toBe('/?type=project')
     expect(runCommand('cd ~/picks', { rows }).navigate).toBe('/picks')
     expect(runCommand('cd', { rows }).navigate).toBe('/')
     expect(runCommand('cd nope', { rows }).output[0]).toContain('no such file')

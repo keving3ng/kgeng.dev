@@ -4,7 +4,6 @@
  */
 export const paths = {
   home: '/',
-  work: '/work',
   writing: '/writing',
   about: '/about',
   cv: '/cv',
@@ -17,17 +16,31 @@ export const paths = {
   test: '/test',
 } as const
 
-/** Legacy paths that redirect to their new homes. */
-export const legacyRedirects: Record<string, string> = {
-  '/blog': paths.writing,
-  '/projects': paths.work,
-  '/recipes': paths.recipes,
-}
+/** Index filtered to projects (there is no standalone `/work` list page). */
+export const projectsIndexPath = `${paths.home}?type=project`
 
 /** Index filtered to tools (the `tools` tab has no page of its own). */
 export const toolsIndexPath = `${paths.home}?type=tool`
 
+/** Legacy paths that redirect to their new homes. */
+export const legacyRedirects: Record<string, string> = {
+  '/blog': paths.writing,
+  '/work': projectsIndexPath,
+  '/projects': projectsIndexPath,
+  '/recipes': paths.recipes,
+}
+
 /** Permalink path for a blog post (matches `/post/:slug`). */
 export function postPath(slug: string): string {
   return `/post/${encodeURIComponent(slug)}`
+}
+
+/** Permalink path for a project detail page (matches `/work/:slug`). */
+export function projectPath(slug: string): string {
+  return `/work/${encodeURIComponent(slug)}`
+}
+
+/** Permalink path for a recipe detail page (matches `/picks/recipes/:id`). */
+export function recipePath(id: string): string {
+  return `/picks/recipes/${encodeURIComponent(id)}`
 }

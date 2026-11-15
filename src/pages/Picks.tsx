@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
-import { useTerminalNav } from '../hooks/useTerminalNav'
+import { useTerminalNav, useGoBack } from '../hooks/useTerminalNav'
 import { buildIndexRows } from '../config/indexRows'
 import { paths } from '../config/paths'
 
@@ -16,7 +16,7 @@ interface Pick {
 interface Category {
   name: string
   items: Pick[]
-  link?: { label: string; url: string }
+  link?: { label: string; url: string; note?: string }
 }
 
 interface PickRow {
@@ -29,7 +29,35 @@ interface PickRow {
 }
 
 const categories: Category[] = [
-  { name: 'books', items: [] },
+  {
+    name: 'books',
+    items: [
+      { title: 'Atomic Habits', author: 'James Clear', note: 'obviously' },
+    ],
+  },
+  {
+    name: 'games',
+    items: [
+      { title: 'Old School RuneScape', note: 'click box number go up' },
+      { title: 'Super Smash Brothers Melee', note: 'old game best game' },
+      { title: 'Titanfall 2', note: 'chills' },
+      { title: 'Witcher 3', note: 'played 80 hours during reading week in third year' },
+      { title: 'Skyrim', note: 'i never really played single player games before this and it changed my life' },
+    ],
+  },
+  {
+    name: 'sports',
+    items: [
+      { title: 'Ottawa Senators 2017 Playoffs', note: 'goats of my childhood' },
+      { title: 'Toronto Raptors 2019 Playoffs', note: 'i can replay so many moments in my mind' },
+    ],
+  },
+  {
+    name: 'places',
+    items: [
+      { title: 'Martin Goodman Trail', note: 'my strava has never seen another place' },
+    ],
+  },
   {
     name: 'articles',
     items: [
@@ -37,13 +65,14 @@ const categories: Category[] = [
         title: 'An Existential Guide to Making Friends',
         url: 'https://theshadowedarchive.substack.com/p/an-existential-guide-to-making-friends',
         author: 'The Shadowed Archive',
+        note: 'perspective shifting and brought great success',
       },
     ],
   },
   { name: 'videos', items: [] },
   {
     name: 'movies',
-    link: { label: 'letterboxd', url: 'https://letterboxd.com/kegk3g/' },
+    link: { label: 'letterboxd', url: 'https://letterboxd.com/kegk3g/', note: 'yuh' },
     items: [],
   },
   { name: 'podcasts', items: [] },
@@ -70,7 +99,7 @@ function Picks() {
           id: `${cat.name}:${cat.link.label}`,
           category: cat.name,
           title: cat.link.label,
-          detail: `${cat.name} log`,
+          detail: cat.link.note ?? `${cat.name} log`,
           href: cat.link.url,
           external: true,
         })
@@ -114,7 +143,7 @@ function Picks() {
     [rows, navigate],
   )
 
-  const goBack = useCallback(() => navigate(paths.home), [navigate])
+  const goBack = useGoBack(paths.home)
 
   const { selected } = useTerminalNav({
     filters: filterOptions,

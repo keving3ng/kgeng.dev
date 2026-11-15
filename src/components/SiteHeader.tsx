@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
 import NameAnimation, { type NameAnimationKind } from './NameAnimation'
 import { parentPath, promptSegments } from '../config/headerNav'
+import { useGoBack } from '../hooks/useTerminalNav'
 import { paths } from '../config/paths'
 import { randomFortune } from '../config/fortunes'
 
@@ -28,10 +29,16 @@ function pickNextAnimation(current: NameAnimationKind): NameAnimationKind {
   return pool[Math.floor(Math.random() * pool.length)] ?? 'pop'
 }
 
-export default function SiteHeader() {
+interface SiteHeaderProps {
+  /** Optional label for the final breadcrumb segment (e.g. recipe name instead of UUID). */
+  currentSegment?: string
+}
+
+export default function SiteHeader({ currentSegment }: SiteHeaderProps = {}) {
   const { pathname } = useLocation()
   const parent = parentPath(pathname)
-  const segments = promptSegments(pathname)
+  const goBack = useGoBack(parent ?? paths.home)
+  const segments = promptSegments(pathname, currentSegment)
   const [fortune] = useState(() => randomFortune())
   const [anim, setAnim] = useState<{ kind: NameAnimationKind; tick: number }>({
     kind: 'pop',
@@ -75,12 +82,13 @@ export default function SiteHeader() {
             <span>$</span>
           </nav>
           {parent && (
-            <Link
-              to={parent}
+            <button
+              type="button"
+              onClick={goBack}
               className="shrink-0 text-content-muted hover:text-content transition-colors"
             >
               ← cd ..
-            </Link>
+            </button>
           )}
         </div>
         <h1 className="text-2xl font-medium text-content">
