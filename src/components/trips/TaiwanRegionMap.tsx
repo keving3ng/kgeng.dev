@@ -71,48 +71,91 @@ export default function TaiwanRegionMap({
         aria-label="interactive map of taiwan regions"
         className="mx-auto h-[360px] w-full max-w-[340px] sm:h-[440px] sm:max-w-[400px] select-none drop-shadow-sm"
       >
+        <defs>
+          <clipPath id="clip-alishan-mountain">
+            <rect x="622" y="795" width="110" height="105" rx="14" />
+          </clipPath>
+        </defs>
         {(taiwan.locations as SvgLocation[]).map((loc) => {
           const owner = countyToRegion.get(loc.id)
+          const isAlishanClip = Boolean(!paintingRegionId && owner?.slug === 'alishan' && loc.id === 'chiayi-county')
           const isSelected = Boolean(owner && owner.id === selectedRegionId)
           const isHovered = Boolean(owner && owner.id === hoveredRegionId)
           const isPaintingTarget = Boolean(paintingRegionId && owner?.id === paintingRegionId)
 
-          const fill = owner ? owner.color : 'var(--color-surface-secondary)'
-          const fillOpacity = owner
-            ? isSelected || isHovered || isPaintingTarget
-              ? 0.95
-              : 0.72
-            : 0.9
+          const fill = owner && !isAlishanClip ? owner.color : 'var(--color-surface-secondary)'
+          const fillOpacity =
+            owner && !isAlishanClip
+              ? isSelected || isHovered || isPaintingTarget
+                ? 0.95
+                : 0.72
+              : 0.9
+
+          const activeFillOpacity = isSelected || isHovered || isPaintingTarget ? 0.95 : 0.72
 
           return (
-            <path
-              key={loc.id}
-              d={loc.path}
-              aria-label={owner ? `${loc.name.toLowerCase()} (${owner.name})` : loc.name.toLowerCase()}
-              style={{
-                fill,
-                fillOpacity,
-                stroke: isSelected ? 'var(--color-content)' : 'var(--color-surface)',
-                strokeWidth: isSelected ? 4 : 2,
-                transition: 'fill-opacity 150ms ease, transform 150ms ease, stroke-width 150ms ease',
-              }}
-              className={owner || paintingRegionId ? 'cursor-pointer' : 'cursor-default'}
-              onMouseEnter={() => {
-                setHoveredCountyName(loc.name)
-                if (owner) setHoveredRegionId(owner.id)
-              }}
-              onMouseLeave={() => {
-                setHoveredCountyName(null)
-                setHoveredRegionId(null)
-              }}
-              onClick={() => {
-                if (paintingRegionId && onToggleMapCounty) {
-                  onToggleMapCounty(paintingRegionId, loc.id)
-                } else if (owner) {
-                  onSelectRegion(owner.id)
+            <g key={loc.id}>
+              <path
+                d={loc.path}
+                aria-label={
+                  owner && !isAlishanClip
+                    ? `${loc.name.toLowerCase()} (${owner.name})`
+                    : loc.name.toLowerCase()
                 }
-              }}
-            />
+                style={{
+                  fill,
+                  fillOpacity,
+                  stroke:
+                    isSelected && !isAlishanClip ? 'var(--color-content)' : 'var(--color-surface)',
+                  strokeWidth: isSelected && !isAlishanClip ? 4 : 2,
+                  transition:
+                    'fill-opacity 150ms ease, transform 150ms ease, stroke-width 150ms ease',
+                }}
+                className={
+                  (owner && !isAlishanClip) || paintingRegionId ? 'cursor-pointer' : 'cursor-default'
+                }
+                onMouseEnter={() => {
+                  setHoveredCountyName(loc.name)
+                  if (owner && !isAlishanClip) setHoveredRegionId(owner.id)
+                }}
+                onMouseLeave={() => {
+                  setHoveredCountyName(null)
+                  setHoveredRegionId(null)
+                }}
+                onClick={() => {
+                  if (paintingRegionId && onToggleMapCounty) {
+                    onToggleMapCounty(paintingRegionId, loc.id)
+                  } else if (owner && !isAlishanClip) {
+                    onSelectRegion(owner.id)
+                  }
+                }}
+              />
+              {isAlishanClip && owner && (
+                <path
+                  d={loc.path}
+                  clipPath="url(#clip-alishan-mountain)"
+                  aria-label={`alishan (${owner.name})`}
+                  style={{
+                    fill: owner.color,
+                    fillOpacity: activeFillOpacity,
+                    stroke: isSelected ? 'var(--color-content)' : 'var(--color-surface)',
+                    strokeWidth: isSelected ? 4 : 2,
+                    transition:
+                      'fill-opacity 150ms ease, transform 150ms ease, stroke-width 150ms ease',
+                  }}
+                  className="cursor-pointer"
+                  onMouseEnter={() => {
+                    setHoveredCountyName('alishan')
+                    setHoveredRegionId(owner.id)
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredCountyName(null)
+                    setHoveredRegionId(null)
+                  }}
+                  onClick={() => onSelectRegion(owner.id)}
+                />
+              )}
+            </g>
           )
         })}
       </svg>
