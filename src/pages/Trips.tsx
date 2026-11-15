@@ -78,7 +78,7 @@ export default function Trips() {
                     : 'border-border bg-surface-secondary text-content-secondary hover:text-content'
                 }`}
               >
-                {editMode ? 'editing' : 'edit'}
+                {editMode ? 'editing' : 'viewing'}
               </button>
               <button
                 type="button"

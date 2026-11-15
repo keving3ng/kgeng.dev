@@ -385,7 +385,7 @@ export default function TripDetail() {
                     : 'border-border bg-surface-secondary text-content-secondary hover:text-content'
                 }`}
               >
-                {editMode ? 'editing' : 'edit'}
+                {editMode ? 'editing' : 'viewing'}
               </button>
               <button
                 type="button"
