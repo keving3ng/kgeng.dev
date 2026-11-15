@@ -6,7 +6,7 @@ import NotionRenderer from '../components/NotionRenderer'
 import { usePost, usePosts } from '../hooks/usePosts'
 import { useGoBack, useTerminalNav } from '../hooks/useTerminalNav'
 import { buildIndexRows, formatShortDate } from '../config/indexRows'
-import { paths, postPath } from '../config/paths'
+import { paths, postPath, postsIndexPath } from '../config/paths'
 
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -44,7 +44,7 @@ export default function PostDetail() {
         ) : error ? (
           <div className="space-y-4 text-sm">
             <p className="text-error">{error}</p>
-            <Link to={paths.writing} className="inline-block text-content hover:text-content-secondary transition-colors">
+            <Link to={postsIndexPath} className="inline-block text-content hover:text-content-secondary transition-colors">
               ← back to writing
             </Link>
           </div>

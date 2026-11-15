@@ -28,7 +28,7 @@ describe('header navigation helpers', () => {
     expect(parentPath('/')).toBeNull()
     expect(parentPath('/picks')).toBe('/')
     expect(parentPath('/picks/recipes')).toBe('/picks')
-    expect(parentPath('/post/hi')).toBe('/writing')
+    expect(parentPath('/post/hi')).toBe('/?type=post')
     expect(parentPath('/cv')).toBe('/about')
   })
 })

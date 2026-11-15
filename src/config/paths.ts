@@ -4,7 +4,6 @@
  */
 export const paths = {
   home: '/',
-  writing: '/writing',
   about: '/about',
   cv: '/cv',
   tools: {
@@ -22,16 +21,11 @@ export const paths = {
 /** Index filtered to projects (there is no standalone `/work` list page). */
 export const projectsIndexPath = `${paths.home}?type=project`
 
+/** Index filtered to writing/posts (there is no standalone `/writing` list page). */
+export const postsIndexPath = `${paths.home}?type=post`
+
 /** Index filtered to tools (the `tools` tab has no page of its own). */
 export const toolsIndexPath = `${paths.home}?type=tool`
-
-/** Legacy paths that redirect to their new homes. */
-export const legacyRedirects: Record<string, string> = {
-  '/blog': paths.writing,
-  '/work': projectsIndexPath,
-  '/projects': projectsIndexPath,
-  '/recipes': paths.recipes,
-}
 
 /** Permalink path for a blog post (matches `/post/:slug`). */
 export function postPath(slug: string): string {

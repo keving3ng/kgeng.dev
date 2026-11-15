@@ -1,6 +1,6 @@
 // Centralized navigation configuration (URLs must match `config/paths.ts`)
 
-import { paths, projectsIndexPath, toolsIndexPath } from './paths'
+import { paths, postsIndexPath, projectsIndexPath, toolsIndexPath } from './paths'
 
 export interface NavLink {
   label: string
@@ -26,7 +26,7 @@ export const lists: NavLink[] = [
 /** Top-level "directories" shown as header tabs (desktop) and in the mobile menu. */
 export const mainNav: NavLink[] = [
   { label: 'work', url: projectsIndexPath },
-  { label: 'writing', url: paths.writing },
+  { label: 'writing', url: postsIndexPath },
   { label: 'tools', url: toolsIndexPath },
   { label: 'picks', url: paths.picks },
   { label: 'about', url: paths.about },

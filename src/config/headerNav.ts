@@ -1,4 +1,4 @@
-import { paths, projectsIndexPath, toolsIndexPath } from './paths'
+import { paths, postsIndexPath, projectsIndexPath, toolsIndexPath } from './paths'
 
 export interface PromptSegment {
   label: string
@@ -12,7 +12,7 @@ export function promptSegments(pathname: string, currentLabel?: string): PromptS
   if (pathname.startsWith('/post/')) {
     return [
       { label: '~', to: paths.home },
-      { label: 'writing', to: paths.writing },
+      { label: 'writing', to: postsIndexPath },
       { label: currentLabel ?? decodeURIComponent(pathname.slice('/post/'.length)), to: null },
     ]
   }
@@ -68,7 +68,7 @@ export function parentPath(pathname: string): string | null {
   if (pathname === paths.recipes) return paths.picks
   if (pathname.startsWith('/picks/recipes/')) return paths.recipes
   if (pathname.startsWith('/work/')) return paths.home
-  if (pathname.startsWith('/post/')) return paths.writing
+  if (pathname.startsWith('/post/')) return postsIndexPath
   if (pathname === paths.cv) return paths.about
   return paths.home
 }

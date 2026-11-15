@@ -20,14 +20,6 @@ beforeAll(() => {
   }))
 })
 
-vi.mock('../hooks/usePosts', () => ({
-  usePosts: () => ({ posts: [], loading: false, error: null }),
-}))
-
-vi.mock('../hooks/usePostFilters', () => ({
-  usePostFilters: () => ['All Posts'],
-}))
-
 afterEach(() => {
   cleanup()
 })
@@ -42,13 +34,7 @@ function renderHome(route: string) {
   )
 }
 
-describe('Home (writing / cv)', () => {
-  it('renders writing prompt path on /writing', () => {
-    renderHome(paths.writing)
-
-    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toHaveTextContent('kgeng@dev:~/writing$')
-  })
-
+describe('Home (cv)', () => {
   it('renders CVList on /cv', () => {
     renderHome(paths.cv)
 

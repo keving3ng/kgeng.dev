@@ -1,6 +1,6 @@
 import type { ThemeId } from './themes'
 import { mainNav } from './navigation'
-import { paths, projectsIndexPath, toolsIndexPath } from './paths'
+import { paths, postsIndexPath, projectsIndexPath, toolsIndexPath } from './paths'
 import { filterRows, type IndexRow, type RowType } from './indexRows'
 
 export interface CommandContext {
@@ -25,7 +25,7 @@ interface Command {
 
 const DIRS: Record<string, { path: string; type: RowType | null }> = {
   work: { path: projectsIndexPath, type: 'project' },
-  writing: { path: paths.writing, type: 'post' },
+  writing: { path: postsIndexPath, type: 'post' },
   tools: { path: toolsIndexPath, type: 'tool' },
   picks: { path: paths.picks, type: null },
   recipes: { path: paths.recipes, type: null },

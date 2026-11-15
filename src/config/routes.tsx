@@ -15,8 +15,7 @@ import CmsLogin from '../pages/CmsLogin'
 import CmsPosts from '../pages/CmsPosts'
 import AnimationTest from '../pages/AnimationTest'
 import NotFound from '../pages/NotFound'
-import { Navigate } from 'react-router-dom'
-import { legacyRedirects, paths } from './paths'
+import { paths } from './paths'
 
 export interface AppRoute {
   path: string
@@ -27,7 +26,6 @@ export interface AppRoute {
 export const appRoutes: AppRoute[] = [
   { path: paths.home, Component: Index },
   { path: '/work/:slug', Component: ProjectDetail },
-  { path: paths.writing, Component: Home },
   { path: '/post/:slug', Component: PostDetail },
   { path: paths.cv, Component: Home },
   { path: paths.about, Component: About },
@@ -41,10 +39,6 @@ export const appRoutes: AppRoute[] = [
   { path: paths.cms, Component: CmsLogin },
   { path: paths.cmsPosts, Component: CmsPosts },
   { path: paths.test, Component: AnimationTest },
-  ...Object.entries(legacyRedirects).map(([from, to]) => ({
-    path: from,
-    Component: () => <Navigate to={to} replace />,
-  })),
   /** Catch-all; must stay last. */
   { path: '*', Component: NotFound },
 ]
