@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import Sidebar, { MobilePostFilters } from '../components/Sidebar'
 import Newsfeed from '../components/Newsfeed'
 import CVList from '../components/CVList'
@@ -10,8 +10,6 @@ import { socialLinks, tools, lists } from '../config/navigation'
 import { paths } from '../config/paths'
 
 function Home() {
-  const { slug } = useParams<{ slug: string }>()
-  const navigate = useNavigate()
   const location = useLocation()
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const { posts, loading, error } = usePosts()
@@ -20,10 +18,6 @@ function Home() {
   const filters = usePostFilters(posts)
 
   const handleFilterChange = (filter: string | null) => {
-    // If viewing a single post, navigate back to home
-    if (slug) {
-      navigate(paths.home)
-    }
     setActiveFilter(filter === 'All Posts' ? null : filter)
   }
 
@@ -45,13 +39,11 @@ function Home() {
             lists={lists}
           />
           <main className="min-h-0 flex-1 overflow-y-auto">
-            {!slug && (
-              <MobilePostFilters
-                filters={filters}
-                activeFilter={activeFilter}
-                onFilterChange={handleFilterChange}
-              />
-            )}
+            <MobilePostFilters
+              filters={filters}
+              activeFilter={activeFilter}
+              onFilterChange={handleFilterChange}
+            />
             {loading ? (
               <div className="text-center py-16 text-content-muted">
                 Loading posts...
@@ -61,7 +53,7 @@ function Home() {
                 {error}
               </div>
             ) : (
-              <Newsfeed items={posts} activeFilter={activeFilter} singleSlug={slug} />
+              <Newsfeed items={posts} activeFilter={activeFilter} />
             )}
           </main>
         </div>

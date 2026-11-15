@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import PageHeader from '../components/PageHeader'
+import SiteHeader from '../components/SiteHeader'
 
 const PEOPLE = ['A', 'B', 'C', 'D', 'E']
 
@@ -220,12 +220,16 @@ function Splits() {
   }
 
   return (
-    <div className="min-h-screen bg-surface py-8 px-4">
-      <div className="max-w-3xl mx-auto">
-        <PageHeader
-          title="splits"
-          subtitle="i made this for my own use, so it's intentionally rigid. let me know if you'd like to request improvements."
-        />
+    <div className="font-mono pb-12">
+      <SiteHeader />
+
+      <div className="px-2 md:px-0">
+        <div className="mb-6">
+          <h1 className="text-xl font-medium text-content">splits</h1>
+          <p className="text-xs text-content-muted mt-1">
+            i made this for my own use, so it&apos;s intentionally rigid. let me know if you&apos;d like to request improvements.
+          </p>
+        </div>
 
         {/* Items Section */}
         <section className="mb-8">

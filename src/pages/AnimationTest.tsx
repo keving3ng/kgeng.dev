@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import PageHeader from '../components/PageHeader'
+import SiteHeader from '../components/SiteHeader'
 import NameAnimation, { type NameAnimationKind } from '../components/NameAnimation'
 
 interface AnimationOption {
@@ -51,8 +51,16 @@ export default function AnimationTest() {
   }
 
   return (
-    <div className="font-mono pb-16 px-2 md:px-0">
-      <PageHeader title="name animations" subtitle="click any row or replay all to preview." />
+    <div className="font-mono pb-16">
+      <SiteHeader />
+
+      <div className="px-2 md:px-0">
+        <div className="mb-6">
+          <h1 className="text-xl font-medium text-content">name animations</h1>
+          <p className="text-xs text-content-muted mt-1">
+            click any row or replay all to preview.
+          </p>
+        </div>
 
       <div className="mb-6">
         <button
@@ -85,6 +93,7 @@ export default function AnimationTest() {
           </li>
         ))}
       </ul>
+      </div>
     </div>
   )
 }

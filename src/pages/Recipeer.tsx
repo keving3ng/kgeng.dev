@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import PageHeader from '../components/PageHeader'
+import SiteHeader from '../components/SiteHeader'
 
 // Common units and their variations
 const UNITS = [
@@ -280,12 +280,16 @@ function Recipeer() {
   }
 
   return (
-    <div className="min-h-screen bg-surface py-8 px-4">
-      <div className="max-w-3xl mx-auto">
-        <PageHeader
-          title="recipeer"
-          subtitle="paste a recipe and see quantities next to ingredients in the instructions."
-        />
+    <div className="font-mono pb-12">
+      <SiteHeader />
+
+      <div className="px-2 md:px-0">
+        <div className="mb-6">
+          <h1 className="text-xl font-medium text-content">recipeer</h1>
+          <p className="text-xs text-content-muted mt-1">
+            paste a recipe and see quantities next to ingredients in the instructions.
+          </p>
+        </div>
 
         {/* Mode Toggle */}
         <div className="flex gap-4 mb-6">
@@ -392,21 +396,21 @@ function Recipeer() {
                 <p key={lineIdx}>
                   {line.split(/(<<[^>]+>>|\[[^\]]+\])/g).map((part, idx) => {
                     if (part.startsWith('<<') && part.endsWith('>>')) {
-                      // Ingredient name - amber/orange color
+                      // Ingredient name
                       return (
                         <span
                           key={idx}
-                          className="text-amber-600 dark:text-amber-400 font-medium"
+                          className="text-content font-medium underline decoration-border underline-offset-2"
                         >
                           {part.slice(2, -2)}
                         </span>
                       )
                     } else if (part.startsWith('[') && part.endsWith(']')) {
-                      // Quantity - blue color
+                      // Quantity
                       return (
                         <span
                           key={idx}
-                          className="text-blue-600 dark:text-blue-400 text-xs"
+                          className="text-content-muted text-xs"
                         >
                           {part}
                         </span>

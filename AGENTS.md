@@ -147,6 +147,7 @@ Legacy `/blog`, `/work`, `/projects`, `/recipes` redirect (see `legacyRedirects`
 | `GET /api/posts` | List published posts |
 | `GET /api/posts/[slug]` | Single post + Notion blocks |
 | `GET /api/recipes` | Recipes list |
+| `GET /api/recipes/[id]` | Single recipe + Notion blocks |
 | `GET /api/image/[blockId]` | Image proxy + R2 cache |
 
 **Cross-cutting:** CORS to allowed origins, rate limit ~60/min/IP, image URL allowlist (Notion S3, Unsplash), sanitized client errors + structured server logs.

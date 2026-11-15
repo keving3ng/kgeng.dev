@@ -4,8 +4,8 @@ import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
 import { useRecipes } from '../hooks/useRecipes'
 import { useTerminalNav, useGoBack } from '../hooks/useTerminalNav'
+import { usePromptRows } from '../hooks/usePromptRows'
 import { staticRecipesAsList } from '../config/recipes'
-import { buildIndexRows } from '../config/indexRows'
 import { paths, recipePath } from '../config/paths'
 
 function Recipes() {
@@ -60,7 +60,7 @@ function Recipes() {
     query,
   })
 
-  const promptRows = useMemo(() => buildIndexRows([]), [])
+  const promptRows = usePromptRows()
 
   return (
     <div className="font-mono flex flex-col md:h-[calc(100dvh-4rem)]">

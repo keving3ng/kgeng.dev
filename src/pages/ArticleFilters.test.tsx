@@ -46,12 +46,10 @@ describe('article feed filters', () => {
     expect(screen.getByRole('heading', { name: 'a thought' })).toBeInTheDocument()
   })
 
-  it.each(['/cv', '/post/building'])('does not show a feed filter on %s', async (path) => {
-    render(<MemoryRouter initialEntries={[path]}><Routes>
+  it('does not show a feed filter on /cv', () => {
+    render(<MemoryRouter initialEntries={['/cv']}><Routes>
       <Route path="/cv" element={<Home />} />
-      <Route path="/post/:slug" element={<Home />} />
     </Routes></MemoryRouter>)
-    if (path.startsWith('/post/')) await screen.findByText('No content')
     expect(screen.queryByRole('button', { name: /filter:/ })).not.toBeInTheDocument()
   })
 

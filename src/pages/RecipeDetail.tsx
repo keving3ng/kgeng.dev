@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
 import NotionRenderer from '../components/NotionRenderer'
 import { useGoBack, useTerminalNav } from '../hooks/useTerminalNav'
+import { usePromptRows } from '../hooks/usePromptRows'
 import { findStaticRecipe } from '../config/recipes'
 import { getRecipe, type RecipeWithContent } from '../services/recipes'
-import { buildIndexRows } from '../config/indexRows'
 import { paths } from '../config/paths'
 
 export default function RecipeDetail() {
@@ -41,7 +41,7 @@ export default function RecipeDetail() {
     onBack: goBack,
   })
 
-  const promptRows = useMemo(() => buildIndexRows([]), [])
+  const promptRows = usePromptRows()
   const title = staticRecipe?.name ?? notionRecipe?.name
   const notes = staticRecipe?.notes ?? notionRecipe?.notes
   const url = staticRecipe?.url ?? notionRecipe?.url

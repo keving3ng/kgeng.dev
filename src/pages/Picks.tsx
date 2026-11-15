@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
 import { useTerminalNav, useGoBack } from '../hooks/useTerminalNav'
-import { buildIndexRows } from '../config/indexRows'
+import { usePromptRows } from '../hooks/usePromptRows'
 import { paths } from '../config/paths'
 
 interface Pick {
@@ -155,7 +155,7 @@ function Picks() {
     query,
   })
 
-  const promptRows = useMemo(() => buildIndexRows([]), [])
+  const promptRows = usePromptRows()
 
   return (
     <div className="font-mono flex flex-col md:h-[calc(100dvh-4rem)]">

@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import type { Post, PostWithContent } from '../types/post'
 import { getPost } from '../services/posts'
 import { postPath } from '../config/paths'
+import { formatDate } from '../config/constants'
 import NotionRenderer from './NotionRenderer'
 
 interface NewsfeedProps {
   items: Post[]
   activeFilter: string | null
-  singleSlug?: string
 }
 
 function PostContent({ slug }: { slug: string }) {
@@ -68,7 +68,7 @@ function CopyLinkButton({ slug }: { slug: string }) {
   )
 }
 
-function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
+function Newsfeed({ items, activeFilter }: NewsfeedProps) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(
     new Set(items.map((item) => item.id))
   )
@@ -85,12 +85,8 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
     })
   }
 
-  // Filter by single slug first, then by tag filter
-  let filteredItems = singleSlug
-    ? items.filter((item) => item.slug === singleSlug)
-    : items
-
-  if (!singleSlug && activeFilter) {
+  let filteredItems = items
+  if (activeFilter) {
     const filterLower = activeFilter.toLowerCase()
     filteredItems = filteredItems.filter((item) =>
       item.tags.some((tag) => tag.toLowerCase() === filterLower)
@@ -100,7 +96,7 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
   if (filteredItems.length === 0) {
     return (
       <div className="text-center py-16 text-content-muted">
-        {singleSlug ? 'Post not found.' : 'No posts found.'}
+        no posts found.
       </div>
     )
   }
@@ -141,12 +137,7 @@ function Newsfeed({ items, activeFilter, singleSlug }: NewsfeedProps) {
                       ))}
                       {item.date && (
                         <span className="text-xs text-content-muted">
-                          ·{' '}
-                          {new Date(item.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
+                          · {formatDate(item.date)}
                         </span>
                       )}
                     </div>

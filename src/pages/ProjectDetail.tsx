@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
 import { useGoBack, useTerminalNav } from '../hooks/useTerminalNav'
+import { usePromptRows } from '../hooks/usePromptRows'
 import { findProject } from '../config/projects'
-import { buildIndexRows, formatShortDate } from '../config/indexRows'
+import { formatShortDate } from '../config/indexRows'
 import { paths } from '../config/paths'
 
 export default function ProjectDetail() {
@@ -21,7 +21,7 @@ export default function ProjectDetail() {
     onBack: goBack,
   })
 
-  const promptRows = useMemo(() => buildIndexRows([]), [])
+  const promptRows = usePromptRows()
 
   return (
     <div className="font-mono pb-12">

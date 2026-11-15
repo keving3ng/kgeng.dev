@@ -37,16 +37,16 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
           <h2 className="text-xl font-semibold text-content mb-2">
-            Something went wrong
+            something went wrong
           </h2>
           <p className="text-content-secondary mb-4">
-            An unexpected error occurred while loading this page.
+            an unexpected error occurred while loading this page.
           </p>
           <button
             onClick={this.handleReset}
             className="px-4 py-2 bg-content text-surface rounded hover:opacity-80 transition-opacity"
           >
-            Try again
+            try again
           </button>
         </div>
       )

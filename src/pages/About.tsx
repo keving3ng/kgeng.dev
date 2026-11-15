@@ -1,9 +1,8 @@
-import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
 import { useGoBack, useTerminalNav } from '../hooks/useTerminalNav'
-import { buildIndexRows } from '../config/indexRows'
+import { usePromptRows } from '../hooks/usePromptRows'
 import { paths } from '../config/paths'
 
 function About() {
@@ -18,7 +17,7 @@ function About() {
     onBack: goBack,
   })
 
-  const promptRows = useMemo(() => buildIndexRows([]), [])
+  const promptRows = usePromptRows()
 
   return (
     <div className="font-mono flex flex-col md:h-[calc(100dvh-4rem)]">

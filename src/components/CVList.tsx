@@ -24,7 +24,7 @@ function Logo({ src, alt, name }: { src: string; alt: string; name: string }) {
     <img
       src={src}
       alt={alt}
-      className="w-8 h-8 rounded-full object-contain bg-white"
+      className="w-8 h-8 rounded-full object-contain bg-surface-secondary"
       onError={() => setHasError(true)}
     />
   )

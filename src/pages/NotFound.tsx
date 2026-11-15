@@ -1,19 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Sidebar from '../components/Sidebar'
-import ThemeToggle from '../components/ThemeToggle'
-import { socialLinks } from '../config/navigation'
+import SiteHeader from '../components/SiteHeader'
+import TerminalPrompt from '../components/TerminalPrompt'
+import { useGoBack, useTerminalNav } from '../hooks/useTerminalNav'
+import { usePromptRows } from '../hooks/usePromptRows'
 import { paths } from '../config/paths'
-
-const tools = [
-  { label: 'splits', url: paths.tools.splits },
-  { label: 'recipeer', url: paths.tools.recipeer },
-]
-
-const lists = [
-  { label: 'picks', url: paths.picks },
-  { label: 'recipes', url: paths.recipes },
-]
 
 const VARIANTS = [
            {
@@ -71,46 +62,54 @@ function NotFound() {
   const [variant] = useState(
     () => VARIANTS[Math.floor(Math.random() * VARIANTS.length)]!,
   )
+  const goBack = useGoBack(paths.home)
+
+  useTerminalNav({
+    filters: ['404'],
+    activeFilter: '404',
+    onFilterChange: () => {},
+    itemCount: 0,
+    onActivate: () => {},
+    onBack: goBack,
+  })
+
+  const promptRows = usePromptRows()
 
   return (
-    <div>
-      <div className="flex justify-end mb-4 px-2">
-        <ThemeToggle />
-      </div>
-      <div className="flex">
-        <Sidebar
-          filters={[]}
-          activeFilter={null}
-          onFilterChange={() => {}}
-          links={socialLinks}
-          tools={tools}
-          lists={lists}
-        />
-        <main className="flex-1 p-8">
-          <div className="max-w-lg mx-auto text-center md:text-left">
-            <p className="text-xs font-medium tracking-wide text-content-muted mb-2">
-              page not found
-            </p>
-            <h1 className="text-2xl font-medium text-content mb-6">
-              nowhere to land
-            </h1>
-            <pre
-              className="mb-6 font-mono text-sm leading-relaxed text-content-secondary whitespace-pre select-none overflow-x-auto"
-              aria-hidden
-            >
-              {variant.art.trim()}
-            </pre>
-            <p className="text-content-secondary mb-8">
-              {variant.caption}
-            </p>
-            <Link
-              to={paths.home}
-              className="inline-flex rounded-full border border-border bg-surface-secondary px-5 py-2.5 text-sm text-content-secondary transition-colors hover:border-content-muted/40 hover:text-content"
-            >
-              take me home
-            </Link>
-          </div>
+    <div className="font-mono flex flex-col md:h-[calc(100dvh-4rem)]">
+      <SiteHeader />
+
+      <div className="px-2 md:px-0 flex-1 min-h-0 flex flex-col justify-between">
+        <main className="py-4">
+          <p className="text-xs tracking-wide text-content-muted mb-2">
+            page not found
+          </p>
+          <h1 className="text-xl font-medium text-content mb-6">
+            nowhere to land
+          </h1>
+          <pre
+            className="mb-6 font-mono text-sm leading-relaxed text-content-secondary whitespace-pre select-none overflow-x-auto"
+            aria-hidden
+          >
+            {variant.art.trim()}
+          </pre>
+          <p className="text-sm text-content-secondary mb-6">
+            {variant.caption}
+          </p>
+          <Link
+            to={paths.home}
+            className="inline-block text-sm text-content hover:text-content-secondary transition-colors"
+          >
+            ← take me home
+          </Link>
         </main>
+
+        <div className="shrink-0 mt-4 border-t border-border pt-3 space-y-2">
+          <p className="hidden md:block text-xs text-content-muted">
+            esc back
+          </p>
+          <TerminalPrompt rows={promptRows} />
+        </div>
       </div>
     </div>
   )
