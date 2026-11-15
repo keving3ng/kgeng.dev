@@ -46,13 +46,13 @@ describe('Home (writing / cv)', () => {
   it('renders writing prompt path on /writing', () => {
     renderHome(paths.writing)
 
-    expect(screen.getByText('kgeng@dev:~/writing$')).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toHaveTextContent('kgeng@dev:~/writing$')
   })
 
   it('renders CVList on /cv', () => {
     renderHome(paths.cv)
 
-    expect(screen.getByText('kgeng@dev:~/about/cv$')).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toHaveTextContent('kgeng@dev:~/about/cv$')
     expect(screen.getByText('education')).toBeInTheDocument()
   })
 })

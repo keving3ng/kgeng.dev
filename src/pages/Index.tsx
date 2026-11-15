@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
 import { usePosts } from '../hooks/usePosts'
+import { useTerminalNav } from '../hooks/useTerminalNav'
 import { ROW_TYPES, buildIndexRows, filterRows, formatShortDate, parseRowType, type IndexRow, type RowType } from '../config/indexRows'
 
 const FILTER_OPTIONS: (RowType | null)[] = [null, ...ROW_TYPES]
@@ -24,15 +25,6 @@ function RowName({ row }: { row: IndexRow }) {
   )
 }
 
-/** True when the key event came from somewhere arrow keys already mean something else. */
-function isTerminalTarget(target: EventTarget | null): boolean {
-  return target instanceof Element && target.closest('[data-terminal]') !== null
-}
-
-function isTypingTarget(target: EventTarget | null): boolean {
-  return target instanceof HTMLElement && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
-}
-
 function Index() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -42,60 +34,33 @@ function Index() {
 
   const allRows = useMemo(() => buildIndexRows(posts), [posts])
   const rows = useMemo(() => filterRows(allRows, type, query), [allRows, type, query])
-  const [selected, setSelected] = useState<number | null>(null)
 
   const setType = useCallback(
-    (next: string | null) => {
+    (next: RowType | null) => {
       if (next) setSearchParams({ type: next })
       else setSearchParams({})
     },
     [setSearchParams],
   )
 
-  // A changed result set invalidates the old selection.
-  useEffect(() => setSelected(null), [type, query, allRows.length])
-
-  useEffect(() => {
-    const openRow = (row: IndexRow) => {
-      if (!row.href) return
+  const openRow = useCallback(
+    (index: number) => {
+      const row = rows[index]
+      if (!row?.href) return
       if (row.external) window.open(row.href, '_blank', 'noopener,noreferrer')
       else navigate(row.href)
-    }
+    },
+    [rows, navigate],
+  )
 
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || isTerminalTarget(e.target)) return
-      const typing = isTypingTarget(e.target)
-      const hasInputText = e.target instanceof HTMLInputElement && e.target.value.length > 0
-      const down = e.key === 'ArrowDown' || (!typing && e.key === 'j')
-      const up = e.key === 'ArrowUp' || (!typing && e.key === 'k')
-      const left = (e.key === 'ArrowLeft' && (!typing || !hasInputText)) || (!typing && e.key === 'h')
-      const right = (e.key === 'ArrowRight' && (!typing || !hasInputText)) || (!typing && e.key === 'l')
-
-      if (left || right) {
-        e.preventDefault()
-        const idx = FILTER_OPTIONS.indexOf(type)
-        const nextIdx = Math.min(FILTER_OPTIONS.length - 1, Math.max(0, idx + (right ? 1 : -1)))
-        if (nextIdx !== idx) setType(FILTER_OPTIONS[nextIdx] ?? null)
-      } else if ((down || up) && rows.length > 0) {
-        e.preventDefault()
-        setSelected((cur) => {
-          if (cur === null) return down ? 0 : rows.length - 1
-          return Math.min(rows.length - 1, Math.max(0, cur + (down ? 1 : -1)))
-        })
-      } else if (e.key === 'Escape') {
-        setSelected(null)
-      } else if (e.key === 'Enter' && selected !== null && rows[selected]) {
-        const el = e.target
-        // Let focused links/buttons keep their own Enter behaviour.
-        if (el instanceof HTMLElement && (el.tagName === 'A' || el.tagName === 'BUTTON')) return
-        e.preventDefault()
-        openRow(rows[selected])
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [rows, selected, type, setType, navigate])
+  const { selected } = useTerminalNav({
+    filters: FILTER_OPTIONS,
+    activeFilter: type,
+    onFilterChange: setType,
+    itemCount: rows.length,
+    onActivate: openRow,
+    query,
+  })
 
   const count = (t: string) => allRows.filter((r) => r.type === t).length
 

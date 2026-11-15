@@ -1,51 +1,51 @@
-import { Link } from 'react-router-dom'
-import Sidebar from '../components/Sidebar'
-import ThemeToggle from '../components/ThemeToggle'
-import { socialLinks } from '../config/navigation'
+import { useCallback, useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import SiteHeader from '../components/SiteHeader'
+import TerminalPrompt from '../components/TerminalPrompt'
+import { useTerminalNav } from '../hooks/useTerminalNav'
+import { buildIndexRows } from '../config/indexRows'
 import { paths } from '../config/paths'
 
-const tools = [
-  { label: 'splits', url: paths.tools.splits },
-  { label: 'recipeer', url: paths.tools.recipeer },
-]
-
-const lists = [
-  { label: 'picks', url: paths.picks },
-  { label: 'recipes', url: paths.recipes },
-]
-
 function About() {
+  const navigate = useNavigate()
+  const goBack = useCallback(() => navigate(paths.home), [navigate])
+
+  useTerminalNav({
+    filters: ['about'],
+    activeFilter: 'about',
+    onFilterChange: () => {},
+    itemCount: 0,
+    onActivate: () => {},
+    onBack: goBack,
+  })
+
+  const promptRows = useMemo(() => buildIndexRows([]), [])
+
   return (
-    <div>
-      <div className="flex justify-end mb-4 px-2">
-        <ThemeToggle />
-      </div>
-      <div className="flex">
-        <Sidebar
-          filters={[]}
-          activeFilter={null}
-          onFilterChange={() => {}}
-          links={socialLinks}
-          tools={tools}
-          lists={lists}
-        />
-        <main className="flex-1 p-8">
-          <div className="max-w-2xl">
-            <h1 className="text-2xl font-medium mb-6">About</h1>
-            <p className="text-content-secondary leading-relaxed">
-              About page content coming soon...
-            </p>
-            <p className="mt-6 text-sm">
-              <Link to={paths.cv} className="text-content-secondary hover:text-content transition-colors">
-                cv →
-              </Link>
-            </p>
-          </div>
-        </main>
+    <div className="font-mono flex flex-col md:h-[calc(100dvh-4rem)]">
+      <SiteHeader />
+
+      <div className="px-2 md:px-0 flex-1 min-h-0 flex flex-col justify-between">
+        <div className="space-y-4 text-sm">
+          <p className="text-content-secondary leading-relaxed">
+            about page content coming soon...
+          </p>
+          <p>
+            <Link to={paths.cv} className="text-content hover:text-content-secondary transition-colors">
+              cv →
+            </Link>
+          </p>
+        </div>
+
+        <div className="shrink-0 mt-4 border-t border-border pt-3 space-y-2">
+          <p className="hidden md:block text-xs text-content-muted">
+            esc back
+          </p>
+          <TerminalPrompt rows={promptRows} />
+        </div>
       </div>
     </div>
   )
 }
 
 export default About
-

@@ -1,11 +1,11 @@
 import { projects } from './projects'
 import { tools } from './navigation'
-import { postPath } from './paths'
+import { paths, postPath } from './paths'
 import type { Post } from '../types/post'
 
-export type RowType = 'project' | 'tool' | 'post'
+export type RowType = 'project' | 'tool' | 'post' | 'page'
 
-export const ROW_TYPES: RowType[] = ['project', 'tool', 'post']
+export const ROW_TYPES: RowType[] = ['project', 'tool', 'post', 'page']
 
 export interface IndexRow {
   id: string
@@ -41,7 +41,14 @@ const toolMeta: Record<string, { description: string; date: string }> = {
   recipeer: { description: 'see ingredient quantities inline in recipe instructions.', date: '2025-02' },
 }
 
-/** Unified rows for the home index: projects, tools and posts. */
+const pageRows: IndexRow[] = [
+  { id: 'page:picks', name: 'picks', type: 'page', description: 'things i\'ve enjoyed and would recommend.', date: '2026-11', href: paths.picks },
+  { id: 'page:recipes', name: 'recipes', type: 'page', description: 'a collection of recipes i\'ve saved.', date: '2026-11', href: paths.recipes },
+  { id: 'page:about', name: 'about', type: 'page', description: 'a little more about me.', date: '2026-11', href: paths.about },
+  { id: 'page:cv', name: 'cv', type: 'page', description: 'experience, education, and background.', date: '2026-11', href: paths.cv },
+]
+
+/** Unified rows for the home index: projects, tools, posts and pages. */
 export function buildIndexRows(posts: Post[]): IndexRow[] {
   return [
     ...projects.map((p): IndexRow => ({
@@ -69,6 +76,7 @@ export function buildIndexRows(posts: Post[]): IndexRow[] {
       date: p.date,
       href: postPath(p.slug),
     })),
+    ...pageRows,
   ]
 }
 

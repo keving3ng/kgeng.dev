@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
 import NameAnimation, { type NameAnimationKind } from './NameAnimation'
-import { promptPath } from '../config/headerNav'
+import { parentPath, promptSegments } from '../config/headerNav'
 import { paths } from '../config/paths'
 import { randomFortune } from '../config/fortunes'
 
@@ -30,6 +30,8 @@ function pickNextAnimation(current: NameAnimationKind): NameAnimationKind {
 
 export default function SiteHeader() {
   const { pathname } = useLocation()
+  const parent = parentPath(pathname)
+  const segments = promptSegments(pathname)
   const [fortune] = useState(() => randomFortune())
   const [anim, setAnim] = useState<{ kind: NameAnimationKind; tick: number }>({
     kind: 'pop',
@@ -55,9 +57,32 @@ export default function SiteHeader() {
   return (
     <header className="mb-4 md:mb-5 px-2 md:px-0 flex justify-between items-start font-mono shrink-0">
       <div className="min-w-0">
-        <p className="text-xs text-content-muted mb-2 truncate" aria-hidden="true">
-          kgeng@dev:{promptPath(pathname)}$
-        </p>
+        <div className="flex items-center gap-3 text-xs text-content-muted mb-2 min-w-0">
+          <nav aria-label="breadcrumb" className="truncate flex items-center">
+            <span>kgeng@dev:</span>
+            {segments.map((seg, i) => (
+              <span key={`${seg.label}-${i}`} className="inline-flex items-center">
+                {i > 0 && <span>/</span>}
+                {seg.to ? (
+                  <Link to={seg.to} className="hover:text-content transition-colors">
+                    {seg.label}
+                  </Link>
+                ) : (
+                  <span className="text-content-secondary">{seg.label}</span>
+                )}
+              </span>
+            ))}
+            <span>$</span>
+          </nav>
+          {parent && (
+            <Link
+              to={parent}
+              className="shrink-0 text-content-muted hover:text-content transition-colors"
+            >
+              ← cd ..
+            </Link>
+          )}
+        </div>
         <h1 className="text-2xl font-medium text-content">
           <Link to={paths.home} aria-label={DISPLAY_NAME}>
             <NameAnimation text={DISPLAY_NAME} kind={anim.kind} playKey={anim.tick} />

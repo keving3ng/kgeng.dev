@@ -1,5 +1,9 @@
-import { Link } from 'react-router-dom'
-import PageHeader from '../components/PageHeader'
+import { useCallback, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import SiteHeader from '../components/SiteHeader'
+import TerminalPrompt from '../components/TerminalPrompt'
+import { useTerminalNav } from '../hooks/useTerminalNav'
+import { buildIndexRows } from '../config/indexRows'
 import { paths } from '../config/paths'
 
 interface Pick {
@@ -7,7 +11,6 @@ interface Pick {
   author?: string
   url?: string
   note?: string
-  label?: string // optional sub-section label
 }
 
 interface Category {
@@ -16,14 +19,17 @@ interface Category {
   link?: { label: string; url: string }
 }
 
+interface PickRow {
+  id: string
+  category: string
+  title: string
+  detail: string
+  href?: string
+  external?: boolean
+}
+
 const categories: Category[] = [
-  {
-    name: 'books',
-    items: [
-      // Add your book picks here
-      // { title: 'Example Book', author: 'Author Name', note: 'Why I recommend it' },
-    ],
-  },
+  { name: 'books', items: [] },
   {
     name: 'articles',
     items: [
@@ -34,107 +40,197 @@ const categories: Category[] = [
       },
     ],
   },
-  {
-    name: 'videos',
-    items: [
-      // Add your video picks here
-      // { title: 'Example Video', url: 'https://...', note: 'Why I recommend it' },
-    ],
-  },
+  { name: 'videos', items: [] },
   {
     name: 'movies',
     link: { label: 'letterboxd', url: 'https://letterboxd.com/kegk3g/' },
-    items: []
+    items: [],
   },
-  {
-    name: 'podcasts',
-    items: [
-      // Add your podcast picks here
-      // { title: 'Example Podcast', url: 'https://...', note: 'Why I recommend it' },
-    ],
-  },
+  { name: 'podcasts', items: [] },
 ]
 
 function Picks() {
-  const nonEmptyCategories = categories.filter((cat) => cat.items.length > 0)
+  const navigate = useNavigate()
+  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [query, setQuery] = useState('')
+
+  const allRows = useMemo<PickRow[]>(() => {
+    const rows: PickRow[] = [
+      {
+        id: 'recipes',
+        category: 'recipes',
+        title: 'saved recipes',
+        detail: "a collection of recipes i've saved.",
+        href: paths.recipes,
+      },
+    ]
+    for (const cat of categories) {
+      if (cat.link) {
+        rows.push({
+          id: `${cat.name}:${cat.link.label}`,
+          category: cat.name,
+          title: cat.link.label,
+          detail: `${cat.name} log`,
+          href: cat.link.url,
+          external: true,
+        })
+      }
+      for (const item of cat.items) {
+        const detail = [item.author, item.note].filter(Boolean).join(' — ')
+        rows.push({
+          id: `${cat.name}:${item.title}`,
+          category: cat.name,
+          title: item.title.toLowerCase(),
+          detail,
+          href: item.url,
+          external: Boolean(item.url),
+        })
+      }
+    }
+    return rows
+  }, [])
+
+  const filterOptions = useMemo(() => {
+    const cats = Array.from(new Set(allRows.map((r) => r.category)))
+    return ['all', ...cats]
+  }, [allRows])
+
+  const rows = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return allRows.filter(
+      (r) =>
+        (activeCategory === 'all' || r.category === activeCategory) &&
+        (q === '' || `${r.category} ${r.title} ${r.detail}`.toLowerCase().includes(q)),
+    )
+  }, [allRows, activeCategory, query])
+
+  const openRow = useCallback(
+    (index: number) => {
+      const row = rows[index]
+      if (!row?.href) return
+      if (row.external) window.open(row.href, '_blank', 'noopener,noreferrer')
+      else navigate(row.href)
+    },
+    [rows, navigate],
+  )
+
+  const goBack = useCallback(() => navigate(paths.home), [navigate])
+
+  const { selected } = useTerminalNav({
+    filters: filterOptions,
+    activeFilter: activeCategory,
+    onFilterChange: setActiveCategory,
+    itemCount: rows.length,
+    onActivate: openRow,
+    onBack: goBack,
+    query,
+  })
+
+  const promptRows = useMemo(() => buildIndexRows([]), [])
 
   return (
-    <div className="min-h-screen bg-surface py-8 px-4">
-      <div className="max-w-3xl mx-auto">
-        <PageHeader title="picks" subtitle="things i've enjoyed and would recommend." />
+    <div className="font-mono flex flex-col md:h-[calc(100dvh-4rem)]">
+      <SiteHeader />
 
-        <p className="mb-8 text-sm">
-          <Link to={paths.recipes} className="text-content-secondary hover:text-content transition-colors">
-            recipes →
-          </Link>
-        </p>
-
-        {nonEmptyCategories.length === 0 ? (
-          <p className="text-sm text-content-muted italic">
-            coming soon...
-          </p>
-        ) : (
-          <div className="space-y-10">
-            {nonEmptyCategories.map((category) => (
-              <section key={category.name}>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <h2 className="text-sm text-content-muted lowercase">
-                    {category.name}
-                  </h2>
-                  {category.link && (
-                    <a
-                      href={category.link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-content-muted hover:text-content-secondary transition-colors"
-                    >
-                      ({category.link.label} ↗)
-                    </a>
-                  )}
-                </div>
-                <div className="space-y-4">
-                  {category.items.map((item, idx) => (
-                    <div key={idx}>
-                      {item.label && (
-                        <p className="text-xs text-content-muted mb-2 mt-2">
-                          {item.label}
-                        </p>
-                      )}
-                      <div className="border-l-2 border-border pl-4">
-                      <div className="flex items-baseline gap-2">
-                        {item.url ? (
-                          <a
-                            href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm font-medium text-content hover:text-content-secondary transition-colors"
-                          >
-                            {item.title} ↗
-                          </a>
-                        ) : (
-                          <span className="text-sm font-medium text-content">
-                            {item.title}
-                          </span>
-                        )}
-                        {item.author && (
-                          <span className="text-sm text-content-muted">
-                            — {item.author}
-                          </span>
-                        )}
-                      </div>
-                      {item.note && (
-                        <p className="text-sm text-content-muted mt-1">
-                          {item.note}
-                        </p>
-                      )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ))}
+      <div className="px-2 md:px-0 flex-1 min-h-0 flex flex-col">
+        <div className="shrink-0 mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm">
+          <div className="flex flex-wrap items-center gap-x-1" role="group" aria-label="filter picks by category">
+            <span className="text-content-muted mr-2">filter:</span>
+            {filterOptions.map((cat) => {
+              const isSelected = activeCategory === cat
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  aria-pressed={isSelected}
+                  className="min-h-[44px] inline-flex items-center px-1 transition-colors"
+                >
+                  <span
+                    className={`px-1.5 py-0.5 rounded-sm transition-colors ${
+                      isSelected
+                        ? 'bg-content text-surface font-medium'
+                        : 'text-content-muted hover:text-content-secondary'
+                    }`}
+                  >
+                    {cat}
+                  </span>
+                </button>
+              )
+            })}
           </div>
-        )}
+
+          <label className="flex items-center gap-2 text-sm min-w-0 flex-1 md:flex-initial md:w-56">
+            <span className="text-content-muted shrink-0">grep:</span>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="filter picks…"
+              aria-label="search picks"
+              className="w-full min-h-[44px] bg-transparent border-b border-border text-content placeholder:text-content-muted/60 outline-none focus:border-content-muted"
+            />
+          </label>
+        </div>
+
+        <div className="md:flex-1 md:min-h-0 md:overflow-y-auto md:pr-1">
+          {rows.length === 0 ? (
+            <p className="text-sm text-content-muted">no matches.</p>
+          ) : (
+            <ul className="space-y-3 md:space-y-1">
+              {rows.map((row, i) => (
+                <li
+                  key={row.id}
+                  ref={(el) => {
+                    if (el && selected === i) el.scrollIntoView?.({ block: 'nearest' })
+                  }}
+                  aria-current={selected === i ? 'true' : undefined}
+                  className={`grid grid-cols-[auto_1fr] md:grid-cols-[7rem_16rem_1fr] gap-x-4 text-sm ${
+                    selected === i ? 'bg-surface-secondary' : ''
+                  }`}
+                >
+                  <span className="text-content font-medium whitespace-nowrap">
+                    <span aria-hidden="true" className="hidden md:inline text-content-muted font-normal">
+                      {selected === i ? '> ' : '  '}
+                    </span>
+                    {row.category}
+                  </span>
+                  <span className="min-w-0 break-words">
+                    {row.href ? (
+                      row.external ? (
+                        <a
+                          href={row.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-content hover:text-content-secondary transition-colors"
+                        >
+                          {row.title} ↗
+                        </a>
+                      ) : (
+                        <Link to={row.href} className="text-content hover:text-content-secondary transition-colors">
+                          {row.title}
+                        </Link>
+                      )
+                    ) : (
+                      <span className="text-content">{row.title}</span>
+                    )}
+                  </span>
+                  <span className="col-span-2 md:col-span-1 text-content-muted">
+                    {row.detail}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="shrink-0 mt-4 border-t border-border pt-3 space-y-2">
+          <p className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-content-muted">
+            <span>{allRows.length} picks</span>
+            <span className="hidden md:inline">←→ filter · ↑↓ select · ↵ open · esc back</span>
+          </p>
+          <TerminalPrompt rows={promptRows} />
+        </div>
       </div>
     </div>
   )

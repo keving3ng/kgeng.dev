@@ -16,16 +16,18 @@ describe('formatShortDate', () => {
 })
 
 describe('buildIndexRows', () => {
-  it('includes dates on projects, tools and posts', () => {
+  it('includes dates on projects, tools, posts and pages', () => {
     const rows = buildIndexRows([
       { id: '1', title: 'Test Post', slug: 'test-post', tags: ['dev'], date: '2026-04-12' },
     ])
     const post = rows.find((r) => r.id === 'post:test-post')
     const tool = rows.find((r) => r.id === 'tool:splits')
     const project = rows.find((r) => r.id === 'project:kgeng.dev')
+    const page = rows.find((r) => r.id === 'page:picks')
 
     expect(formatShortDate(post?.date)).toBe('apr 2026')
     expect(formatShortDate(tool?.date)).toBe('jan 2025')
     expect(formatShortDate(project?.date)).toBe('nov 2026')
+    expect(formatShortDate(page?.date)).toBe('nov 2026')
   })
 })
