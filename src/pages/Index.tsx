@@ -2,15 +2,19 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
+import TerminalListSkeleton from '../components/TerminalListSkeleton'
 import { usePosts } from '../hooks/usePosts'
+import { useInitialMinLoading } from '../hooks/useInitialMinLoading'
 import { useTerminalNav } from '../hooks/useTerminalNav'
 import { ROW_TYPES, buildIndexRows, filterRows, formatShortDate, parseRowType, type IndexRow, type RowType } from '../config/indexRows'
 
 const FILTER_OPTIONS: (RowType | null)[] = [null, ...ROW_TYPES]
 
-function RowName({ row }: { row: IndexRow }) {
-  const cls = 'text-content hover:text-content-secondary transition-colors'
-  if (!row.href) return <span className="text-content">{row.name}</span>
+function RowName({ row, selected }: { row: IndexRow; selected: boolean }) {
+  const cls = selected
+    ? 'text-surface hover:text-surface/80 transition-colors'
+    : 'text-content hover:text-content-secondary transition-colors'
+  if (!row.href) return <span className={selected ? 'text-surface' : 'text-content'}>{row.name}</span>
   if (row.external) {
     return (
       <a href={row.href} target="_blank" rel="noopener noreferrer" className={cls}>
@@ -30,7 +34,8 @@ function Index() {
   const [searchParams, setSearchParams] = useSearchParams()
   const type = parseRowType(searchParams.get('type'))
   const [query, setQuery] = useState('')
-  const { posts } = usePosts()
+  const { posts, loading: postsLoading } = usePosts()
+  const loading = useInitialMinLoading(postsLoading, 'index')
 
   const allRows = useMemo(() => buildIndexRows(posts), [posts])
   const rows = useMemo(() => filterRows(allRows, type, query), [allRows, type, query])
@@ -57,7 +62,7 @@ function Index() {
     filters: FILTER_OPTIONS,
     activeFilter: type,
     onFilterChange: setType,
-    itemCount: rows.length,
+    itemCount: loading ? 0 : rows.length,
     onActivate: openRow,
     query,
   })
@@ -110,45 +115,70 @@ function Index() {
         </div>
 
         <div className="md:flex-1 md:min-h-0 md:overflow-y-auto md:pr-1">
-          {rows.length === 0 ? (
+          {loading ? (
+            <TerminalListSkeleton label="indexing…" variant="index" />
+          ) : rows.length === 0 ? (
             <p className="text-sm text-content-muted">no matches.</p>
           ) : (
             <ul className="space-y-3 md:space-y-1">
-              {rows.map((row, i) => (
-                <li
-                  key={row.id}
-                  ref={(el) => {
-                    if (el && selected === i) el.scrollIntoView?.({ block: 'nearest' })
-                  }}
-                  aria-current={selected === i ? 'true' : undefined}
-                  className={`grid grid-cols-[auto_1fr_auto] md:grid-cols-[6rem_14rem_1fr_auto] gap-x-4 text-sm ${
-                    selected === i ? 'bg-surface-secondary' : ''
-                  }`}
-                >
-                  <span className="text-content font-medium whitespace-nowrap">
-                    <span aria-hidden="true" className="hidden md:inline text-content-muted font-normal">
-                      {selected === i ? '> ' : '  '}
+              {rows.map((row, i) => {
+                const isSelected = selected === i
+                const formattedDate = formatShortDate(row.date)
+                const prevDate = i > 0 ? formatShortDate(rows[i - 1].date) : null
+                const showDate = formattedDate !== prevDate
+
+                return (
+                  <li
+                    key={row.id}
+                    ref={(el) => {
+                      if (el && isSelected) el.scrollIntoView?.({ block: 'nearest' })
+                    }}
+                    aria-current={isSelected ? 'true' : undefined}
+                    className={`grid grid-cols-[auto_1fr_5rem] md:grid-cols-[6rem_1fr_auto_5.5rem] gap-x-4 text-sm ${
+                      isSelected ? 'bg-content text-surface' : ''
+                    }`}
+                  >
+                    <span className={`font-medium whitespace-nowrap ${isSelected ? 'text-surface' : 'text-content'}`}>
+                      {row.type}
                     </span>
-                    {row.type}
-                  </span>
-                  <span className="min-w-0 break-words">
-                    <RowName row={row} />
-                  </span>
-                  <span className="order-3 col-span-3 md:order-none md:col-span-1 text-content-muted">
-                    {row.description}
-                  </span>
-                  <span className="order-2 md:order-none text-content-muted whitespace-nowrap md:text-right">
-                    {formatShortDate(row.date)}
-                  </span>
-                </li>
-              ))}
+                    <span className="min-w-0 break-words">
+                      {isSelected && (
+                        <span aria-hidden="true" className="text-surface/65 mr-1">
+                          [
+                        </span>
+                      )}
+                      <RowName row={row} selected={isSelected} />
+                      {isSelected && (
+                        <span aria-hidden="true" className="text-surface/65 ml-1">
+                          ]
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      className={`order-3 col-span-3 md:order-none md:col-span-1 md:max-w-[42ch] md:truncate md:text-right ${
+                        isSelected ? 'text-surface/80' : 'text-content-muted'
+                      }`}
+                      title={row.description || undefined}
+                    >
+                      {row.description}
+                    </span>
+                    <span
+                      className={`order-2 md:order-none whitespace-nowrap text-right ${
+                        isSelected ? 'text-surface/80' : 'text-content-muted'
+                      }`}
+                    >
+                      {showDate ? formattedDate : ''}
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
           )}
         </div>
 
         <div className="shrink-0 mt-4 border-t border-border pt-3 space-y-2">
           <p className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-content-muted">
-            <span>{count('project')} projects · {count('tool')} tools · {count('post')} posts</span>
+            <span>{loading ? 'indexing…' : `${count('project')} projects · ${count('tool')} tools · ${count('post')} posts`}</span>
             <span className="hidden md:inline">←→ filter · ↑↓ select · ↵ open · esc clear</span>
           </p>
 

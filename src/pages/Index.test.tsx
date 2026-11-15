@@ -19,12 +19,14 @@ beforeAll(() => {
   }))
 })
 
+const mockUsePosts = vi.fn(() => ({
+  posts: [{ id: '1', title: 'Hello World', slug: 'hello-world', tags: ['dev'], date: null }],
+  loading: false,
+  error: null,
+}))
+
 vi.mock('../hooks/usePosts', () => ({
-  usePosts: () => ({
-    posts: [{ id: '1', title: 'Hello World', slug: 'hello-world', tags: ['dev'], date: null }],
-    loading: false,
-    error: null,
-  }),
+  usePosts: () => mockUsePosts(),
 }))
 
 afterEach(() => cleanup())
@@ -100,5 +102,17 @@ describe('Index', () => {
     expect(toolBtn).toHaveAttribute('aria-pressed', 'true')
     fireEvent.keyDown(window, { key: 'ArrowLeft' })
     expect(projectBtn).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('shows terminal skeleton while posts are loading so items do not pop in', () => {
+    mockUsePosts.mockReturnValueOnce({ posts: [], loading: true, error: null })
+    renderIndex()
+    expect(screen.getByRole('status', { name: 'indexing…' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'matchamap' })).toBeNull()
+  })
+
+  it('shows repeated consecutive dates only once', () => {
+    renderIndex()
+    expect(screen.getAllByText('nov 2026')).toHaveLength(1)
   })
 })

@@ -59,44 +59,72 @@ export default function ProjectDetail() {
                   <p className="text-sm text-content-secondary">{project.description}</p>
                 </div>
               </div>
-              {(project.url || project.repo || (project.stack && project.stack.length > 0)) && (
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-xs text-content-muted">
-                  {project.url && (
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-content hover:text-content-secondary transition-colors"
-                    >
-                      visit ↗
-                    </a>
+              {(project.stats || project.url || project.repo || (project.stack && project.stack.length > 0)) && (
+                <div className="space-y-1.5 pt-1 text-xs text-content-muted">
+                  {project.stats && (
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                      {project.stats.visibility && <span>{project.stats.visibility}</span>}
+                      {project.stats.status && <span>status: {project.stats.status}</span>}
+                      {project.stats.commits !== undefined && (
+                        <span>{project.stats.commits} commits</span>
+                      )}
+                      {project.stats.language && <span>lang: {project.stats.language}</span>}
+                      {project.stats.started && (
+                        <span>started {formatShortDate(project.stats.started)}</span>
+                      )}
+                    </div>
                   )}
-                  {project.repo && (
-                    <a
-                      href={project.repo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-content hover:text-content-secondary transition-colors"
-                    >
-                      source ↗
-                    </a>
+                  {(project.url || project.repo || (project.stack && project.stack.length > 0)) && (
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                      {project.url && (
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-content hover:text-content-secondary transition-colors"
+                        >
+                          visit ↗
+                        </a>
+                      )}
+                      {project.repo && (
+                        <a
+                          href={project.repo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-content hover:text-content-secondary transition-colors"
+                        >
+                          source ↗
+                        </a>
+                      )}
+                      {project.stack?.map((tech) => (
+                        <span key={tech}>#{tech}</span>
+                      ))}
+                    </div>
                   )}
-                  {project.stack?.map((tech) => (
-                    <span key={tech}>#{tech}</span>
-                  ))}
                 </div>
               )}
             </header>
 
-            {project.note && (
-              <p className="text-sm text-content-secondary leading-relaxed">{project.note}</p>
+            {(project.note || (project.body && project.body.length > 0)) && (
+              <section className="space-y-2">
+                <h3 className="text-xs text-content-muted">what</h3>
+                {project.note && (
+                  <p className="text-sm text-content-secondary leading-relaxed">{project.note}</p>
+                )}
+                {project.body?.map((paragraph, i) => (
+                  <p key={i} className="text-sm text-content-secondary leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+              </section>
             )}
 
-            {project.body?.map((paragraph, i) => (
-              <p key={i} className="text-sm text-content-secondary leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
+            {project.why && (
+              <section className="space-y-2">
+                <h3 className="text-xs text-content-muted">why</h3>
+                <p className="text-sm text-content-secondary leading-relaxed">{project.why}</p>
+              </section>
+            )}
 
             {project.highlights && project.highlights.length > 0 && (
               <section className="space-y-2">

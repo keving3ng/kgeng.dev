@@ -2,7 +2,9 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import SiteHeader from '../components/SiteHeader'
 import TerminalPrompt from '../components/TerminalPrompt'
+import TerminalListSkeleton from '../components/TerminalListSkeleton'
 import { useRecipes } from '../hooks/useRecipes'
+import { useInitialMinLoading } from '../hooks/useInitialMinLoading'
 import { useTerminalNav, useGoBack } from '../hooks/useTerminalNav'
 import { usePromptRows } from '../hooks/usePromptRows'
 import { staticRecipesAsList } from '../config/recipes'
@@ -10,7 +12,8 @@ import { paths, recipePath } from '../config/paths'
 
 function Recipes() {
   const navigate = useNavigate()
-  const { recipes: notionRecipes, loading, error } = useRecipes()
+  const { recipes: notionRecipes, loading: recipesLoading, error } = useRecipes()
+  const loading = useInitialMinLoading(recipesLoading, 'recipes')
   const [activeTag, setActiveTag] = useState<string>('all')
   const [query, setQuery] = useState('')
 
@@ -109,7 +112,7 @@ function Recipes() {
 
         <div className="md:flex-1 md:min-h-0 md:overflow-y-auto md:pr-1">
           {loading ? (
-            <p className="text-sm text-content-muted">loading recipes...</p>
+            <TerminalListSkeleton label="loading recipes…" variant="recipes" />
           ) : error ? (
             <p className="text-sm text-error">{error}</p>
           ) : filteredRecipes.length === 0 ? (
@@ -179,7 +182,7 @@ function Recipes() {
 
         <div className="shrink-0 mt-4 border-t border-border pt-3 space-y-2">
           <p className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-content-muted">
-            <span>{recipes.length} recipes</span>
+            <span>{loading ? 'loading…' : `${recipes.length} recipes`}</span>
             <span className="hidden md:inline">←→ filter · ↑↓ select · ↵ open · esc back</span>
           </p>
           <TerminalPrompt rows={promptRows} />

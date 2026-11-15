@@ -36,9 +36,11 @@ export function formatShortDate(dateString: string | null | undefined): string {
     .toLowerCase()
 }
 
+export const MAX_DESCRIPTION_LENGTH = 42
+
 const toolMeta: Record<string, { description: string; date: string }> = {
-  splits: { description: 'intentionally rigid splitting calculator.', date: '2025-01' },
-  recipeer: { description: 'see ingredient quantities inline in recipe instructions.', date: '2025-02' },
+  splits: { description: 'rigid bill splitting calculator.', date: '2025-01' },
+  recipeer: { description: 'inline quantities for recipe steps.', date: '2025-02' },
 }
 
 const pageRows: IndexRow[] = [
@@ -48,9 +50,15 @@ const pageRows: IndexRow[] = [
   { id: 'page:cv', name: 'cv', type: 'page', description: 'experience, education, and background.', date: '2026-11', href: paths.cv },
 ]
 
-/** Unified rows for the home index: projects, tools, posts and pages. */
+function dateTimestamp(dateString: string | null | undefined): number {
+  if (!dateString) return Number.NEGATIVE_INFINITY
+  const ts = Date.parse(dateString.trim())
+  return Number.isNaN(ts) ? Number.NEGATIVE_INFINITY : ts
+}
+
+/** Unified rows for the home index: projects, tools, posts and pages, sorted newest-first. */
 export function buildIndexRows(posts: Post[]): IndexRow[] {
-  return [
+  const rows: IndexRow[] = [
     ...projects.map((p): IndexRow => ({
       id: `project:${p.slug}`,
       name: p.name,
@@ -71,12 +79,19 @@ export function buildIndexRows(posts: Post[]): IndexRow[] {
       id: `post:${p.slug}`,
       name: p.title.toLowerCase(),
       type: 'post',
-      description: p.tags.join(', '),
+      description: p.tags.map((tag) => `#${tag.toLowerCase()}`).join(' '),
       date: p.date,
       href: postPath(p.slug),
     })),
     ...pageRows,
   ]
+
+  return rows.sort((a, b) => {
+    const ta = dateTimestamp(a.date)
+    const tb = dateTimestamp(b.date)
+    if (ta === tb) return 0
+    return tb - ta
+  })
 }
 
 export function parseRowType(value: string | null): RowType | null {
