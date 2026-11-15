@@ -4,7 +4,6 @@ import {
   getPost,
   getCmsPosts,
   syncPostsFromNotion,
-  updateCmsPost,
 } from './posts'
 
 describe('posts service', () => {
@@ -95,21 +94,5 @@ describe('posts service', () => {
       body: JSON.stringify({ notionPageId: 'page-123' }),
     })
     expect(res).toEqual(mockRes)
-  })
-
-  it('updates CMS post metadata', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify({ ok: true }), { status: 200 }),
-    )
-
-    await updateCmsPost('secret', { id: 'p1', published: false })
-    expect(fetchMock).toHaveBeenCalledWith('/api/cms/posts', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer secret',
-      },
-      body: JSON.stringify({ id: 'p1', published: false }),
-    })
   })
 })

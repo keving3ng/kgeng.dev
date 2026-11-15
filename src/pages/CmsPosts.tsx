@@ -7,7 +7,6 @@ import {
   deleteCmsPost,
   getCmsPosts,
   syncPostsFromNotion,
-  updateCmsPost,
 } from '../services/posts'
 import type { CmsPostSummary } from '../types/post'
 
@@ -22,14 +21,6 @@ export default function CmsPosts() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<FilterTab>('all')
-
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editTitle, setEditTitle] = useState('')
-  const [editSlug, setEditSlug] = useState('')
-  const [editDate, setEditDate] = useState('')
-  const [editTags, setEditTags] = useState('')
-  const [editPublished, setEditPublished] = useState(true)
-  const [saving, setSaving] = useState(false)
 
   const loadPosts = useCallback(async () => {
     if (!token) return
@@ -59,11 +50,11 @@ export default function CmsPosts() {
     try {
       const res = await syncPostsFromNotion(token)
       setStatusMessage(
-        `pulled ${res.synced} ${res.synced === 1 ? 'article' : 'articles'} from notion (${res.created} new, ${res.updated} updated)`,
+        `synced ${res.synced} ${res.synced === 1 ? 'article' : 'articles'} from notion (${res.created} new, ${res.updated} updated)`,
       )
       await loadPosts()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'failed to pull from notion')
+      setError(err instanceof Error ? err.message : 'failed to sync from notion')
     } finally {
       setSyncing(false)
     }
@@ -76,61 +67,12 @@ export default function CmsPosts() {
     setStatusMessage(null)
     try {
       await syncPostsFromNotion(token, notionPageId)
-      setStatusMessage('pulled latest content from notion')
+      setStatusMessage('synced latest content from notion')
       await loadPosts()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'failed to pull article from notion')
+      setError(err instanceof Error ? err.message : 'failed to sync article from notion')
     } finally {
       setSyncingPageId(null)
-    }
-  }
-
-  const handleTogglePublished = async (post: CmsPostSummary) => {
-    if (!token) return
-    setError(null)
-    try {
-      await updateCmsPost(token, { id: post.id, published: !post.published })
-      setPosts((prev) =>
-        prev.map((p) => (p.id === post.id ? { ...p, published: !post.published } : p)),
-      )
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'failed to update status')
-    }
-  }
-
-  const startEdit = (post: CmsPostSummary) => {
-    setEditingId(post.id)
-    setEditTitle(post.title)
-    setEditSlug(post.slug)
-    setEditDate(post.date ?? '')
-    setEditTags(post.tags.join(', '))
-    setEditPublished(post.published)
-  }
-
-  const handleSaveEdit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!token || !editingId || !editTitle.trim() || !editSlug.trim()) return
-    setSaving(true)
-    setError(null)
-    try {
-      const tags = editTags
-        .split(',')
-        .map((t) => t.trim().toLowerCase())
-        .filter(Boolean)
-      await updateCmsPost(token, {
-        id: editingId,
-        title: editTitle.trim(),
-        slug: editSlug.trim(),
-        date: editDate.trim() || null,
-        tags,
-        published: editPublished,
-      })
-      setEditingId(null)
-      await loadPosts()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'failed to save post')
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -191,7 +133,7 @@ export default function CmsPosts() {
           </div>
           <h1 className="text-2xl font-medium text-content">blog management</h1>
           <p className="mt-1 text-sm text-content-secondary">
-            pull articles from notion into d1, toggle visibility, and manage metadata.
+            sync articles from notion into d1. edit content and metadata in notion.
           </p>
         </div>
 
@@ -204,7 +146,7 @@ export default function CmsPosts() {
             disabled={syncing}
             className="rounded-full bg-content px-3.5 py-1.5 text-xs font-medium text-surface hover:opacity-90 disabled:opacity-50 transition-opacity"
           >
-            {syncing ? 'pulling from notion…' : 'pull from notion'}
+            {syncing ? 'syncing…' : 'sync'}
           </button>
           <button
             type="button"
@@ -258,7 +200,7 @@ export default function CmsPosts() {
         <div className="rounded-2xl border border-border bg-surface-secondary/30 p-8 text-center space-y-3">
           <p className="text-sm text-content-secondary">
             {posts.length === 0
-              ? 'no articles imported yet.'
+              ? 'no articles synced yet.'
               : 'no articles match this filter.'}
           </p>
           {posts.length === 0 && (
@@ -270,167 +212,91 @@ export default function CmsPosts() {
               disabled={syncing}
               className="rounded-full bg-content px-4 py-1.5 text-xs font-medium text-surface hover:opacity-90 disabled:opacity-50"
             >
-              {syncing ? 'pulling from notion…' : 'pull articles from notion'}
+              {syncing ? 'syncing…' : 'sync from notion'}
             </button>
           )}
         </div>
       ) : (
         <div className="space-y-3">
           {filteredPosts.map((post) => {
-            const isEditing = editingId === post.id
-            const isPullingOne = Boolean(post.notionPageId && syncingPageId === post.notionPageId)
+            const isSyncingOne = Boolean(post.notionPageId && syncingPageId === post.notionPageId)
 
             return (
               <div
                 key={post.id}
                 className="rounded-2xl border border-border bg-surface-secondary/35 p-4 transition-colors"
               >
-                {isEditing ? (
-                  <form onSubmit={handleSaveEdit} className="space-y-3 text-xs">
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <input
-                        type="text"
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        placeholder="title"
-                        required
-                        className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-content outline-none focus:border-content-muted"
-                      />
-                      <input
-                        type="text"
-                        value={editSlug}
-                        onChange={(e) => setEditSlug(e.target.value)}
-                        placeholder="slug"
-                        required
-                        className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-content outline-none focus:border-content-muted"
-                      />
-                    </div>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <input
-                        type="date"
-                        value={editDate}
-                        onChange={(e) => setEditDate(e.target.value)}
-                        className="rounded-lg border border-border bg-surface px-3 py-1.5 text-content outline-none focus:border-content-muted"
-                      />
-                      <input
-                        type="text"
-                        value={editTags}
-                        onChange={(e) => setEditTags(e.target.value)}
-                        placeholder="tags (comma separated)"
-                        className="rounded-lg border border-border bg-surface px-3 py-1.5 text-content outline-none focus:border-content-muted"
-                      />
-                    </div>
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                      <label className="inline-flex items-center gap-2 text-content-secondary cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={editPublished}
-                          onChange={(e) => setEditPublished(e.target.checked)}
-                        />
-                        published
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setEditingId(null)}
-                          className="px-2.5 py-1 text-content-muted hover:text-content"
-                        >
-                          cancel
-                        </button>
-                        <button
-                          type="submit"
-                          disabled={saving}
-                          className="rounded-lg bg-content px-3 py-1 font-medium text-surface hover:opacity-90 disabled:opacity-50"
-                        >
-                          {saving ? 'saving…' : 'save'}
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                ) : (
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-sm font-medium text-content">
-                          {post.title.toLowerCase()}
-                        </h2>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            void handleTogglePublished(post)
-                          }}
-                          className={`rounded-full border px-2 py-0.5 text-[11px] transition-colors ${
-                            post.published
-                              ? 'border-content bg-surface text-content font-medium'
-                              : 'border-border bg-surface text-content-muted hover:text-content'
-                          }`}
-                        >
-                          {post.published ? 'published' : 'draft'}
-                        </button>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-content-muted">
-                        {post.published ? (
-                          <Link
-                            to={postPath(post.slug)}
-                            className="hover:text-content hover:underline"
-                          >
-                            /post/{post.slug} ↗
-                          </Link>
-                        ) : (
-                          <span>/post/{post.slug}</span>
-                        )}
-                        {post.date && <span>{post.date}</span>}
-                        <span>{post.blockCount} blocks</span>
-                        <span>synced {post.syncedAt.slice(0, 10)}</span>
-                      </div>
-
-                      {post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {post.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-full bg-surface px-2 py-0.5 text-[11px] text-content-secondary"
-                            >
-                              #{tag.toLowerCase()}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex shrink-0 items-center gap-1.5 text-[11px]">
-                      {post.notionPageId && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            void handleSyncOne(post.notionPageId!)
-                          }}
-                          disabled={isPullingOne}
-                          className="rounded-lg border border-border bg-surface px-2 py-1 text-content-secondary hover:text-content disabled:opacity-50"
-                        >
-                          {isPullingOne ? 'pulling…' : 'pull'}
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => startEdit(post)}
-                        className="rounded-lg border border-border bg-surface px-2 py-1 text-content-secondary hover:text-content"
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-sm font-medium text-content">
+                        {post.title.toLowerCase()}
+                      </h2>
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-[11px] ${
+                          post.published
+                            ? 'border-content bg-surface text-content font-medium'
+                            : 'border-border bg-surface text-content-muted'
+                        }`}
                       >
-                        edit
-                      </button>
+                        {post.published ? 'published' : 'draft'}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-content-muted">
+                      {post.published ? (
+                        <Link
+                          to={postPath(post.slug)}
+                          className="hover:text-content hover:underline"
+                        >
+                          /post/{post.slug} ↗
+                        </Link>
+                      ) : (
+                        <span>/post/{post.slug}</span>
+                      )}
+                      {post.date && <span>{post.date}</span>}
+                      <span>{post.blockCount} blocks</span>
+                      <span>synced {post.syncedAt.slice(0, 10)}</span>
+                    </div>
+
+                    {post.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {post.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full bg-surface px-2 py-0.5 text-[11px] text-content-secondary"
+                          >
+                            #{tag.toLowerCase()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1.5 text-[11px]">
+                    {post.notionPageId && (
                       <button
                         type="button"
                         onClick={() => {
-                          void handleDelete(post)
+                          void handleSyncOne(post.notionPageId!)
                         }}
-                        className="rounded-lg border border-border bg-surface px-2 py-1 text-error hover:bg-surface-secondary"
+                        disabled={isSyncingOne}
+                        className="rounded-lg border border-border bg-surface px-2 py-1 text-content-secondary hover:text-content disabled:opacity-50"
                       >
-                        del
+                        {isSyncingOne ? 'syncing…' : 'sync'}
                       </button>
-                    </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handleDelete(post)
+                      }}
+                      className="rounded-lg border border-border bg-surface px-2 py-1 text-error hover:bg-surface-secondary"
+                    >
+                      del
+                    </button>
                   </div>
-                )}
+                </div>
               </div>
             )
           })}

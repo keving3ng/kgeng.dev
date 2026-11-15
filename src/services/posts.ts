@@ -57,28 +57,6 @@ export async function syncPostsFromNotion(
   return response.json()
 }
 
-export async function updateCmsPost(
-  token: string,
-  payload: {
-    id: string
-    title?: string
-    slug?: string
-    tags?: string[]
-    date?: string | null
-    published?: boolean
-  },
-): Promise<void> {
-  const response = await fetch(`${API_BASE}/cms/posts`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-  })
-  if (!response.ok) await parseError(response, 'failed to update post')
-}
-
 export async function deleteCmsPost(token: string, id: string): Promise<void> {
   const response = await fetch(`${API_BASE}/cms/posts?id=${encodeURIComponent(id)}`, {
     method: 'DELETE',

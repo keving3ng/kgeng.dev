@@ -57,7 +57,7 @@ export default function CmsLogin() {
                 <span className="text-xs text-content-muted">→</span>
               </div>
               <p className="mt-1 text-xs text-content-secondary">
-                pull articles from notion into d1, toggle drafts, and edit metadata.
+                sync articles from notion into d1.
               </p>
             </Link>
 

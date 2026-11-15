@@ -4,7 +4,6 @@ import {
   guardRequest,
   handleOptions,
   jsonResponse,
-  slugify,
 } from '../trips/_helpers'
 
 interface CmsPostRow {
@@ -65,62 +64,6 @@ export const onRequestGet: PagesFunction<TripsEnv> = async ({ request, env }) =>
   } catch (err) {
     logger.error('Failed to list CMS posts', { error: err instanceof Error ? err.message : 'unknown' })
     return errorResponse(500, 'failed to list posts', corsHeaders)
-  }
-}
-
-export const onRequestPatch: PagesFunction<TripsEnv> = async ({ request, env }) => {
-  const { corsHeaders, error } = await guardRequest(request, env, { requireAuth: true })
-  if (error) return error
-
-  try {
-    const body = (await request.json()) as {
-      id?: string
-      title?: string
-      slug?: string
-      tags?: string[]
-      date?: string | null
-      published?: boolean
-    }
-
-    const id = body.id?.trim()
-    if (!id) {
-      return errorResponse(400, 'post id is required', corsHeaders)
-    }
-
-    const nextSlug = body.slug !== undefined ? slugify(body.slug) : null
-    if (body.slug !== undefined && !nextSlug) {
-      return errorResponse(400, 'valid slug is required', corsHeaders)
-    }
-
-    const nextTags = Array.isArray(body.tags)
-      ? JSON.stringify(body.tags.map((t) => t.trim().toLowerCase()).filter(Boolean))
-      : null
-
-    await env.DB!.prepare(`
-      UPDATE posts
-      SET title = COALESCE(?, title),
-          slug = COALESCE(?, slug),
-          tags = COALESCE(?, tags),
-          date = CASE WHEN ? = 1 THEN ? ELSE date END,
-          published = COALESCE(?, published),
-          updated_at = datetime('now')
-      WHERE id = ?
-    `)
-      .bind(
-        body.title !== undefined ? body.title.trim() : null,
-        nextSlug,
-        nextTags,
-        body.date !== undefined ? 1 : 0,
-        body.date ?? null,
-        body.published !== undefined ? (body.published ? 1 : 0) : null,
-        id,
-      )
-      .run()
-
-    return jsonResponse({ ok: true }, 200, corsHeaders)
-  } catch (err) {
-    logger.error('Failed to update CMS post', { error: err instanceof Error ? err.message : 'unknown' })
-    return errorResponse(500, 'failed to update post', corsHeaders)
   }
 }
 
