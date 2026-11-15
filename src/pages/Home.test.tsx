@@ -42,49 +42,17 @@ function renderHome(route: string) {
   )
 }
 
-describe('Home header navigation tabs', () => {
-  it('highlights blog tab as active on / and renders feed', () => {
-    renderHome(paths.home)
+describe('Home (writing / cv)', () => {
+  it('renders writing prompt path on /writing', () => {
+    renderHome(paths.writing)
 
-    const blogLink = screen.getByRole('link', { name: 'blog' })
-    const cvLink = screen.getByRole('link', { name: 'cv' })
-    const projectsLink = screen.getByRole('link', { name: 'projects' })
-
-    expect(blogLink).toHaveClass('text-content font-medium')
-    expect(cvLink).toHaveClass('text-content-muted')
-    expect(projectsLink).toHaveClass('text-content-muted')
+    expect(screen.getByText('kgeng@dev:~/writing$')).toBeInTheDocument()
   })
 
-  it('highlights cv tab as active on /cv and renders CVList', () => {
+  it('renders CVList on /cv', () => {
     renderHome(paths.cv)
 
-    const blogLink = screen.getByRole('link', { name: 'blog' })
-    const cvLink = screen.getByRole('link', { name: 'cv' })
-    const projectsLink = screen.getByRole('link', { name: 'projects' })
-
-    expect(blogLink).toHaveClass('text-content-muted')
-    expect(cvLink).toHaveClass('text-content font-medium')
-    expect(projectsLink).toHaveClass('text-content-muted')
+    expect(screen.getByText('kgeng@dev:~/about/cv$')).toBeInTheDocument()
     expect(screen.getByText('education')).toBeInTheDocument()
-  })
-
-  it('highlights projects tab as active on /projects and renders ProjectsList', () => {
-    renderHome(paths.projects)
-
-    const blogLink = screen.getByRole('link', { name: 'blog' })
-    const cvLink = screen.getByRole('link', { name: 'cv' })
-    const projectsLink = screen.getByRole('link', { name: 'projects' })
-
-    expect(blogLink).toHaveClass('text-content-muted')
-    expect(cvLink).toHaveClass('text-content-muted')
-    expect(projectsLink).toHaveClass('text-content font-medium')
-    expect(screen.getByText('matchamap ↗')).toBeInTheDocument()
-    expect(screen.getByText('workbench')).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /workbench/ })).toBeNull()
-    expect(screen.getByText('vivisualizer')).toBeInTheDocument()
-    expect(screen.getByText('overpour')).toBeInTheDocument()
-    expect(screen.getByText('keg tool/jonas-config workflow')).toBeInTheDocument()
-    expect(screen.getByText('jonas/keglab setup')).toBeInTheDocument()
-    expect(screen.getByText('personal utilities')).toBeInTheDocument()
   })
 })

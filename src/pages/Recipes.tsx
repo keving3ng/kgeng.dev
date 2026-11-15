@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '../components/PageHeader'
+import { paths } from '../config/paths'
 import { useRecipes } from '../hooks/useRecipes'
 import { getRecipe, type RecipeWithContent } from '../services/recipes'
 import NotionRenderer from '../components/NotionRenderer'
@@ -71,7 +72,7 @@ function Recipes() {
   return (
     <div className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        <PageHeader title="recipes" subtitle="a collection of recipes i've saved." />
+        <PageHeader title="recipes" subtitle="a collection of recipes i've saved." backTo={paths.picks} backLabel="← picks" />
 
         {/* Tag filters */}
         {allTags.length > 0 && (

@@ -6,7 +6,7 @@ interface PageHeaderProps {
   title: string
   subtitle?: string
   showBackLink?: boolean
-  /** Defaults to home; use for nested hubs (e.g. games). */
+  /** Defaults to home; use for nested hubs (e.g. picks/recipes). */
   backTo?: string
   backLabel?: string
 }

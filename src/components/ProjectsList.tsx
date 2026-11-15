@@ -1,4 +1,5 @@
 import { projects } from '../config/projects'
+import { formatShortDate } from '../config/indexRows'
 
 export default function ProjectsList() {
   return (
@@ -9,7 +10,7 @@ export default function ProjectsList() {
             key={project.name}
             className="border-l-2 border-border pl-4"
           >
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-wrap items-baseline gap-2">
               {project.url ? (
                 <a
                   href={project.url}
@@ -27,6 +28,11 @@ export default function ProjectsList() {
               <span className="text-sm text-content-muted">
                 — {project.description}
               </span>
+              {project.updatedAt && (
+                <span className="text-xs text-content-muted">
+                  (updated {formatShortDate(project.updatedAt)})
+                </span>
+              )}
             </div>
             {project.note && (
               <p className="text-sm text-content-muted mt-1">

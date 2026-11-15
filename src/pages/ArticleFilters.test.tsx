@@ -4,7 +4,6 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import '@testing-library/jest-dom/vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import Home from './Home'
-import Blog from './Blog'
 import { MobilePostFilters } from '../components/Sidebar'
 
 vi.mock('../hooks/usePosts', () => ({
@@ -25,10 +24,9 @@ vi.mock('../components/ThemeToggle', () => ({ default: () => null }))
 afterEach(cleanup)
 
 describe('article feed filters', () => {
-  it.each(['/', '/blog'])('filters the feed on %s and closes after selection', async (path) => {
+  it.each(['/writing'])('filters the feed on %s and closes after selection', async (path) => {
     render(<MemoryRouter initialEntries={[path]}><Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/blog" element={<Blog />} />
+      <Route path="/writing" element={<Home />} />
     </Routes></MemoryRouter>)
     await screen.findAllByText('No content')
     const trigger = screen.getByRole('button', { name: /filter: all posts/ })

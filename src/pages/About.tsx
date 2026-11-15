@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import ThemeToggle from '../components/ThemeToggle'
 import { socialLinks } from '../config/navigation'
@@ -33,6 +34,11 @@ function About() {
             <h1 className="text-2xl font-medium mb-6">About</h1>
             <p className="text-content-secondary leading-relaxed">
               About page content coming soon...
+            </p>
+            <p className="mt-6 text-sm">
+              <Link to={paths.cv} className="text-content-secondary hover:text-content transition-colors">
+                cv →
+              </Link>
             </p>
           </div>
         </main>

@@ -4,7 +4,8 @@
  */
 export const paths = {
   home: '/',
-  blog: '/blog',
+  work: '/work',
+  writing: '/writing',
   about: '/about',
   cv: '/cv',
   tools: {
@@ -12,17 +13,21 @@ export const paths = {
     recipeer: '/tools/recipeer',
   },
   picks: '/picks',
-  projects: '/projects',
-  recipes: '/recipes',
-  games: '/games',
+  recipes: '/picks/recipes',
+  test: '/test',
 } as const
+
+/** Legacy paths that redirect to their new homes. */
+export const legacyRedirects: Record<string, string> = {
+  '/blog': paths.writing,
+  '/projects': paths.work,
+  '/recipes': paths.recipes,
+}
+
+/** Index filtered to tools (the `tools` tab has no page of its own). */
+export const toolsIndexPath = `${paths.home}?type=tool`
 
 /** Permalink path for a blog post (matches `/post/:slug`). */
 export function postPath(slug: string): string {
   return `/post/${encodeURIComponent(slug)}`
-}
-
-/** Path for a mini-game under `/games/:slug`. */
-export function gamePath(slug: string): string {
-  return `/games/${encodeURIComponent(slug)}`
 }

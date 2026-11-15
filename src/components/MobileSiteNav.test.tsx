@@ -8,7 +8,7 @@ import Sidebar, { MobilePostFilters } from './Sidebar'
 import ThemeToggle from './ThemeToggle'
 import NotionRenderer from './NotionRenderer'
 import { ThemeProvider } from '../contexts/ThemeContext'
-import { lists, socialLinks, tools } from '../config/navigation'
+import { lists, mainNav, socialLinks, tools } from '../config/navigation'
 import { paths } from '../config/paths'
 
 beforeAll(() => {
@@ -52,7 +52,7 @@ describe('mobile site navigation', () => {
     fireEvent.click(trigger)
     const dialog = screen.getByRole('dialog', { name: 'navigation' })
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
-    for (const link of [...lists, ...tools]) {
+    for (const link of [...mainNav.filter((l) => l.label !== 'tools'), ...tools]) {
       expect(within(dialog).getByRole('link', { name: link.label.toLowerCase() })).toHaveAttribute('href', link.url)
     }
     for (const link of socialLinks) {
@@ -67,8 +67,8 @@ describe('mobile site navigation', () => {
     render(<MemoryRouter><Layout><CurrentRoute /></Layout></MemoryRouter>)
     const trigger = screen.getByRole('button', { name: 'menu' })
     fireEvent.click(trigger)
-    fireEvent.click(screen.getByRole('link', { name: 'projects' }))
-    expect(screen.getByTestId('route')).toHaveTextContent(paths.projects)
+    fireEvent.click(screen.getByRole('link', { name: 'work' }))
+    expect(screen.getByTestId('route')).toHaveTextContent(paths.work)
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
   })
@@ -114,7 +114,7 @@ describe('mobile site navigation', () => {
   it('retains desktop navigation and filters', () => {
     const onFilterChange = vi.fn()
     render(<MemoryRouter><Sidebar filters={['All Posts', 'dev']} activeFilter="dev" onFilterChange={onFilterChange} links={socialLinks} tools={tools} lists={lists} /></MemoryRouter>)
-    expect(screen.getByRole('link', { name: 'games' })).toHaveAttribute('href', paths.games)
+    expect(screen.getByRole('link', { name: 'picks' })).toHaveAttribute('href', paths.picks)
     expect(screen.getByRole('link', { name: 'splits' })).toHaveAttribute('href', paths.tools.splits)
     fireEvent.click(screen.getByRole('button', { name: 'all posts' }))
     expect(onFilterChange).toHaveBeenCalledWith(null)

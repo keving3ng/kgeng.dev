@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { lists, socialLinks, tools } from '../config/navigation'
+import { mainNav, socialLinks, tools } from '../config/navigation'
 import { paths } from '../config/paths'
 
 export default function MobileSiteNav() {
@@ -65,7 +65,7 @@ export default function MobileSiteNav() {
           </div>
           <div className="space-y-5">
             <div className="space-y-1">
-              {[{ label: 'blog', url: paths.home }, { label: 'cv', url: paths.cv }, { label: 'projects', url: paths.projects }, ...lists].map((link) => (
+              {[{ label: 'home', url: paths.home }, ...mainNav.filter((n) => n.label !== 'tools'), { label: 'cv', url: paths.cv }].map((link) => (
                 <Link key={link.url} to={link.url} onClick={closeMenu} className="min-h-[44px] flex items-center py-2 text-sm hover:text-content-secondary">
                   {link.label.toLowerCase()}
                 </Link>

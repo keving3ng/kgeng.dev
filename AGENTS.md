@@ -67,15 +67,14 @@ npm run check
 
 | Path | Page / behavior |
 |------|-----------------|
-| `/`, `/cv`, `/post/:slug` | `Home` (newsfeed; slug/cv are variants on home) |
-| `/blog` | `Blog` |
+| `/` | `Index` (terminal-style index of projects, tools, posts; desktop-only command prompt) |
+| `/work` | `Work` (projects) |
+| `/writing`, `/post/:slug`, `/cv` | `Home` (newsfeed / cv variants) |
 | `/about` | `About` |
 | `/tools/splits`, `/tools/recipeer` | Tool pages |
-| `/picks` | `Picks` |
-| `/projects` | `Projects` |
-| `/recipes` | `Recipes` |
-| `/games` | `Games` (hub + discovery selector) |
-| `/games/:gameSlug` | `GameRoute` → game component from `src/games/registry.ts` |
+| `/picks`, `/picks/recipes` | `Picks`, `Recipes` |
+
+Legacy `/blog`, `/projects`, `/recipes` redirect (see `legacyRedirects` in `paths.ts`). The games section was removed.
 
 - **Nav config:** `src/config/navigation.ts` (`tools`, `lists`, social links)—URLs must match `paths.ts`.
 
@@ -97,14 +96,6 @@ npm run check
 1. New page in `src/pages/`.
 2. Add `paths.tools.*` (or a new segment) in **`paths.ts`**, then register in **`routes.tsx`**.
 3. Entry in **`navigation.ts`** → `tools` array.
-
-### Add a **mini-game** (under `/games/...`)
-
-1. Create a component under **`src/games/`** (see **`WelcomeGame.tsx`**).
-2. Register it in **`src/games/registry.ts`** (`GAME_LIST` — unique **`slug`**).
-3. Hub UI (**`src/pages/Games.tsx`**) reads the registry automatically; routing is **`/games/:gameSlug`** via **`GameRoute`** (already wired in **`routes.tsx`**).
-4. Use **`gamePath(slug)`** from **`paths.ts`** for links; **`PageHeader`** accepts **`backTo={paths.games}`** and **`backLabel="← games"`** on game pages.
-5. Run **`npm run check`**.
 
 ### Add or extend **unit tests**
 
@@ -143,7 +134,6 @@ npm run check
 | Client API wrappers | `src/services/` |
 | Hooks | `src/hooks/` |
 | Static config (nav, cv, themes, paths, routes) | `src/config/` |
-| Mini-games (registry + game components) | `src/games/` |
 | Presentational components | `src/components/` (no direct Notion/API calls) |
 | Unit tests | `src/**/*.test.{ts,tsx}` (Vitest) |
 

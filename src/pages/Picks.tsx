@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
+import { paths } from '../config/paths'
 
 interface Pick {
   title: string
@@ -60,6 +62,12 @@ function Picks() {
     <div className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <PageHeader title="picks" subtitle="things i've enjoyed and would recommend." />
+
+        <p className="mb-8 text-sm">
+          <Link to={paths.recipes} className="text-content-secondary hover:text-content transition-colors">
+            recipes →
+          </Link>
+        </p>
 
         {nonEmptyCategories.length === 0 ? (
           <p className="text-sm text-content-muted italic">
