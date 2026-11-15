@@ -338,7 +338,7 @@ export default function TripDetail() {
   )
 
   return (
-    <div className="min-h-screen pb-16">
+    <div className="min-h-screen overflow-x-hidden pb-16 touch-manipulation">
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="mb-2 flex items-center gap-3 text-xs text-content-muted">
@@ -502,7 +502,7 @@ export default function TripDetail() {
                     e.preventDefault()
                     void handleDropSpotOnBucket(bucket)
                   }}
-                  className={`flex flex-col rounded-2xl border p-4 transition-colors ${
+                  className={`flex min-w-0 flex-col rounded-2xl border p-4 transition-colors ${
                     isDropTarget
                       ? 'border-content bg-surface-secondary/90'
                       : 'border-border bg-surface-secondary/35'
@@ -542,7 +542,7 @@ export default function TripDetail() {
                         value={newSpotName}
                         onChange={(e) => setNewSpotName(e.target.value)}
                         placeholder="spot name"
-                        className="w-full rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-sm text-content outline-none focus:border-content-muted"
+                        className="w-full rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-base sm:text-sm text-content outline-none focus:border-content-muted"
                         required
                       />
                       <div className="grid grid-cols-2 gap-2">

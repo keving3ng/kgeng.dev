@@ -69,7 +69,7 @@ export default function TaiwanRegionMap({
         viewBox="285 295 745 995"
         role="img"
         aria-label="interactive map of taiwan regions"
-        className="mx-auto h-[360px] w-full max-w-[340px] sm:h-[440px] sm:max-w-[400px] select-none drop-shadow-sm"
+        className="mx-auto h-[360px] w-full max-w-[340px] sm:h-[440px] sm:max-w-[400px] select-none touch-manipulation drop-shadow-sm"
       >
         <defs>
           <clipPath id="clip-alishan-mountain">
