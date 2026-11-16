@@ -32,6 +32,28 @@ import {
   type TripSpot,
 } from '../types/trip'
 
+function findNearestRegionId(
+  lat: number | null,
+  lng: number | null,
+  regions: TripRegion[],
+  fallbackId: string,
+): string {
+  if (lat === null || lng === null) return fallbackId
+  let bestId = fallbackId
+  let bestDist = Number.POSITIVE_INFINITY
+  for (const r of regions) {
+    if (r.centerLat === null || r.centerLng === null) continue
+    const dLat = r.centerLat - lat
+    const dLng = r.centerLng - lng
+    const dist = dLat * dLat + dLng * dLng
+    if (dist < bestDist) {
+      bestDist = dist
+      bestId = r.id
+    }
+  }
+  return bestId
+}
+
 export default function TripDetail() {
   const { slug = 'taiwan' } = useParams<{ slug: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -77,7 +99,9 @@ export default function TripDetail() {
   const [showMapsListImport, setShowMapsListImport] = useState(false)
   const [mapsListUrl, setMapsListUrl] = useState('')
   const [mapsListTitle, setMapsListTitle] = useState<string | null>(null)
-  const [mapsListSpots, setMapsListSpots] = useState<Array<ImportedMapsSpot & { selected: boolean }>>([])
+  const [mapsListSpots, setMapsListSpots] = useState<
+    Array<ImportedMapsSpot & { selected: boolean; regionId: string }>
+  >([])
   const [mapsListBucket, setMapsListBucket] = useState<SpotBucket>('saved')
   const [mapsListRecommended, setMapsListRecommended] = useState(false)
   const [mapsListLoading, setMapsListLoading] = useState(false)
@@ -236,13 +260,20 @@ export default function TripDetail() {
 
   const handleFetchMapsList = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token || !mapsListUrl.trim()) return
+    if (!token || !mapsListUrl.trim() || !data) return
     setMapsListLoading(true)
     setMapsListError(null)
     try {
       const res = await importGoogleMapsUrl(token, mapsListUrl.trim())
+      const fallbackRegionId = selectedRegion?.id ?? data.regions[0]?.id ?? ''
       setMapsListTitle(res.listTitle)
-      setMapsListSpots(res.spots.map((s) => ({ ...s, selected: true })))
+      setMapsListSpots(
+        res.spots.map((s) => ({
+          ...s,
+          selected: true,
+          regionId: selectedRegion?.id ?? findNearestRegionId(s.lat, s.lng, data.regions, fallbackRegionId),
+        })),
+      )
     } catch (err) {
       setMapsListError(err instanceof Error ? err.message : 'failed to fetch google maps list')
       setMapsListSpots([])
@@ -252,17 +283,17 @@ export default function TripDetail() {
   }
 
   const handleImportMapsListSpots = async () => {
-    if (!token || !selectedRegion || !data) return
-    const selected = mapsListSpots.filter((s) => s.selected && s.name.trim())
+    if (!token || !data) return
+    const selected = mapsListSpots.filter((s) => s.selected && s.name.trim() && s.regionId)
     if (selected.length === 0) return
 
     setMapsListImporting(true)
     setMapsListError(null)
     try {
-      const createdSpots: TripSpot[] = []
+      const createdByRegion = new Map<string, TripSpot[]>()
       for (const item of selected) {
         const created = await createSpot(token, slug, {
-          regionId: selectedRegion.id,
+          regionId: item.regionId,
           name: item.name.trim(),
           bucket: mapsListBucket,
           recommended: mapsListBucket === 'visited' ? mapsListRecommended : false,
@@ -271,14 +302,17 @@ export default function TripDetail() {
           lat: item.lat,
           lng: item.lng,
         })
-        createdSpots.push(created)
+        const list = createdByRegion.get(item.regionId) ?? []
+        list.push(created)
+        createdByRegion.set(item.regionId, list)
       }
 
       setData({
         ...data,
-        regions: data.regions.map((r) =>
-          r.id === selectedRegion.id ? { ...r, spots: [...r.spots, ...createdSpots] } : r,
-        ),
+        regions: data.regions.map((r) => {
+          const added = createdByRegion.get(r.id)
+          return added ? { ...r, spots: [...r.spots, ...added] } : r
+        }),
       })
       setMapsListUrl('')
       setMapsListTitle(null)
@@ -487,9 +521,22 @@ export default function TripDetail() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           {isAuthenticated && (
             <>
+              {editMode && data && data.regions.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowMapsListImport((v) => !v)}
+                  className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                    showMapsListImport
+                      ? 'border-content bg-content text-surface font-medium'
+                      : 'border-border bg-surface-secondary text-content-secondary hover:text-content'
+                  }`}
+                >
+                  {showMapsListImport ? 'close maps import' : '+ maps list'}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {
@@ -498,6 +545,7 @@ export default function TripDetail() {
                   if (!next) {
                     setPaintingRegionId(null)
                     setPickingSpotId(null)
+                    setShowMapsListImport(false)
                   }
                 }}
                 className={`rounded-full border px-3 py-1 text-xs transition-colors ${
@@ -520,6 +568,183 @@ export default function TripDetail() {
           <ThemeToggle />
         </div>
       </header>
+
+      {editMode && showMapsListImport && data && data.regions.length > 0 && (
+        <div className="mb-6 rounded-2xl border border-border bg-surface-secondary/40 p-4 space-y-3 text-xs">
+          <div>
+            <h3 className="text-sm font-medium text-content">import from google maps list</h3>
+            <p className="text-[11px] text-content-muted">
+              paste a public shared google maps list link — spots auto-match to the nearest region by pin.
+            </p>
+          </div>
+
+          <form onSubmit={handleFetchMapsList} className="flex flex-wrap gap-2">
+            <input
+              type="url"
+              value={mapsListUrl}
+              onChange={(e) => setMapsListUrl(e.target.value)}
+              placeholder="https://maps.app.goo.gl/… or google.com/maps/placelists/list/…"
+              required
+              className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-content outline-none focus:border-content-muted"
+            />
+            <button
+              type="submit"
+              disabled={mapsListLoading}
+              className="rounded-lg bg-content px-3 py-1.5 font-medium text-surface hover:opacity-90 disabled:opacity-50"
+            >
+              {mapsListLoading ? 'fetching…' : 'fetch list'}
+            </button>
+          </form>
+
+          {mapsListError && <p className="text-error">{mapsListError}</p>}
+
+          {mapsListSpots.length > 0 && (
+            <div className="space-y-3 pt-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-y border-border py-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  {mapsListTitle && (
+                    <span className="font-medium text-content">{mapsListTitle}</span>
+                  )}
+                  <label className="inline-flex items-center gap-1.5 text-content-secondary">
+                    <span>add to:</span>
+                    <select
+                      value={mapsListBucket}
+                      onChange={(e) => setMapsListBucket(e.target.value as SpotBucket)}
+                      className="rounded border border-border bg-surface px-2 py-0.5 text-content outline-none"
+                    >
+                      <option value="visited">visited</option>
+                      <option value="saved">saved</option>
+                    </select>
+                  </label>
+                  <label className="inline-flex items-center gap-1.5 text-content-secondary">
+                    <span>all regions:</span>
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        const targetId = e.target.value
+                        if (!targetId) return
+                        setMapsListSpots((prev) =>
+                          prev.map((s) => ({ ...s, regionId: targetId })),
+                        )
+                      }}
+                      className="rounded border border-border bg-surface px-2 py-0.5 text-content outline-none"
+                    >
+                      <option value="">auto / mixed</option>
+                      {data.regions.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {mapsListBucket === 'visited' && (
+                    <label className="inline-flex items-center gap-1.5 text-content-secondary cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={mapsListRecommended}
+                        onChange={(e) => setMapsListRecommended(e.target.checked)}
+                      />
+                      <span>
+                        <span aria-hidden="true" style={{ color: '#f59e0b' }}>★</span> recommend
+                      </span>
+                    </label>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const allSelected = mapsListSpots.every((s) => s.selected)
+                    setMapsListSpots((prev) =>
+                      prev.map((s) => ({ ...s, selected: !allSelected })),
+                    )
+                  }}
+                  className="text-content-muted hover:text-content"
+                >
+                  {mapsListSpots.every((s) => s.selected) ? 'unselect all' : 'select all'}
+                </button>
+              </div>
+
+              <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1">
+                {mapsListSpots.map((spot, idx) => (
+                  <div
+                    key={`${spot.name}-${idx}`}
+                    className="flex flex-wrap items-center gap-2.5 rounded-lg border border-border bg-surface p-2"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={spot.selected}
+                      onChange={() =>
+                        setMapsListSpots((prev) =>
+                          prev.map((item, i) =>
+                            i === idx ? { ...item, selected: !item.selected } : item,
+                          ),
+                        )
+                      }
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium text-content">{spot.name}</span>
+                        {spot.lat !== null && spot.lng !== null && (
+                          <span className="text-[10px] text-content-muted">
+                            {spot.lat.toFixed(3)}, {spot.lng.toFixed(3)}
+                          </span>
+                        )}
+                      </div>
+                      {spot.note && (
+                        <p className="text-[11px] text-content-secondary">{spot.note}</p>
+                      )}
+                    </div>
+                    <select
+                      value={spot.regionId}
+                      onChange={(e) => {
+                        const regionId = e.target.value
+                        setMapsListSpots((prev) =>
+                          prev.map((item, i) => (i === idx ? { ...item, regionId } : item)),
+                        )
+                      }}
+                      className="rounded border border-border bg-surface-secondary px-2 py-1 text-[11px] text-content outline-none"
+                    >
+                      {data.regions.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMapsListSpots([])
+                    setShowMapsListImport(false)
+                  }}
+                  className="px-2.5 py-1 text-content-muted hover:text-content"
+                >
+                  cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={
+                    mapsListImporting ||
+                    mapsListSpots.filter((s) => s.selected).length === 0
+                  }
+                  onClick={() => {
+                    void handleImportMapsListSpots()
+                  }}
+                  className="rounded-lg bg-content px-3 py-1.5 font-medium text-surface hover:opacity-90 disabled:opacity-50"
+                >
+                  {mapsListImporting
+                    ? 'importing…'
+                    : `import ${mapsListSpots.filter((s) => s.selected).length} spots`}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <p className="text-sm text-content-muted">loading trip map…</p>
@@ -589,26 +814,13 @@ export default function TripDetail() {
 
                   <div className="flex flex-wrap items-center gap-2">
                     {editMode && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => setShowMapsListImport((v) => !v)}
-                          className={`rounded-full border px-3 py-1 text-xs transition-colors ${
-                            showMapsListImport
-                              ? 'border-content bg-content text-surface font-medium'
-                              : 'border-border bg-surface text-content-secondary hover:text-content'
-                          }`}
-                        >
-                          {showMapsListImport ? 'close maps import' : '+ maps list'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowPinMapInEdit((v) => !v)}
-                          className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-content-secondary hover:text-content"
-                        >
-                          {showPinMapInEdit || hasPinnedSpots ? 'hide pin map' : '+ pin map'}
-                        </button>
-                      </>
+                      <button
+                        type="button"
+                        onClick={() => setShowPinMapInEdit((v) => !v)}
+                        className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-content-secondary hover:text-content"
+                      >
+                        {showPinMapInEdit || hasPinnedSpots ? 'hide pin map' : '+ pin map'}
+                      </button>
                     )}
                     <button
                       type="button"
@@ -619,149 +831,6 @@ export default function TripDetail() {
                     </button>
                   </div>
                 </div>
-
-                {editMode && showMapsListImport && (
-                  <div className="rounded-2xl border border-border bg-surface-secondary/40 p-4 space-y-3 text-xs">
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <h3 className="text-sm font-medium text-content">import from google maps list</h3>
-                        <p className="text-[11px] text-content-muted">
-                          paste a public shared google maps list link to import spots with coordinates.
-                        </p>
-                      </div>
-                    </div>
-
-                    <form onSubmit={handleFetchMapsList} className="flex flex-wrap gap-2">
-                      <input
-                        type="url"
-                        value={mapsListUrl}
-                        onChange={(e) => setMapsListUrl(e.target.value)}
-                        placeholder="https://maps.app.goo.gl/… or google.com/maps/placelists/list/…"
-                        required
-                        className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-content outline-none focus:border-content-muted"
-                      />
-                      <button
-                        type="submit"
-                        disabled={mapsListLoading}
-                        className="rounded-lg bg-content px-3 py-1.5 font-medium text-surface hover:opacity-90 disabled:opacity-50"
-                      >
-                        {mapsListLoading ? 'fetching…' : 'fetch list'}
-                      </button>
-                    </form>
-
-                    {mapsListError && <p className="text-error">{mapsListError}</p>}
-
-                    {mapsListSpots.length > 0 && (
-                      <div className="space-y-3 pt-1">
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-y border-border py-2">
-                          <div className="flex flex-wrap items-center gap-3">
-                            {mapsListTitle && (
-                              <span className="font-medium text-content">{mapsListTitle}</span>
-                            )}
-                            <label className="inline-flex items-center gap-1.5 text-content-secondary">
-                              <span>add to:</span>
-                              <select
-                                value={mapsListBucket}
-                                onChange={(e) => setMapsListBucket(e.target.value as SpotBucket)}
-                                className="rounded border border-border bg-surface px-2 py-0.5 text-content outline-none"
-                              >
-                                <option value="visited">visited</option>
-                                <option value="saved">saved</option>
-                              </select>
-                            </label>
-                            {mapsListBucket === 'visited' && (
-                              <label className="inline-flex items-center gap-1.5 text-content-secondary cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={mapsListRecommended}
-                                  onChange={(e) => setMapsListRecommended(e.target.checked)}
-                                />
-                                <span>
-                                  <span aria-hidden="true" style={{ color: '#f59e0b' }}>★</span> recommend
-                                </span>
-                              </label>
-                            )}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const allSelected = mapsListSpots.every((s) => s.selected)
-                              setMapsListSpots((prev) =>
-                                prev.map((s) => ({ ...s, selected: !allSelected })),
-                              )
-                            }}
-                            className="text-content-muted hover:text-content"
-                          >
-                            {mapsListSpots.every((s) => s.selected) ? 'unselect all' : 'select all'}
-                          </button>
-                        </div>
-
-                        <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1">
-                          {mapsListSpots.map((spot, idx) => (
-                            <label
-                              key={`${spot.name}-${idx}`}
-                              className="flex items-start gap-2.5 rounded-lg border border-border bg-surface p-2 cursor-pointer hover:border-content-muted/60"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={spot.selected}
-                                onChange={() =>
-                                  setMapsListSpots((prev) =>
-                                    prev.map((item, i) =>
-                                      i === idx ? { ...item, selected: !item.selected } : item,
-                                    ),
-                                  )
-                                }
-                                className="mt-0.5"
-                              />
-                              <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className="font-medium text-content">{spot.name}</span>
-                                  {spot.lat !== null && spot.lng !== null && (
-                                    <span className="text-[10px] text-content-muted">
-                                      {spot.lat.toFixed(3)}, {spot.lng.toFixed(3)}
-                                    </span>
-                                  )}
-                                </div>
-                                {spot.note && (
-                                  <p className="text-[11px] text-content-secondary">{spot.note}</p>
-                                )}
-                              </div>
-                            </label>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setMapsListSpots([])
-                              setShowMapsListImport(false)
-                            }}
-                            className="px-2.5 py-1 text-content-muted hover:text-content"
-                          >
-                            cancel
-                          </button>
-                          <button
-                            type="button"
-                            disabled={
-                              mapsListImporting ||
-                              mapsListSpots.filter((s) => s.selected).length === 0
-                            }
-                            onClick={() => {
-                              void handleImportMapsListSpots()
-                            }}
-                            className="rounded-lg bg-content px-3 py-1.5 font-medium text-surface hover:opacity-90 disabled:opacity-50"
-                          >
-                            {mapsListImporting
-                              ? 'importing…'
-                              : `import ${mapsListSpots.filter((s) => s.selected).length} spots`}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
 
                 {/* Optional hybrid Leaflet pin map */}
                 {(hasPinnedSpots || Boolean(pickingSpotId) || (editMode && showPinMapInEdit)) && (
