@@ -191,6 +191,34 @@ export async function deleteSpot(token: string, tripSlug: string, id: string): P
   if (!response.ok) await parseError(response, 'failed to delete spot')
 }
 
+export interface ImportedMapsSpot {
+  name: string
+  url: string
+  lat: number | null
+  lng: number | null
+  note: string | null
+}
+
+export interface MapsImportResult {
+  kind: 'place' | 'list'
+  listTitle: string | null
+  sourceUrl: string
+  spots: ImportedMapsSpot[]
+}
+
+export async function importGoogleMapsUrl(
+  token: string,
+  url: string,
+): Promise<MapsImportResult> {
+  const response = await fetch(`${API_BASE}/maps-import`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ url }),
+  })
+  if (!response.ok) await parseError(response, 'failed to import google maps link')
+  return response.json()
+}
+
 export async function uploadSpotImage(
   token: string,
   spotId: string,
